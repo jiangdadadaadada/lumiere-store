@@ -13,7 +13,7 @@
   /* ★ 版本化覆盖：OLD 解析器若版本不同就允许新版覆盖它。
      之前这里直接 return，导致同一页面反复采集永远用第一次注入的旧解析器 ——
      扩展版本升到 z、页面里却还是几小时前的代码，改了等于没改。 */
-  const INJECT_BUILD = '20261125b';
+  const INJECT_BUILD = '20261125d';
   if (window.__LUM_COLLECT__ && window.__LUM_COLLECT__.__build === INJECT_BUILD) return;
 
   /* ---------------- 通用工具 ---------------- */
@@ -910,16 +910,30 @@
     const budget = delayMs || 700;
     /* 页面初始就够采的话，一秒都不滚 —— 真实 1688 店铺页常常首屏就有全部商品 */
     if (needCount && countProductLinks() >= needCount) return;
+
+    /* ★ 整个 autoScroll 硬超时：最多 5 秒，防止 MutationObserver 卡死 SPA 页面 */
+    const hardDeadline = Date.now() + 5000;
+
+    /* ★ SPA 页面优化：1688 od-pc 虚拟滚动页面滚动不会新增 DOM 节点，
+       最多滚 3 次就停，不然一直在等一个永远不会增加的数字 */
+    const effectiveMax = IS_1688_SPA ? Math.min(maxTimes, 3) : maxTimes;
+
     let stall = 0;
-    for (let i = 0; i < maxTimes; i++) {
+    for (let i = 0; i < effectiveMax; i++) {
+      /* ★ 硬超时到了立刻退出 */
+      if (Date.now() > hardDeadline) break;
+
       const before = countProductLinks();
       if (needCount && before >= needCount) break;   /* 已经够采了 */
       window.scrollTo(0, document.body.scrollHeight);
-      /* 等这一屏的新卡片渲染出来：一涨就立刻继续，不白等 */
-      const grew = await watchProductGrowth(before, budget);
+
+      /* 等这一屏的新卡片渲染出来：一涨就立刻继续，不白等
+         ★ SPA 页面也缩短单次等待：最多 300ms 就好 */
+      const watchBudget = IS_1688_SPA ? 300 : budget;
+      const grew = await watchProductGrowth(before, watchBudget);
       if (!grew) {
         stall++;
-        if (stall >= 2) break;   /* 连续两轮没新内容 = 到底了 */
+        if (stall >= (IS_1688_SPA ? 1 : 2)) break;   /* SPA 页面一轮没涨就到底了 */
       } else stall = 0;
     }
     window.scrollTo(0, 0);
@@ -1566,11 +1580,15 @@
   );
 
   async function shopLinks() {
+    /* ★ 整个 shopLinks 硬超时 7 秒，绝不卡死 */
+    const start = Date.now();
+    const hardTimeout = 7000;
+
     const blocked = nonProductReason();
-    if (blocked) return { ok: false, error: blocked, urls: [], hasNext: false, nextUrl: '', isSpaMode: false, is1688: false };
+    if (blocked) return { ok: false, error: blocked, urls: [], hasNext: false, nextUrl: '', isSpaMode: false, is1688: false, diag: collectDiag() };
 
     if (IS_1688_SHOP) {
-      try { await autoScroll(18, 500, 30); } catch (e) {}
+      if (Date.now() - start < hardTimeout - 1000) try { await autoScroll(18, 500, 30); } catch (e) {}
     } else {
       try {
         for (let i = 0; i < 8; i++) { window.scrollBy(0, window.innerHeight * 2); await new Promise(r => setTimeout(r, 200)); }
@@ -1687,7 +1705,40 @@
       }
     } catch (e) {}
 
-    return { ok: true, urls, hasNext, nextUrl, isSpaMode, is1688: IS_1688_SHOP };
+    return { ok: true, urls, hasNext, nextUrl, isSpaMode, is1688: IS_1688_SHOP, diag: urls.length === 0 ? collectDiag() : null };
+  }
+
+  /* 收集页面诊断信息：链接数、class 名、data 属性等
+     扫描失败时返回给 background → 弹窗里显示，方便排查 */
+  function collectDiag() {
+    try {
+      const totalA = document.querySelectorAll('a[href]').length;
+      let offerA = 0;
+      document.querySelectorAll('a[href]').forEach(a => {
+        const h = a.getAttribute('href') || '';
+        if (/offer|product|item|goods/i.test(h)) offerA++;
+      });
+      const dataOfferIds = document.querySelectorAll('[data-offer-id],[data-offerId]').length;
+      const dataHrefs = document.querySelectorAll('[data-href]').length;
+      const offerClassSet = new Set();
+      document.querySelectorAll('[class]').forEach(el => {
+        (el.className + '').split(/\s+/).forEach(cls => {
+          if (/offer|Offer|product|Product|goods|Goods|card|Card|search|Search|item|Item/i.test(cls)) {
+            offerClassSet.add(cls);
+          }
+        });
+      });
+      return {
+        url: location.href,
+        title: document.title?.substring(0, 50),
+        totalALinks: totalA,
+        offerRelatedLinks: offerA,
+        dataOfferIds,
+        dataHrefs,
+        offerClasses: Array.from(offerClassSet).slice(0, 25),
+        bodyTextSnippet: (document.body?.innerText || '').substring(0, 200).replace(/\s+/g, ' ')
+      };
+    } catch (e) { return { error: String(e) }; }
   }
 
   async function shopWaitPageChange(oldUrlCount) {

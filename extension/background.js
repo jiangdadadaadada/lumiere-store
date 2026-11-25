@@ -12,7 +12,7 @@ const STORAGE_KEY = 'lum_collect_state';
    所以不需要分批了 —— 一次全发，省掉 7 次往返。 */
 const BATCH_SIZE = 200;
 /* 与 content.js 保持一致的构建号：变了就重载扩展并把页面按钮重新挂上 */
-const BUILD = '20261125b';
+const BUILD = '20261125d';
 
 let state = {
   running: false, phase: '', url: '', total: 0, done: 0, failed: 0,
@@ -363,7 +363,7 @@ function isProductDetailUrl(url) {
    旧逻辑只要 tabId+url 没变就永不重注，页面里一旦注入了旧版解析器，
    扩展升到新版也进不去 —— 这正是「版本号升了、采集行为还是旧的」的根因。
    改成每次采集先探测页面里 __LUM_COLLECT__.__build，不符就强制重注。 */
-const PARSER_BUILD = '20261125b';
+const PARSER_BUILD = '20261125d';
 async function ensureInjected(tabId, url) {
   try {
     const probe = await chrome.scripting.executeScript({
@@ -598,13 +598,18 @@ async function runShopScan(cfg) {
           try { return await window.__LUM_COLLECT__.shopLinks({ scanLinks: true }); }
           catch (e) { return { ok: false, error: e.message }; }
         }
-      }), 10000, '店铺页解析');
+      }), 8000, '店铺页解析');
 
-      const r = res && res[0] ? res[0].result : { ok: false, error: '無返回' };
+      const r = res && res[0] ? res[0].result : { ok: false, error: '无返回' };
+
+      /* ★ 存诊断信息，扫描失败时传给 content.js 显示给用户 */
+      if (r && r.diag) state.shopDiag = r.diag;
 
       if (!r || !r.ok) {
-        if (page === 1) throw new Error((r && r.error) || '这个页面不像店铺页，请打开店铺首页再试');
-        else { pushProgress('第 ' + page + ' 页解析失敗，停止翻页…'); break; }
+        if (page === 1) {
+          const diagMsg = state.shopDiag ? '\n[诊断] ' + JSON.stringify(state.shopDiag).substring(0, 500) : '';
+          throw new Error((r && r.error) || '这个页面不像店铺页，请打开店铺首页再试' + diagMsg);
+        } else { pushProgress('第 ' + page + ' 页解析失败，停止翻页…'); break; }
       }
 
       const urls = r.urls || [];
@@ -680,7 +685,8 @@ async function runShopScan(cfg) {
     state.shopFound = state.shopUrls.length;
 
     if (!state.shopUrls.length) {
-      throw new Error('这个页面没扫描到任何商品，请确保在店铺商品列表页');
+      const diagMsg = state.shopDiag ? '\n[诊断] ' + JSON.stringify(state.shopDiag).substring(0, 800) : '';
+      throw new Error('这个页面没扫描到任何商品，请确保在店铺商品列表页' + diagMsg);
     }
 
     /* 問服务端哪些商品已存在（按 offerId 或 URL 匹配） */

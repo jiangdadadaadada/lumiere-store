@@ -925,7 +925,7 @@
    "id": "DRAFT-MWVU3EXS2M1J",
    "status": "pending",
    "sku": "",
-   "site": "",
+   "site": "lumiere",
    "createdAt": "2026-11-25T08:00:44.128Z",
    "name": "私语 · 甄选好物",
    "nameEn": "Whisper · Intimate Essential",
@@ -964,8 +964,9 @@
    "originalDesc": "",
    "sourceUrl": "https://feitiyu.1688.com/page/offerlist.htm?offerId=1098541264459",
    "collectedAt": "2026-11-25T08:00:44.128Z",
-   "whiteStatus": "failed",
-   "whiteError": "Unable to allocate 1.86 GiB for an array with shape (250000000,) and data type int64"
+   "whiteStatus": "done",
+   "whiteError": "Unable to allocate 1.86 GiB for an array with shape (250000000,) and data type int64",
+   "updatedAt": "2026-11-25T08:41:38.075Z"
   },
   "DRAFT-MWVURZZOLPYC": {
    "id": "DRAFT-MWVURZZOLPYC",
