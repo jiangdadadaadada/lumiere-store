@@ -920,7 +920,127 @@
    "createdAt": "2026-11-25T06:12:35.123Z"
   }
  },
- "drafts": {},
+ "drafts": {
+  "DRAFT-MWW0XYW3B9V2": {
+   "id": "DRAFT-MWW0XYW3B9V2",
+   "status": "pending",
+   "sku": "",
+   "site": "",
+   "createdAt": "2026-11-25T11:12:27.363Z",
+   "name": "私语 · 甄选好物",
+   "nameEn": "Whisper · Intimate Essential",
+   "category": "women",
+   "desc": "这款单品选用亲肤材质。为私密时刻而设计，细节都藏在手感里。私密包装，中性面单发货。",
+   "descEn": "A intimate essential with a skin-safe finish. Discreet packaging, neutral billing.",
+   "price": 6,
+   "priceMissing": false,
+   "priceMissingAt": "",
+   "stock": 232317,
+   "image": "/assets/img/collected/CQ-05147565.webp",
+   "mainSource": "https://cbu01.alicdn.com/img/ibank/O1CN01VJgGzA25d2b6cIMnL_!!2206592147548-0-cib.jpg",
+   "gallerySources": [
+    "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg_60x60q90.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01cFsF7t25d2b6cIu44_!!2206592147548-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01oElQBu25d2b5nhlJb_!!2206592147548-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01UHOysJ25d2b6j1Gex_!!2206592147548-0-cib.jpg"
+   ],
+   "gallery": [
+    "/assets/img/collected/src-356a944514a033ee.jpg",
+    "/assets/img/collected/src-38aa5b8e81dd7a24.jpg",
+    "/assets/img/collected/src-53c8d8e44c296c0a.jpg",
+    "/assets/img/collected/src-ff3834f76fa15ad4.jpg"
+   ],
+   "specs": [],
+   "skuImages": {},
+   "skus": [
+    {
+     "name": "8190【单独连体衣】 / 均码",
+     "price": 19,
+     "stock": 16083,
+     "image": ""
+    },
+    {
+     "name": "8190+眼罩+黑丝袜 / 均码",
+     "price": 23.5,
+     "stock": 19545,
+     "image": ""
+    },
+    {
+     "name": "8190+外袍+眼罩+丝袜 / 均码",
+     "price": 45.5,
+     "stock": 19867,
+     "image": ""
+    },
+    {
+     "name": "模特同款外袍 / 均码",
+     "price": 22,
+     "stock": 18860,
+     "image": ""
+    },
+    {
+     "name": "8190+黑丝袜 / 均码",
+     "price": 21.5,
+     "stock": 19689,
+     "image": ""
+    },
+    {
+     "name": "8190+外袍+铃铛牵引+丝袜 / 均码",
+     "price": 49.5,
+     "stock": 19956,
+     "image": ""
+    },
+    {
+     "name": "8190+眼罩 / 均码",
+     "price": 21,
+     "stock": 19844,
+     "image": ""
+    },
+    {
+     "name": "8190+外袍+眼罩+铃铛牵引+丝袜 / 均码",
+     "price": 51.5,
+     "stock": 19285,
+     "image": ""
+    },
+    {
+     "name": "模特同款铃铛牵引 / 均码",
+     "price": 6,
+     "stock": 19619,
+     "image": ""
+    },
+    {
+     "name": "8190+黑丝袜+铃铛牵引+黑眼罩 / 均码",
+     "price": 29.5,
+     "stock": 19851,
+     "image": ""
+    },
+    {
+     "name": "8190+黑丝袜+铃铛牵引 / 均码",
+     "price": 27.5,
+     "stock": 19847,
+     "image": ""
+    },
+    {
+     "name": "8190+外袍 / 均码",
+     "price": 41,
+     "stock": 19871,
+     "image": ""
+    }
+   ],
+   "features": [],
+   "badge": "",
+   "material": "—",
+   "size": "—",
+   "noise": "",
+   "waterproof": "",
+   "battery": "",
+   "originalName": "柠檬物语情趣内衣性感免脱小胸显大带钢圈睡衣新款免脱连体衣8190",
+   "originalDesc": "",
+   "sourceUrl": "https://detail.1688.com/offer/981584332995.html",
+   "collectedAt": "2026-11-25T11:12:27.363Z",
+   "whiteStatus": "done",
+   "whiteAt": "2026-11-25T11:12:30.300Z"
+  }
+ },
  "orders": {
   "LM506746504159": {
    "id": "LM506746504159",
