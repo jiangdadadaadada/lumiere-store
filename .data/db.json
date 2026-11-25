@@ -1073,6 +1073,96 @@
    "sourceUrl": "https://detail.1688.com/offer/999999999.html",
    "collectedAt": "2026-11-25T11:27:33.884Z",
    "whiteStatus": "done"
+  },
+  "DRAFT-MWW1SRYT4AZD": {
+   "id": "DRAFT-MWW1SRYT4AZD",
+   "status": "pending",
+   "sku": "",
+   "site": "",
+   "createdAt": "2026-11-25T11:36:24.725Z",
+   "name": "云弧 · 女用震动棒",
+   "nameEn": "Arc · For Her Vibrator",
+   "category": "women",
+   "desc": "这款震动棒选用亲肤材质。女用，力度随你掌控。角度是提前设计好的，不用在黑暗里反复寻找位置。私密包装，中性面单发货。",
+   "descEn": "A vibrator with a skin-safe finish. For Her for a rhythm you set yourself. Discreet packaging, neutral billing.",
+   "price": 9.3,
+   "priceMissing": false,
+   "priceMissingAt": "",
+   "stock": 113006,
+   "image": "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg",
+   "mainSource": "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg",
+   "gallerySources": [
+    "https://cbu01.alicdn.com/img/ibank/O1CN01sDufn9hwEkD1chua_!!2223125782003-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01i8s8daw0zUH1WPfQ_!!2223125782003-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01DyvDOS77PSK1pIOu_!!2223125782003-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01y04j8tdylWF1pIOu_!!2223125782003-0-cib.jpg"
+   ],
+   "gallery": [
+    "/assets/img/collected/src-beda987f7e208fb0.jpg",
+    "/assets/img/collected/src-35ee3b6014f356fa.jpg",
+    "/assets/img/collected/src-c4d667e8daecad9a.jpg",
+    "/assets/img/collected/src-8fd9f3c4b073b203.jpg"
+   ],
+   "specs": [],
+   "skuImages": {},
+   "skus": [
+    {
+     "name": "大骑士（黑色）盒装加塑封",
+     "price": 10,
+     "stock": 12213,
+     "image": ""
+    },
+    {
+     "name": "大骑士（紫色）盒装盒装加塑封",
+     "price": 10,
+     "stock": 12308,
+     "image": ""
+    },
+    {
+     "name": "小骑士（玫红色）盒装盒装加塑封",
+     "price": 9.3,
+     "stock": 12284,
+     "image": ""
+    },
+    {
+     "name": "大骑士（粉色）盒装盒装加塑封",
+     "price": 10,
+     "stock": 21311,
+     "image": ""
+    },
+    {
+     "name": "小骑士（黑色）盒装盒装加塑封",
+     "price": 9.3,
+     "stock": 12293,
+     "image": ""
+    },
+    {
+     "name": "大骑士（玫红色）盒装盒装加塑封",
+     "price": 10,
+     "stock": 21308,
+     "image": ""
+    },
+    {
+     "name": "小骑士（紫色）盒装盒装加塑封",
+     "price": 9.3,
+     "stock": 21289,
+     "image": ""
+    }
+   ],
+   "features": [
+    "女用"
+   ],
+   "badge": "",
+   "material": "—",
+   "size": "—",
+   "noise": "",
+   "waterproof": "",
+   "battery": "",
+   "originalName": "跨境爆款20频骑士震动棒女用自慰棒强震av棒成人按摩情趣用品阴蒂",
+   "originalDesc": "",
+   "sourceUrl": "https://detail.1688.com/offer/1089713008390.html",
+   "collectedAt": "2026-11-25T11:36:24.725Z",
+   "whiteStatus": "done"
   }
  },
  "orders": {
