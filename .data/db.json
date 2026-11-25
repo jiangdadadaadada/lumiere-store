@@ -1951,7 +1951,7 @@
    "priceMissing": false,
    "priceMissingAt": "",
    "stock": 0,
-   "image": "https://cbu01.alicdn.com/img/ibank/O1CN01VJgGzA25d2b6cIMnL_!!2206592147548-0-cib.jpg",
+   "image": "/assets/img/collected/CQ-02930361.webp",
    "mainSource": "https://cbu01.alicdn.com/img/ibank/O1CN01VJgGzA25d2b6cIMnL_!!2206592147548-0-cib.jpg",
    "gallerySources": [
     "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg_60x60q90.jpg",
@@ -1979,7 +1979,8 @@
    "originalDesc": "",
    "sourceUrl": "https://detail.1688.com/offer/981584332995.html",
    "collectedAt": "2026-11-25T10:34:46.330Z",
-   "whiteStatus": "pending"
+   "whiteStatus": "done",
+   "whiteAt": "2026-11-25T10:36:27.799Z"
   }
  },
  "orders": {
