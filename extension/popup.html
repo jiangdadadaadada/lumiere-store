@@ -16,25 +16,66 @@
     </div>
   </div>
 
+  <div class="tabs">
+    <button class="tab active" data-tab="single">单页采集</button>
+    <button class="tab" data-tab="shop">全店采集</button>
+  </div>
+
   <div class="verbar" id="verbar">
     <span id="verTxt">版本检查中…</span>
     <button id="btnReload" class="mini hidden">立即更新</button>
   </div>
 
-  <div class="sec">
+  <!-- ============ 单页采集 ============ -->
+  <div class="sec tab-panel active" id="panel-single">
     <button id="btnStart" class="primary big">采集当前页并入库</button>
-    <div class="hint">自动抓商品 → 逐个补全图集 → 转白底 → 存进 LUMIÈRE</div>
+    <div class="hint">自动抓商品 → 补全图集 → 转白底 → 存进 LUMIÈRE</div>
     <div class="row2 line">
       <span class="lb2">最多抓</span>
       <input id="limit" type="number" value="60" min="1" max="200">
       <span class="lb2">款</span>
     </div>
-    <div id="prog" class="prog hidden">
-      <div class="bar"><i id="bar"></i></div>
-      <div class="ptext"><span id="pmsg">…</span><span id="pnum"></span></div>
+  </div>
+
+  <!-- ============ 全店采集 ============ -->
+  <div class="sec tab-panel" id="panel-shop">
+    <div class="hint" style="text-align:left;margin-bottom:8px;">
+      在浏览器里打开店铺首页（如 <code>shop12345678.1688.com</code>），然后点下方按钮：
+    </div>
+    <button id="btnShopScan" class="primary big">扫描当前店铺全部商品</button>
+    <div class="hint">自动翻页 → 收集所有商品链接 → 逐款采集入草稿箱</div>
+    <div class="row2 line">
+      <span class="lb2">最多翻</span>
+      <input id="shopPages" type="number" value="30" min="1" max="200">
+      <span class="lb2">页</span>
+      <span class="lb2">并发</span>
+      <input id="shopConcurrency" type="number" value="4" min="1" max="10">
+      <span class="lb2">款</span>
+    </div>
+    <div class="row2 line" style="margin-top:6px;">
+      <label style="display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--sub);">
+        <input type="checkbox" id="shopSkipExisting" checked style="accent-color:var(--acc);">
+        跳过店铺已采过的商品（避免重复）
+      </label>
     </div>
   </div>
 
+  <!-- 通用进度区 -->
+  <div id="prog" class="prog hidden">
+    <div class="bar"><i id="bar"></i></div>
+    <div class="ptext"><span id="pmsg">…</span><span id="pnum"></span></div>
+  </div>
+
+  <!-- 店铺扫描中间结果 -->
+  <div id="shopScanSec" class="sec hidden">
+    <div class="lhead">
+      <div class="lt">扫描完成 · 发现 <b id="shopFound">0</b> 款</div>
+      <button id="btnShopGo" class="mini primary">开始采集</button>
+    </div>
+    <div id="shopScanInfo" class="note"></div>
+  </div>
+
+  <!-- 结果区 -->
   <div class="sec hidden" id="resSec">
     <div class="lhead">
       <div class="lt">已入库 <b id="cnt">0</b> 款</div>

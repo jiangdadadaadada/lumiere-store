@@ -1119,6 +1119,26 @@ function buildDupIndex(targetSite) {
     }
 
     /* ============================================================
+       全店採集：批量檢查哪些 URL 已在庫中（商品庫 + 草稿箱）
+       ---------------------------------------------------------
+       擴展在掃描店鋪後調這個端點，避免重複採集已有的商品。
+       ============================================================ */
+    if (pathname === '/api/collect/check-existing' && req.method === 'POST') {
+      let raw = ''; for await (const c of req) raw += c;
+      let b; try { b = JSON.parse(raw || '{}'); } catch (e) { return send(res, 400, { error:'invalid json' }); }
+      const urls = Array.isArray(b.urls) ? b.urls.map(u => String(u || '').trim()).filter(Boolean) : [];
+      if (!urls.length) return send(res, 200, { ok: true, existingUrls: [] });
+
+      const idx = buildDupIndex((b.site || (mem.settings && mem.settings.collectSite) || ''));
+      const existingUrls = [];
+      for (const u of urls) {
+        const cleaned = cleanSourceUrl(u);
+        if (cleaned && idx.urls.has(cleaned)) existingUrls.push(u);
+      }
+      return send(res, 200, { ok: true, existingUrls, checked: urls.length });
+    }
+
+    /* ============================================================
        采集诊断上报
        ---------------------------------------------------------
        扩展在采集失败时把页面现场信息 POST 上来，

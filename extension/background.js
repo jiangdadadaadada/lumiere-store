@@ -12,7 +12,7 @@ const STORAGE_KEY = 'lum_collect_state';
    所以不需要分批了 —— 一次全发，省掉 7 次往返。 */
 const BATCH_SIZE = 200;
 /* 与 content.js 保持一致的构建号：变了就重载扩展并把页面按钮重新挂上 */
-const BUILD = '20261121e';
+const BUILD = '20261124a';
 
 let state = {
   running: false, phase: '', url: '', total: 0, done: 0, failed: 0,
@@ -23,7 +23,12 @@ let state = {
   /* 本次采集走的是列表页还是详情页 */
   source: '',
   /* 分段耗时（毫秒）：用户反馈慢时能直接看出卡在哪一步 */
-  timings: { inject: 0, scrollParse: 0, import: 0, total: 0, wakeup: 0 }
+  timings: { inject: 0, scrollParse: 0, import: 0, total: 0, wakeup: 0 },
+  /* ===== 全店采集专用字段 ===== */
+  shopUrls: [],          // 收集到的所有商品 URL
+  shopFound: 0,          // 扫描到的商品总数
+  shopUnique: 0,         // 去重后待采集数
+  shopSkippedExisting: 0 // 跳过已采过的数量
 };
 
 /* 打一个时间戳 */
@@ -59,7 +64,11 @@ function publicState() {
     sample: state.sample || [],
     diag: state.diag || null,
     source: state.source || '',
-    timings: state.timings || {}
+    timings: state.timings || {},
+    shopUrls: state.shopUrls || [],
+    shopFound: state.shopFound || 0,
+    shopUnique: state.shopUnique || 0,
+    shopSkippedExisting: state.shopSkippedExisting || 0
   };
 }
 /* 进度通知必须用 chrome.tabs.sendMessage 定向发给页面。
@@ -354,7 +363,7 @@ function isProductDetailUrl(url) {
    旧逻辑只要 tabId+url 没变就永不重注，页面里一旦注入了旧版解析器，
    扩展升到新版也进不去 —— 这正是「版本号升了、采集行为还是旧的」的根因。
    改成每次采集先探测页面里 __LUM_COLLECT__.__build，不符就强制重注。 */
-const PARSER_BUILD = '20261121e';
+const PARSER_BUILD = '20261124a';
 async function ensureInjected(tabId, url) {
   try {
     const probe = await chrome.scripting.executeScript({
@@ -545,6 +554,301 @@ async function runCollect(cfg) {
   }
 }
 
+/* ============================================================
+   全店採集：掃描階段
+   ---------------------------------------------------------
+   在當前標籤頁（應該是店鋪頁）翻頁收集所有商品 URL。
+   流程：
+   ① 解析當前頁商品鏈接 → 存入 Set 去重
+   ② 點下一頁或構造下一頁 URL → 跳轉 → 重複 ①
+   ③ 最多翻 cfg.pages 頁
+   ④ 去重後問服務端哪些商品已存在 → 標記跳過
+   ⑤ phase = 'shop-scan-done'，popup 顯示「發現 N 款」+「開始採集」按鈕
+   ============================================================ */
+async function runShopScan(cfg) {
+  state.running = true;
+  state.phase = 'shop-scan';
+  state.url = cfg.url || '';
+  state.shopUrls = []; state.shopFound = 0; state.shopUnique = 0; state.shopSkippedExisting = 0;
+  state.message = '正在掃描店鋪商品（第 1 頁）…';
+  state.startedAt = Date.now();
+  state.timings = { inject: 0, scrollParse: 0, import: 0, total: 0, wakeup: 0 };
+  state.tabId = cfg.tabId;
+  saveState();
+
+  const allUrls = new Set();
+  const tabId = cfg.tabId;
+  const maxPages = cfg.pages || 30;
+
+  try {
+    pushProgress('準備解析店鋪頁…');
+
+    for (let page = 1; page <= maxPages; page++) {
+      pushProgress('正在掃描第 ' + page + '/' + maxPages + ' 頁…');
+
+      /* 確保解析器已注入 */
+      await ensureInjected(tabId, state.url);
+
+      /* 調 shopLinks 解析當前頁的商品鏈接 */
+      const res = await withTimeout(chrome.scripting.executeScript({
+        target: { tabId },
+        world: 'MAIN',
+        func: async () => {
+          if (!window.__LUM_COLLECT__) return { ok: false, error: '解析器未注入' };
+          try { return await window.__LUM_COLLECT__.shopLinks({ scanLinks: true }); }
+          catch (e) { return { ok: false, error: e.message }; }
+        }
+      }), 10000, '店鋪頁解析');
+
+      const r = res && res[0] ? res[0].result : { ok: false, error: '無返回' };
+
+      if (!r || !r.ok) {
+        if (page === 1) throw new Error((r && r.error) || '這個頁面不像店鋪頁，請打開店鋪首頁再試');
+        else { pushProgress('第 ' + page + ' 頁解析失敗，停止翻頁…'); break; }
+      }
+
+      const urls = r.urls || [];
+      urls.forEach(u => allUrls.add(u));
+      pushProgress('第 ' + page + ' 頁抓到 ' + urls.length + ' 款，累計 ' + allUrls.size + ' 款');
+
+      /* 沒有下一頁就停 */
+      if (!r.hasNext) break;
+
+      /* 翻頁：解析器返回 nextUrl 的話直接跳，否則讓解析器模擬點擊下一頁 */
+      /* ★ 1688 SPA 模式：shopLinks 返回 isSpaMode=true 時，URL 可能不變，
+         翻頁後必須用 MutationObserver 監聽商品鏈接數量變化，
+         而不是等 tabs.onUpdated 的 status=complete（SPA 不觸發）。 */
+
+      /* 先記錄當前頁商品鏈接數（用於翻頁後對比） */
+      let oldLinkCount = 0;
+      try {
+        const cntRes = await withTimeout(chrome.scripting.executeScript({
+          target: { tabId }, world: 'MAIN', func: () => {
+            try { return window.__LUM_COLLECT__ && window.__LUM_COLLECT__.scanProductLinks ? window.__LUM_COLLECT__.scanProductLinks() : 0; } catch(e) { return 0; }
+          }
+        }), 3000, '計數');
+        oldLinkCount = (cntRes && cntRes[0] && cntRes[0].result) || 0;
+      } catch (e) {}
+
+      if (r.nextUrl && !r.isSpaMode) {
+        /* URL 跳轉模式（非 SPA） */
+        try {
+          await chrome.tabs.update(tabId, { url: r.nextUrl });
+          await new Promise(res => {
+            chrome.tabs.onUpdated.addListener(function listener(id, info) {
+              if (id === tabId && info.status === 'complete') {
+                chrome.tabs.onUpdated.removeListener(listener); res();
+              }
+            });
+            setTimeout(res, 8000);
+          });
+          state.url = (await chrome.tabs.get(tabId)).url || state.url;
+          await new Promise(r => setTimeout(r, 800));
+        } catch (e) { pushProgress('翻頁失敗，停止…'); break; }
+      } else {
+        /* Click 模式（SPA 或無 nextUrl） */
+        const clicked = await withTimeout(chrome.scripting.executeScript({
+          target: { tabId }, world: 'MAIN',
+          func: async () => {
+            if (!window.__LUM_COLLECT__) return false;
+            try { return await window.__LUM_COLLECT__.shopClickNext(); }
+            catch (e) { return false; }
+          }
+        }), 5000, '點下一頁');
+        const didClick = clicked && clicked[0] && clicked[0].result;
+        if (!didClick) { pushProgress('沒有下一頁按鈕，停止翻頁'); break; }
+
+        /* ★ SPA 翻頁後等待：調 shopWaitPageChange 用 MutationObserver 監聽 */
+        try {
+          await withTimeout(chrome.scripting.executeScript({
+            target: { tabId }, world: 'MAIN',
+            func: async (oldCnt) => {
+              if (!window.__LUM_COLLECT__) return true;
+              try { return await window.__LUM_COLLECT__.shopWaitPageChange(oldCnt); }
+              catch (e) { await new Promise(r => setTimeout(r, 1500)); return true; }
+            },
+            args: [oldLinkCount]
+          }), 12000, '等待新頁加載');
+        } catch (e) {}
+
+        try { state.url = (await chrome.tabs.get(tabId)).url || state.url; } catch (e) {}
+      }
+    }
+
+    /* 收集完成 */
+    state.shopUrls = Array.from(allUrls);
+    state.shopFound = state.shopUrls.length;
+
+    if (!state.shopUrls.length) {
+      throw new Error('這個頁面沒掃描到任何商品，請確保在店鋪商品列表頁');
+    }
+
+    /* 問服務端哪些商品已存在（按 offerId 或 URL 匹配） */
+    pushProgress('檢查哪些商品已在庫中…');
+    let existingUrls = [];
+    try {
+      const r = await withTimeout(apiPost('/api/collect/check-existing', { urls: state.shopUrls }), 10000, '重複檢查');
+      if (r && r.ok && r.existingUrls) existingUrls = r.existingUrls;
+    } catch (e) { /* 服務端沒這個端點就跳過 */ }
+
+    const existingSet = new Set(existingUrls);
+    const uniqueUrls = state.shopUrls.filter(u => !existingSet.has(u));
+    state.shopSkippedExisting = state.shopUrls.length - uniqueUrls.length;
+    state.shopUrls = uniqueUrls;
+    state.shopUnique = uniqueUrls.length;
+
+    state.phase = 'shop-scan-done';
+    state.message = '掃描完成：發現 ' + state.shopFound + ' 款，待采 ' + state.shopUnique + ' 款';
+    state.timings.total = Date.now() - state.startedAt;
+    saveState();
+    broadcast({ type: 'progress', state: publicState() });
+  } catch (e) {
+    state.phase = 'error';
+    state.message = '掃描失敗：' + (e && e.message ? e.message : e);
+    saveState();
+    broadcast({ type: 'error', state: publicState() });
+  } finally {
+    state.running = false;
+    saveState();
+  }
+}
+
+/* ============================================================
+   全店採集：採集階段
+   ---------------------------------------------------------
+   並行打開商品詳情頁 → 注入解析器 → detail() → 入草稿箱。
+   每個商品獨立標籤頁，採完即關閉，避免積壓。
+   ============================================================ */
+async function runShopCollect(cfg) {
+  const urls = state.shopUrls || [];
+  const concurrency = Math.max(1, Math.min(10, cfg.concurrency || 4));
+
+  state.running = true;
+  state.phase = 'shop-collect';
+  state.total = urls.length;
+  state.done = 0; state.failed = 0;
+  state.imported = 0; state.importFailed = 0;
+  state.message = '開始採集 ' + urls.length + ' 款（並發 ' + concurrency + '）…';
+  state.startedAt = Date.now();
+  state.timings = { inject: 0, scrollParse: 0, import: 0, total: 0, wakeup: 0 };
+  saveState();
+
+  let okCount = 0, failCount = 0;
+  let idx = 0;
+
+  /* 並行 worker */
+  async function worker() {
+    while (idx < urls.length) {
+      const myIdx = idx++;
+      const url = urls[myIdx];
+      let tab = null;
+      try {
+        /* 開新標籤頁在後台加載（active: false） */
+        tab = await chrome.tabs.create({ url, active: false });
+        const tabId = tab.id;
+
+        /* 等頁面加載 */
+        await new Promise(res => {
+          chrome.tabs.onUpdated.addListener(function listener(id, info) {
+            if (id === tabId && info.status === 'complete') {
+              chrome.tabs.onUpdated.removeListener(listener);
+              res();
+            }
+          });
+          setTimeout(res, 12000);
+        });
+
+        /* 注入解析器 */
+        await ensureInjected(tabId, url);
+
+        /* 調 detail 解析 */
+        const res = await withTimeout(chrome.scripting.executeScript({
+          target: { tabId },
+          world: 'MAIN',
+          func: async () => {
+            if (!window.__LUM_COLLECT__) return { ok: false, error: '解析器未注入' };
+            try { return await window.__LUM_COLLECT__.detail({}); }
+            catch (e) { return { ok: false, error: e.message }; }
+          }
+        }), 12000, '商品詳情解析');
+
+        const r = res && res[0] ? res[0].result : { ok: false, error: '無返回' };
+
+        if (!r || !r.ok || !r.items || !r.items.length) {
+          failCount++;
+          state.failed = failCount;
+        } else {
+          const d = r.items[0];
+          if (!d.name || !(d.images && d.images.length)) {
+            failCount++;
+            state.failed = failCount;
+          } else {
+            /* 單個商品入草稿箱 */
+            const draft = {
+              name: d.name,
+              price: Number(d.price) || 0,
+              stock: Number(d.stock) || 0,
+              category: d.category || 'women',
+              desc: d.desc || '',
+              images: d.images || [],
+              url: d.url || url,
+              offerId: d.offerId || '',
+              attrs: d.attrs || [],
+              skuOptions: d.skuOptions || [],
+              skus: d.skus || []
+            };
+            try {
+              const imp = await apiPost('/api/collect/batch', { drafts: [draft] });
+              if (imp && imp.ok && (imp.succeeded || 0) > 0) {
+                okCount++;
+              } else {
+                failCount++;
+              }
+            } catch (e) {
+              failCount++;
+            }
+          }
+        }
+      } catch (e) {
+        failCount++;
+      } finally {
+        /* 關閉標籤頁 */
+        try { if (tab && tab.id) await chrome.tabs.remove(tab.id); } catch (e) {}
+      }
+
+      state.done = myIdx + 1;
+      state.imported = okCount;
+      state.importFailed = failCount;
+      state.message = '採集中 ' + state.done + '/' + state.total + ' · 成功 ' + okCount + ' · 失敗 ' + failCount;
+      saveState();
+      broadcast({ type: 'progress', state: publicState() });
+    }
+  }
+
+  try {
+    /* 啟動 concurrency 個 worker */
+    const workers = [];
+    for (let i = 0; i < Math.min(concurrency, urls.length); i++) workers.push(worker());
+    await Promise.all(workers);
+
+    state.phase = 'shop-done';
+    state.message = '全店採集完成：成功 ' + okCount + ' 款' +
+      (failCount ? ('，失敗 ' + failCount + ' 款') : '') + '，已存草稿箱';
+    state.finishedAt = Date.now();
+    state.timings.total = Date.now() - state.startedAt;
+    saveState();
+    broadcast({ type: 'done', state: publicState() });
+  } catch (e) {
+    state.phase = 'error';
+    state.message = '採集失敗：' + (e && e.message ? e.message : e);
+    saveState();
+    broadcast({ type: 'error', state: publicState() });
+  } finally {
+    state.running = false;
+    saveState();
+  }
+}
+
 function handleCommand(msg, sender) {
   return (async () => {
     switch (msg && msg.type) {
@@ -575,6 +879,43 @@ function handleCommand(msg, sender) {
         runCollect({ url: pageUrl, tabId, limit: Math.max(1, Math.min(200, (msg.cfg && msg.cfg.limit) || 60)), clickAt: msg.clickAt });
         return { ok: true, url: pageUrl };
       }
+
+      /* ===== 全店採集：掃描階段 ===== */
+      case 'shopScan': {
+        if (state.running && state.startedAt && Date.now() - state.startedAt > 90000) {
+          state.running = false; saveState();
+        }
+        if (state.running) return { ok: false, error: '已有任务在运行' };
+
+        let tab = null;
+        const senderTabId = sender && sender.tab ? sender.tab.id : 0;
+        if (senderTabId) { try { tab = await chrome.tabs.get(senderTabId); } catch (e) {} }
+        if (!tab) tab = (await chrome.tabs.query({ active: true, currentWindow: true }))[0];
+        if (!tab || !tab.id) return { ok: false, error: '找不到当前标签页' };
+
+        const pageUrl = tab.url || '';
+        if (!pageUrl || !/^https?:\/\//i.test(pageUrl)) return { ok: false, error: '当前不是网页' };
+
+        runShopScan({ tabId: tab.id, url: pageUrl, pages: (msg.cfg && msg.cfg.pages) || 30 });
+        return { ok: true };
+      }
+
+      /* ===== 全店採集：採集階段 ===== */
+      case 'shopCollect': {
+        if (state.running && state.startedAt && Date.now() - state.startedAt > 90000) {
+          state.running = false; saveState();
+        }
+        if (state.running) return { ok: false, error: '已有任务在运行' };
+        if (!state.shopUrls || !state.shopUrls.length) {
+          return { ok: false, error: '还没扫描店铺，请先点扫描' };
+        }
+        runShopCollect({
+          concurrency: (msg.cfg && msg.cfg.concurrency) || 4,
+          skipExisting: !!(msg.cfg && msg.cfg.skipExisting)
+        });
+        return { ok: true };
+      }
+
       case 'getState': return { ok: true, state: publicState() };
       case 'registerBuild': return registerBuild(msg.scope || 'page');
       /* popup 自查：浏览器当前实际跑的 BUILD + 服务端最新版 */

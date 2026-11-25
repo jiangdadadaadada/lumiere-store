@@ -13,7 +13,7 @@
   /* ★ 版本化覆盖：OLD 解析器若版本不同就允许新版覆盖它。
      之前这里直接 return，导致同一页面反复采集永远用第一次注入的旧解析器 ——
      扩展版本升到 z、页面里却还是几小时前的代码，改了等于没改。 */
-  const INJECT_BUILD = '20261121e';
+  const INJECT_BUILD = '20261124a';
   if (window.__LUM_COLLECT__ && window.__LUM_COLLECT__.__build === INJECT_BUILD) return;
 
   /* ---------------- 通用工具 ---------------- */
@@ -1472,5 +1472,214 @@
     return out;
   }
 
-  window.__LUM_COLLECT__ = { __build: INJECT_BUILD, list, detail, diag, skuDump, parseDetail, cardInfo, findOfferLinks };
+  /* ============================================================
+     全店採集 · 掃描店鋪頁的商品鏈接
+     ---------------------------------------------------------
+     複用 findOfferLinks() 已有的商品鏈接識別邏輯，
+     同時返回「有沒有下一頁」+「下一頁 URL」。
+     支持多種店鋪平台的分頁：
+       - 1688: shop*.1688.com 店鋪頁有 ?beginPage= 或 ?page= 參數
+       - 淘寶/天貓: 店鋪頁 ?page=
+       - 京東: ?page=
+       - 通用: 找 .pagination / .pager / .next / .next-page 之類的下一頁按鈕
+     ============================================================ */
+  /* ============ 1688 店铺页特征 ============ */
+  const IS_1688_SHOP = (() => {
+    try { return /^shop\w*\.1688\.com$/i.test(location.hostname); } catch (e) { return false; }
+  })();
+  const IS_1688_SPA = IS_1688_SHOP && (
+    /\/(page\/)?offerlist(\.html|\.htm)?$/i.test(location.pathname)
+    || /\/(page\/)?search(\.html|\.htm)?$/i.test(location.pathname)
+    || !location.pathname || location.pathname === '/'
+  );
+
+  async function shopLinks() {
+    const blocked = nonProductReason();
+    if (blocked) return { ok: false, error: blocked, urls: [], hasNext: false, nextUrl: '', isSpaMode: false, is1688: false };
+
+    if (IS_1688_SHOP) {
+      try { await autoScroll(18, 500, 30); } catch (e) {}
+    } else {
+      try {
+        for (let i = 0; i < 8; i++) { window.scrollBy(0, window.innerHeight * 2); await new Promise(r => setTimeout(r, 200)); }
+        window.scrollTo(0, 0); await new Promise(r => setTimeout(r, 150));
+      } catch (e) {}
+    }
+
+    const links = findOfferLinks();
+    const urls = links.map(l => cleanUrl(l.url));
+
+    let hasNext = false, nextUrl = '', isSpaMode = IS_1688_SPA;
+
+    try {
+      const u = new URL(location.href);
+      const PAGE_PARAMS = ['beginPage', 'page', 'page_index', 'pageNo', 'pageno', 'curPage'];
+      let pageParam = null, curPage = 0;
+      for (const p of PAGE_PARAMS) {
+        if (u.searchParams.has(p)) { pageParam = p; curPage = parseInt(u.searchParams.get(p) || '1', 10) || 1; break; }
+      }
+      if (!pageParam) {
+        const m = location.pathname.match(/\/page(\d+)(?:\.html)?$/i);
+        if (m) { curPage = parseInt(m[1], 10); pageParam = '__path_page__'; }
+      }
+
+      if (pageParam && curPage > 0) {
+        let maxPage = curPage;
+        for (const p of PAGE_PARAMS) {
+          document.querySelectorAll('a[href*="' + p + '="]').forEach(a => {
+            try {
+              const pp = new URL(a.href, location.href).searchParams.get(p);
+              const pn = parseInt(pp, 10);
+              if (pn > maxPage && pn < 9999) maxPage = pn;
+            } catch (e) {}
+          });
+        }
+        const PAGER_SELECTORS = [
+          '[class*="pagination"] a', '[class*="Pagination"] a',
+          '[class*="pager"] a', '[class*="Pager"] a',
+          '[class*="page-num"] a', '[class*="pageNum"] a',
+          '[class*="od-pagination"] a', '[class*="odPagination"] a',
+          '.pagination li a', '.pager li a', '.pages li a'
+        ];
+        for (const sel of PAGER_SELECTORS) {
+          document.querySelectorAll(sel).forEach(a => {
+            const txt = (a.textContent || '').trim();
+            const pn = parseInt(txt, 10);
+            if (pn > maxPage && pn < 9999) maxPage = pn;
+            try {
+              const href = a.getAttribute('href') || '';
+              for (const p of PAGE_PARAMS) {
+                const pm = new RegExp('[?&]' + p + '=(\\d+)', 'i').exec(href);
+                if (pm) { const hpn = parseInt(pm[1], 10); if (hpn > maxPage && hpn < 9999) maxPage = hpn; }
+              }
+              const pmp = /\/page(\d+)(?:\.html)?$/.exec(href);
+              if (pmp) { const hpn = parseInt(pmp[1], 10); if (hpn > maxPage && hpn < 9999) maxPage = hpn; }
+            } catch (e) {}
+          });
+        }
+
+        if (curPage < maxPage) {
+          if (pageParam === '__path_page__') {
+            nextUrl = location.href.replace(/\/page\d+(?:\.html)?$/i, '/page' + (curPage + 1) + '.html');
+          } else {
+            const next = new URL(location.href);
+            next.searchParams.set(pageParam, String(curPage + 1));
+            nextUrl = next.href;
+          }
+          hasNext = true;
+        }
+      }
+
+      if (!hasNext) {
+        const NEXT_SELECTORS = [
+          '[class*="pagination"] [class*="next"]',
+          '[class*="Pagination"] [class*="next"]',
+          '[class*="od-pagination"] [class*="next"]',
+          '[class*="odPagination"] [class*="next"]',
+          'a.next', 'a[class*="next-page"]', 'a[class*="page-next"]',
+          'button.next', 'button[class*="next-page"]', 'button[class*="page-next"]',
+          'li.next a', 'li[class*="next"] a',
+          '.pagination .next a', '.pager .next a', '.pages .next',
+          'a[rel="next"]', 'button[rel="next"]'
+        ];
+        for (const sel of NEXT_SELECTORS) {
+          const n = document.querySelector(sel);
+          if (n) {
+            const disabled = n.disabled || n.classList.contains('disabled')
+              || n.classList.contains('next-disabled') || n.getAttribute('aria-disabled') === 'true';
+            if (disabled) break;
+            const href = n.getAttribute('href');
+            if (href && href !== '#' && !isSpaMode && !/^javascript:/i.test(href)) {
+              nextUrl = norm(href); hasNext = !!nextUrl; break;
+            }
+            hasNext = true; isSpaMode = true; break;
+          }
+        }
+      }
+
+      if (!hasNext) {
+        for (const a of document.querySelectorAll('a, button, span')) {
+          const txt = (a.textContent || '').replace(/\s+/g, '').trim();
+          if (!txt) continue;
+          if (/^(下一页|下一页|下一页|下页|Next|NEXT|next|›|»)$/.test(txt)) {
+            const disabled = a.disabled || a.classList.contains('disabled')
+              || a.classList.contains('next-disabled') || a.getAttribute('aria-disabled') === 'true';
+            if (disabled) break;
+            const href = a.getAttribute ? a.getAttribute('href') : '';
+            if (href && href !== '#' && !/^javascript:/i.test(href) && !isSpaMode) {
+              nextUrl = norm(href); hasNext = !!nextUrl;
+            } else if (!disabled) { hasNext = true; isSpaMode = true; }
+            break;
+          }
+        }
+      }
+    } catch (e) {}
+
+    return { ok: true, urls, hasNext, nextUrl, isSpaMode, is1688: IS_1688_SHOP };
+  }
+
+  async function shopWaitPageChange(oldUrlCount) {
+    if (IS_1688_SPA) {
+      return new Promise((resolve) => {
+        let done = false;
+        const finish = () => { if (done) return; done = true; try { obs.disconnect(); } catch (e) {} resolve(true); };
+        setTimeout(() => { if (scanProductLinks() !== oldUrlCount) finish(); }, 300);
+        const obs = new MutationObserver(() => {
+          if (Date.now() - (obs._last || 0) < 120) { obs._last = Date.now(); return; }
+          obs._last = Date.now();
+          if (scanProductLinks() !== oldUrlCount) finish();
+        });
+        try { obs.observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+        setTimeout(finish, 10000);
+      });
+    }
+    await new Promise(r => setTimeout(r, 1200));
+    return true;
+  }
+
+  async function shopClickNext() {
+    const NEXT_SELECTORS = [
+      '[class*="pagination"] [class*="next"]',
+      '[class*="Pagination"] [class*="next"]',
+      '[class*="od-pagination"] [class*="next"]',
+      '[class*="odPagination"] [class*="next"]',
+      'a.next', 'a[class*="next-page"]', 'a[class*="page-next"]',
+      'button.next', 'button[class*="next-page"]', 'button[class*="page-next"]',
+      'li.next a', 'li[class*="next"] a',
+      '.pagination .next a', '.pager .next a', '.pages .next',
+      'a[rel="next"]', 'button[rel="next"]'
+    ];
+    for (const sel of NEXT_SELECTORS) {
+      const n = document.querySelector(sel);
+      if (n) {
+        const disabled = n.disabled || n.classList.contains('disabled')
+          || n.classList.contains('next-disabled') || n.getAttribute('aria-disabled') === 'true';
+        if (disabled) continue;
+        try {
+          n.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+          n.click();
+          n.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
+        } catch (e) {}
+        return true;
+      }
+    }
+    const allClicky = document.querySelectorAll('a, button, span, div');
+    for (const a of allClicky) {
+      const txt = (a.textContent || '').replace(/\s+/g, '').trim();
+      if (!txt) continue;
+      if (/^(下一页|下一页|下一页|下页|Next|NEXT|next|›|»)$/.test(txt)) {
+        const disabled = a.disabled || a.classList.contains('disabled')
+          || a.classList.contains('next-disabled') || a.getAttribute('aria-disabled') === 'true';
+        if (disabled) continue;
+        const href = a.getAttribute ? a.getAttribute('href') : '';
+        if (!href && typeof a.onclick !== 'function') continue;
+        try { a.click(); } catch (e) {}
+        return true;
+      }
+    }
+    return false;
+  }
+
+  window.__LUM_COLLECT__ = { __build: INJECT_BUILD, list, detail, diag, skuDump, parseDetail, cardInfo, findOfferLinks, shopLinks, shopClickNext, shopWaitPageChange };
+
 })();

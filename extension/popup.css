@@ -108,6 +108,46 @@ input:focus { border-color: var(--acc); background: #fff; }
 .note.ok { color: var(--ok); }
 .note.err { color: var(--err); }
 
+/* ====== Tab 切换 ====== */
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 4px;
+  margin-bottom: 10px;
+}
+.tabs .tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: var(--sub);
+  font-weight: 500;
+  cursor: pointer;
+  transition: .15s;
+}
+.tabs .tab:hover { color: var(--acc); }
+.tabs .tab.active {
+  background: var(--acc);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(108, 92, 231, .35);
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+code {
+  background: #f0eefc;
+  color: var(--acc-d);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: Consolas, monospace;
+}
+
 /* 版本状态条 */
 .verbar { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:10px 0 2px; padding:7px 9px; border-radius:8px; background:#f0f0f7; font-size:11px; color:var(--sub); }
 .verbar.outdated { background:#fff1f0; color:var(--err); }
