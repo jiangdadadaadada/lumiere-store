@@ -2168,6 +2168,49 @@
    "whiteStatus": "done",
    "whiteAt": "2026-11-25T10:42:29.698Z",
    "updatedAt": "2026-11-25T10:54:31.202Z"
+  },
+  "DRAFT-MWW0PRBJ5Y5G": {
+   "id": "DRAFT-MWW0PRBJ5Y5G",
+   "status": "pending",
+   "sku": "",
+   "site": "",
+   "createdAt": "2026-11-25T11:06:04.303Z",
+   "name": "私语 · 甄选好物",
+   "nameEn": "Whisper · Intimate Essential",
+   "category": "women",
+   "desc": "这款单品选用亲肤材质。为私密时刻而设计，细节都藏在手感里。私密包装，中性面单发货。",
+   "descEn": "A intimate essential with a skin-safe finish. Discreet packaging, neutral billing.",
+   "price": 19.99,
+   "priceMissing": false,
+   "priceMissingAt": "",
+   "stock": 0,
+   "image": "https://img.alicdn.com/imgextra/i1/O1CN01abc123_!!6000000000000-0-cib.jpg",
+   "mainSource": "https://img.alicdn.com/imgextra/i1/O1CN01abc123_!!6000000000000-0-cib.jpg",
+   "gallerySources": [],
+   "gallery": [],
+   "specs": [],
+   "skuImages": {},
+   "skus": [
+    {
+     "name": "黑色",
+     "price": 19.99,
+     "stock": 100,
+     "image": ""
+    }
+   ],
+   "features": [],
+   "badge": "",
+   "material": "—",
+   "size": "—",
+   "noise": "",
+   "waterproof": "",
+   "battery": "",
+   "originalName": "LUMIERE测试-c1d1b1",
+   "originalDesc": "",
+   "sourceUrl": "https://detail.1688.com/offer/9999999999.html",
+   "collectedAt": "2026-11-25T11:06:04.303Z",
+   "whiteStatus": "failed",
+   "whiteError": "图片 HTTP 404"
   }
  },
  "orders": {

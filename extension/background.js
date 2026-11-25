@@ -1109,7 +1109,6 @@ function handleCommand(msg, sender) {
         }
         if (state.running) return { ok: false, error: '已有任务在运行' };
 
-        const hint = (msg && msg.hint) || 'single';
         const msgUrl = (msg && msg.url) || '';
         const senderTabId = sender && sender.tab ? sender.tab.id : 0;
         let pageUrl = /^https?:\/\//i.test(msgUrl) ? msgUrl : '';
@@ -1123,14 +1122,33 @@ function handleCommand(msg, sender) {
         }
         if (!pageUrl || !/^https?:\/\//i.test(pageUrl)) return { ok: false, error: '当前不是网页' };
 
-        if (hint === 'shop') {
-          /* 全店：扫描 → 完了自动进采集 */
-          runShopScan({ tabId, url: pageUrl, pages: 30, autoCollect: true, concurrency: 4, skipExisting: true });
+        /* ★★ 双保险：SW 自己也判断页面类型，不完全信 content.js 的 hint
+           （content.js mount() 时 URL 可能还没更新导致缓存错值）★★ */
+        let realHint = (msg && msg.hint) || 'single';
+        try {
+          const u = new URL(pageUrl);
+          const h = u.hostname.toLowerCase();
+          const p = u.pathname;
+          /* 1688 店铺 hostname（非 detail 子域）→ shop */
+          if (/\.1688\.com$/i.test(h) && !/(^|\.)(detail|offers?|goods?|upload|img|cbu\d+|.*\.alicdn|peixun|club|bbs)\.1688\.com$/.test(h)) {
+            if (!/\/offer\/\d{5,}/i.test(p)) realHint = 'shop';
+            else realHint = 'single';  /* 这个店铺 hostname 下的详情页 */
+          }
+          /* detail.1688.com → single */
+          else if (/^detail\.1688\.com$/i.test(h)) realHint = 'single';
+          /* 通用详情页特征 */
+          else if (/\/offer\/\d{5,}|item\.(taobao|tmall)\.com\/item|goods\/detail/i.test(p)) realHint = 'single';
+          /* 通用店铺页特征 */
+          else if (/\/offerlist|\/shop|\/store|\/category|\/search/i.test(p)) realHint = 'shop';
+        } catch (e) {}
+        const useShop = realHint === 'shop';
+
+        if (useShop) {
+          runShopScan({ tabId, url: pageUrl, pages: 30, autoCollect: true, concurrency: 1, skipExisting: true });
         } else {
-          /* 单页 */
           runCollect({ url: pageUrl, tabId, limit: 60, clickAt: msg.clickAt });
         }
-        return { ok: true, url: pageUrl, mode: hint };
+        return { ok: true, url: pageUrl, mode: useShop ? 'shop' : 'single', swHint: realHint };
       }
 
       /* ===== 全店采集：扫描階段 ===== */
