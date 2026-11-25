@@ -1483,13 +1483,22 @@
        - 京東: ?page=
        - 通用: 找 .pagination / .pager / .next / .next-page 之類的下一頁按鈕
      ============================================================ */
-  /* ============ 1688 店铺页特征 ============ */
+  /* ============ 1688 店鋪頁特徵 ============ */
+  /* 新版 shopXXXX.1688.com 和舊版 xxx.1688.com 都算 */
   const IS_1688_SHOP = (() => {
-    try { return /^shop\w*\.1688\.com$/i.test(location.hostname); } catch (e) { return false; }
+    try {
+      const h = location.hostname.toLowerCase();
+      if (!h.endsWith('.1688.com')) return false;
+      /* 排除 detail / offer / alicdn 等非店鋪子域 */
+      if (/^(detail|offer|offers|upload|img|cbu01|cbu02|s\.alicdn|.*\.alicdn)\./.test(h)) return false;
+      return true;
+    } catch (e) { return false; }
   })();
+
   const IS_1688_SPA = IS_1688_SHOP && (
-    /\/(page\/)?offerlist(\.html|\.htm)?$/i.test(location.pathname)
-    || /\/(page\/)?search(\.html|\.htm)?$/i.test(location.pathname)
+    /\/(page\/)?offerlist(\.html|\.htm)?(\?|$)/i.test(location.pathname + location.search)
+    || /\/(page\/)?search(\.html|\.htm)?(\?|$)/i.test(location.pathname + location.search)
+    || /\/page\/offerlist/i.test(location.pathname)
     || !location.pathname || location.pathname === '/'
   );
 
