@@ -139,6 +139,45 @@ async function callParser(tabId, method, opts, pageUrl) {
             await new Promise(r => setTimeout(r, 1000));
             raw = window.__c1688.detail();
             if (raw && raw.title) {
+              /* ★ 从 sku_matrix 提取完整 SKU 组合 + 选项组 */
+              const skuMatrix = Array.isArray(raw.sku_matrix) ? raw.sku_matrix : [];
+              let skuOptions = [];
+              let skus = [];
+
+              if (skuMatrix.length) {
+                /* 1. 推导 skuOptions：所有 row.axes 的轴名 → 值集合 */
+                const axisMap = {}; // { "颜色": Set("黑色","白色"), "尺码": Set("M","L") }
+                for (const row of skuMatrix) {
+                  if (!row.axes || typeof row.axes !== 'object') continue;
+                  for (const [axis, val] of Object.entries(row.axes)) {
+                    if (!axis || !val) continue;
+                    if (!axisMap[axis]) axisMap[axis] = new Set();
+                    axisMap[axis].add(val);
+                  }
+                }
+                for (const [axis, vals] of Object.entries(axisMap)) {
+                  const items = Array.from(vals).map(v => ({ name: String(v), image: '' }));
+                  if (items.length >= 1) skuOptions.push({ group: axis, items });
+                }
+
+                /* 2. 生成 skus：每个 row 一个组合 */
+                for (const row of skuMatrix) {
+                  if (!row.axes) continue;
+                  const comboName = Object.values(row.axes).filter(Boolean).join(' / ') || String(row.specAttrs || '');
+                  skus.push({
+                    name: comboName,
+                    price: Number(row.price || row.discountPrice || 0),
+                    stock: Number(row.stock || 0),
+                    skuId: row.skuId || row.specId || '',
+                    images: []
+                  });
+                }
+              } else if (Array.isArray(raw.skus) && raw.skus.length) {
+                /* 没有 sku_matrix 时，把 ERP 的扁平字符串 skus 当单一规格选项 */
+                skuOptions = [{ group: '规格', items: raw.skus.map(s => ({ name: String(s), image: '' })) }];
+                skus = raw.skus.map(s => ({ name: String(s), price: Number(raw.price || raw.priceMax || 0), stock: 0 }));
+              }
+
               return { ok: true, items: [{
                 offerId: raw.offerId || '', url: raw.url || '',
                 name: raw.title || '', price: raw.price || raw.priceMax || 0,
@@ -147,7 +186,7 @@ async function callParser(tabId, method, opts, pageUrl) {
                 attrs: raw.attrs && typeof raw.attrs === 'object'
                   ? Object.entries(raw.attrs).map(([k,v]) => ({ name: k, value: Array.isArray(v) ? v.join('/') : String(v) }))
                   : [],
-                sku: '', skuOptions: [], skus: Array.isArray(raw.skus) ? raw.skus : []
+                sku: '', skuOptions, skus
               }]};
             }
             return { ok: false, error: 'detail 未取到商品数据（可能被反爬或页面未渲染）' };
@@ -931,27 +970,54 @@ async function runShopCollect(cfg) {
           state.lastError = '图片为空';
         } else {
           const d = r.data;
+
+          /* ★ 从 sku_matrix 提取完整 SKU 组合 + 选项组（和 callParser 同口径）*/
+          const skuMatrix = Array.isArray(d.sku_matrix) ? d.sku_matrix : [];
+          let skuOptions = [];
+          let skus = [];
+          if (skuMatrix.length) {
+            const axisMap = {};
+            for (const row of skuMatrix) {
+              if (!row.axes || typeof row.axes !== 'object') continue;
+              for (const [axis, val] of Object.entries(row.axes)) {
+                if (!axis || !val) continue;
+                if (!axisMap[axis]) axisMap[axis] = new Set();
+                axisMap[axis].add(val);
+              }
+            }
+            for (const [axis, vals] of Object.entries(axisMap)) {
+              const items = Array.from(vals).map(v => ({ name: String(v), image: '' }));
+              if (items.length >= 1) skuOptions.push({ group: axis, items });
+            }
+            for (const row of skuMatrix) {
+              if (!row.axes) continue;
+              const comboName = Object.values(row.axes).filter(Boolean).join(' / ') || String(row.specAttrs || '');
+              skus.push({
+                name: comboName,
+                price: Number(row.price || row.discountPrice || 0),
+                stock: Number(row.stock || 0),
+                skuId: row.skuId || row.specId || '',
+                images: []
+              });
+            }
+          } else if (Array.isArray(d.skus) && d.skus.length) {
+            skuOptions = [{ group: '规格', items: d.skus.map(s => ({ name: String(s), image: '' })) }];
+            skus = d.skus.map(s => ({ name: String(s), price: Number(d.price || d.priceMax || 0), stock: 0 }));
+          }
+
           const draft = {
             name: d.title || '',
             price: Number(d.price) || Number(d.priceMax) || 0,
-            stock: 0,
+            stock: skus.length ? skus.reduce((a, s) => a + (s.stock || 0), 0) : 0,
             category: (urlEntry && urlEntry.category) || 'women',
             desc: d.description || '',
             images: Array.isArray(d.images) ? d.images : [],
             url: d.url || url,
             offerId: d.offerId || '',
             attrs: d.attrs && typeof d.attrs === 'object' ? Object.entries(d.attrs).map(([k,v]) => ({name: k, value: Array.isArray(v) ? v.join('/') : String(v)})) : [],
-            skuOptions: [],
-            skus: Array.isArray(d.skus) ? d.skus : []
+            skuOptions,
+            skus
           };
-          /* 从 attrs 里抽 skuOptions（颜色/款式等选项组）*/
-          if (d.attrs && typeof d.attrs === 'object') {
-            for (const [k, v] of Object.entries(d.attrs)) {
-              if (Array.isArray(v) && v.length >= 2 && /颜色|color|款式|style|尺码|size|图案/i.test(k)) {
-                draft.skuOptions.push({ name: k, values: v });
-              }
-            }
-          }
           try {
             const imp = await apiPost('/api/collect/batch', { drafts: [draft] });
             if (imp && imp.ok && (imp.succeeded || 0) > 0) {
