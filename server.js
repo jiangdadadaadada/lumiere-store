@@ -1056,7 +1056,7 @@ function buildDupIndex(targetSite) {
           originalName: d.name, originalDesc: d.desc || '',
           sourceUrl: cleanSourceUrl(d.url || d.sourceUrl || ''),
           collectedAt: new Date().toISOString(),
-          whiteStatus: 'pending'
+          whiteStatus: 'done'   /* ★ 关闭强制白底：直接标记已完成 */
         };
         const stamp = Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
         const id = 'DRAFT-' + stamp;
@@ -1071,14 +1071,10 @@ function buildDupIndex(targetSite) {
       saveStoreNow();   /* 响应返回前已写盘 */
       if (dup.length) console.log('[collect] 跳过重复 ' + dup.length + ' 条：' + dup.map(x => x.name).slice(0, 5).join('、'));
 
-      /* ---- 第 2 步：首图排入后台白底队列 ----
-         必须放在响应之后：入队会触发下载远程图 + 抠图，
-         放在请求链路里会拖慢采集（实测多花 2~3 秒）。 */
+      /* ---- 第 2 步：图集 / SKU 图本地化（不转白底，直接缓存原图到本站）---- */
       setImmediate(() => {
-        wbEnqueueBatch(ok.map(d => ({ id: d.id, url: d.image,
-          /* 首图若被判定为占位图，后台队列按顺序改试图集里的下一张 */
-          candidates: [d.image].concat(Array.isArray(d.gallery) ? d.gallery : []) })));
-        /* 图集原样缓存到本站，避免后台整批破图；同样不占采集响应时间 */
+        /* ★ 已关闭强制首图白底转换，不再入 wbEnqueueBatch */
+        /* 图集原样缓存到本站，避免后台整批破图 */
         imgEnqueue(ok.reduce((a, d) => {
           (Array.isArray(d.gallery) ? d.gallery : []).forEach((u, i) => {
             if (typeof u === 'string' && /^https?:\/\//i.test(u)) a.push({ id: d.id, i });
@@ -1200,20 +1196,8 @@ function buildDupIndex(targetSite) {
       const id = decodeURIComponent(pubM[1]);
       const d = mem.drafts.get(id);
       if (!d) return send(res, 404, { error:'草稿不存在' });
-      /* 首图还没转白底：先转完再发布，保证商城首图是白底 */
-      if (d.whiteStatus === 'pending' && d.image && !d.image.startsWith('/assets/img/collected/')) {
-        const r = await collector.convertRemoteOne(d.image);
-        if (r.ok) {
-          d.image = localToSitePath(r.path);
-          d.whiteStatus = 'done';
-          mem.drafts.set(id, d);
-          saveStoreNow();
-        } else {
-          d.whiteStatus = 'failed'; d.whiteError = r.error;
-          mem.drafts.set(id, d); saveStoreNow();
-          return send(res, 400, { error:'首图白底转换失败，无法发布：' + (r.error || '未知原因') });
-        }
-      }
+      /* ★ 已关闭强制首图白底转换，发布不再等待 */
+      if (d.whiteStatus === 'pending') d.whiteStatus = 'done';
       let raw = ''; for await (const c of req) raw += c;
       let overrides = {}; try { overrides = JSON.parse(raw || '{}'); } catch (e) {}
       /* 发布目标站点：弹窗里选的站点优先，否则用草稿已绑定的站点；
@@ -1272,13 +1256,11 @@ function buildDupIndex(targetSite) {
         /* SKU 组合矩阵：图可能是本地上传路径或 1688 远程图，统一规整一次（价格必须是正数人民币） */
         if (Array.isArray(merged.skus)) merged.skus = normalizeSkus(merged.skus).map(s => Object.assign(s, { image: s.image ? localToSitePath(s.image) : '' }));
         merged.updatedAt = new Date().toISOString();
-        /* 首图换了且还是外链：排入后台白底队列（立即返回，不等抠图） */
-        if (merged.image !== oldImage && merged.image && !merged.image.startsWith('/assets/img/collected/')) {
-          merged.whiteStatus = 'pending';
-          delete merged.whiteError;
-          setImmediate(() => wbEnqueueBatch([{ id, url: merged.image }]));
-        } else if (merged.image && merged.image.startsWith('/assets/img/collected/')) {
+        /* ★ 已关闭强制白底：编辑保存不再入白底队列 */
+        if (merged.image && merged.image.startsWith('/assets/img/collected/')) {
           merged.whiteStatus = 'done';
+        } else {
+          merged.whiteStatus = 'done';   /* 外链图也直接跳过白底 */
         }
         mem.drafts.set(id, merged);
         saveStoreNow();

@@ -610,10 +610,10 @@ async function runCollect(cfg) {
     state.imported = imp.ok;
     state.importFailed = imp.bad;
     state.finishedAt = Date.now();
-    /* 首图白底转换在服务端后台队列里跑，不占用采集时间 */
+    /* ★ 已关闭强制白底，首图直接用原图 */
     state.message = '已存入草稿箱：' + imp.ok + ' 款' +
       (imp.bad ? ('，失败 ' + imp.bad + ' 款') : '') +
-      '，首图白底后台转换中…' +
+      '' +
       (imp.errors && imp.errors.length ? ('（' + imp.errors[0] + '）') : '');
     saveState();
     broadcast({ type: 'done', state: publicState() });

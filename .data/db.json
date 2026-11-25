@@ -2210,7 +2210,8 @@
    "sourceUrl": "https://detail.1688.com/offer/9999999999.html",
    "collectedAt": "2026-11-25T11:06:04.303Z",
    "whiteStatus": "failed",
-   "whiteError": "图片 HTTP 404"
+   "whiteError": "图片 HTTP 404",
+   "imageError": "图片恢复失败：图片 HTTP 404"
   }
  },
  "orders": {
