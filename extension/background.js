@@ -166,42 +166,39 @@ async function callParser(tabId, method, opts, pageUrl) {
               let skuOptions = [];
               let skus = [];
 
-              /* ★ images 数组清洗：所有 URL 都去掉缩略后缀 */
-              const cleanImages = (raw.images || []).map(clean1688).filter(Boolean);
-              /* ★★ 主图修正：1688 parser 的 images[0] 永远是 60x60 缩略占位图（页面渲染先放 tiny 预览），
-                 images[1..] 才是真实主图轮播。用 DOM 页面最大图（点击规格前的默认主图）覆盖 cleanImages[0]，
-                 同时彻底删掉数组里所有其他缩略占位图 */
-              try {
-                /* 1. DOM 最大图 → 放最前 */
-                let biggest = null, maxArea = 0;
-                document.querySelectorAll('img').forEach(img => {
-                  const area = img.naturalWidth * img.naturalHeight;
-                  if (area > maxArea && area > 10000) { maxArea = area; biggest = img; }
-                });
-                const domMain = biggest ? clean1688(biggest.currentSrc || biggest.src || '') : '';
-                if (domMain && !domMain.includes('_60x60') && !domMain.includes('_400x400')) {
-                  /* 如果 DOM 主图不在 cleanImages 里，或者不在最前面，放最前 */
-                  const idx = cleanImages.indexOf(domMain);
-                  if (idx > 0) cleanImages.splice(idx, 1); // 从原位置移除
-                  if (idx !== 0) cleanImages.unshift(domMain); // 放最前
-                }
-                /* 2. 彻底过滤：删掉所有带缩略规格后缀的占位图
-                   （特征：clean 后的 URL 仍然像 xxx.jpg_数字x数字.jpg 或 basename 很短的小图） */
-                const isThumbPlaceholder = (url) => {
-                  const s = String(url || '');
-                  // 缩略规格特征：_60x60q / _400x400 / _800x800 等
-                  if (/_\d+x\d+(?:q\d*)?\./i.test(s)) return true;
-                  // 60x60 / 400x400 缩略 basename 通常以纯数字结尾
-                  const bn = s.split('/').pop()?.split('.')[0] || '';
-                  if (/^\d+$/.test(bn) && bn.length > 6) return true; // 纯数字文件名长编号=缩略
-                  return false;
-                };
-                const beforeCount = cleanImages.length;
-                cleanImages = cleanImages.filter((u, i) => {
-                  if (i === 0) return true; // 主图位置保留（已经是 DOM 修正后的）
-                  return !isThumbPlaceholder(u);
-                });
-              } catch(e) { /* DOM 探测失败不阻断 */ }
+              /* ★ images 数组预处理：先过滤掉 1688 缩略占位图（用原始 URL 特征判断，clean 后就检测不到了）
+                 再对剩下的做缩略后缀清洗
+                 1688 parser 的 raw.images[0] 永远是 _60x60q90.jpg 这种 tiny 预览占位，必须删掉 */
+              const RAW_THUMB_PATTERNS = [
+                /_\d+x\d+(?:q\d*)?\.(jpg|jpeg|png|webp)$/i,   // _60x60q90.jpg / _400x400.jpg
+                /_\d+x\d+\.jpg_\d+x\d+/i,                    // .jpg_60x60.jpg 跨格式
+                /\.jpg_sum\.(jpg|webp)$/i,                    // .jpg_sum.jpg 中间尺寸
+              ];
+              const isRawThumb = (url) => RAW_THUMB_PATTERNS.some(re => re.test(String(url || '')));
+              /* 主图先保住：clean1688 后用 DOM 最大图替换 */
+              const rawAll = raw.images || [];
+              const domMainFirst = (() => {
+                try {
+                  let biggest = null, maxArea = 0;
+                  document.querySelectorAll('img').forEach(img => {
+                    const area = img.naturalWidth * img.naturalHeight;
+                    if (area > maxArea && area > 10000) { maxArea = area; biggest = img; }
+                  });
+                  const dom = biggest ? clean1688(biggest.currentSrc || biggest.src || '') : '';
+                  return (dom && !dom.includes('_60x60') && !dom.includes('_400x400')) ? dom : '';
+                } catch(e) { return ''; }
+              })();
+              /* 过滤 + clean：删掉原始缩略占位图 */
+              let cleanImages = rawAll
+                .filter(u => !isRawThumb(u))
+                .map(clean1688)
+                .filter(Boolean);
+              /* 如果 DOM 主图不在 cleanImages 里，放最前 */
+              if (domMainFirst) {
+                const idx = cleanImages.indexOf(domMainFirst);
+                if (idx > 0) cleanImages.splice(idx, 1);
+                if (idx !== 0) cleanImages.unshift(domMainFirst);
+              }
               /* ★ 从 raw._colorImgs / raw.sku_images 构建颜色 → 图 映射（ERP parser 有时能抓到） */
               const colorImgMap = {};
               if (raw._colorImgs && typeof raw._colorImgs === 'object' && !Array.isArray(raw._colorImgs)) {
