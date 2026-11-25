@@ -919,94 +919,122 @@
   }
  },
  "drafts": {
-  "DRAFT-MWW1SRYT4AZD": {
-   "id": "DRAFT-MWW1SRYT4AZD",
+  "DRAFT-MWW267I6VWFU": {
+   "id": "DRAFT-MWW267I6VWFU",
    "status": "pending",
    "sku": "",
    "site": "",
-   "createdAt": "2026-11-25T11:36:24.725Z",
-   "name": "云弧 · 女用震动棒",
-   "nameEn": "Arc · For Her Vibrator",
+   "createdAt": "2026-11-25T11:46:51.390Z",
+   "name": "私语 · 甄选好物",
+   "nameEn": "Whisper · Intimate Essential",
    "category": "women",
-   "desc": "这款震动棒选用亲肤材质。女用，力度随你掌控。角度是提前设计好的，不用在黑暗里反复寻找位置。私密包装，中性面单发货。",
-   "descEn": "A vibrator with a skin-safe finish. For Her for a rhythm you set yourself. Discreet packaging, neutral billing.",
-   "price": 9.3,
+   "desc": "这款单品选用亲肤材质。为私密时刻而设计，细节都藏在手感里。私密包装，中性面单发货。",
+   "descEn": "A intimate essential with a skin-safe finish. Discreet packaging, neutral billing.",
+   "price": 6,
    "priceMissing": false,
    "priceMissingAt": "",
-   "stock": 113006,
-   "image": "/assets/img/collected/src-6edbb863ace327eb.jpg",
-   "mainSource": "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg",
+   "stock": 232317,
+   "image": "https://cbu01.alicdn.com/img/ibank/O1CN01VJgGzA25d2b6cIMnL_!!2206592147548-0-cib.jpg",
+   "mainSource": "https://cbu01.alicdn.com/img/ibank/O1CN01VJgGzA25d2b6cIMnL_!!2206592147548-0-cib.jpg",
    "gallerySources": [
-    "https://cbu01.alicdn.com/img/ibank/O1CN01sDufn9hwEkD1chua_!!2223125782003-0-cib.jpg",
-    "https://cbu01.alicdn.com/img/ibank/O1CN01i8s8daw0zUH1WPfQ_!!2223125782003-0-cib.jpg",
-    "https://cbu01.alicdn.com/img/ibank/O1CN01DyvDOS77PSK1pIOu_!!2223125782003-0-cib.jpg",
-    "https://cbu01.alicdn.com/img/ibank/O1CN01y04j8tdylWF1pIOu_!!2223125782003-0-cib.jpg"
+    "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01cFsF7t25d2b6cIu44_!!2206592147548-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01oElQBu25d2b5nhlJb_!!2206592147548-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01UHOysJ25d2b6j1Gex_!!2206592147548-0-cib.jpg"
    ],
    "gallery": [
-    "/assets/img/collected/src-beda987f7e208fb0.jpg",
-    "/assets/img/collected/src-35ee3b6014f356fa.jpg",
-    "/assets/img/collected/src-c4d667e8daecad9a.jpg",
-    "/assets/img/collected/src-8fd9f3c4b073b203.jpg"
+    "/assets/img/collected/src-6edbb863ace327eb.jpg",
+    "/assets/img/collected/src-38aa5b8e81dd7a24.jpg",
+    "/assets/img/collected/src-53c8d8e44c296c0a.jpg",
+    "/assets/img/collected/src-ff3834f76fa15ad4.jpg"
    ],
    "specs": [],
    "skuImages": {},
    "skus": [
     {
-     "name": "大骑士（黑色）盒装加塑封",
-     "price": 10,
-     "stock": 12213,
-     "image": ""
+     "name": "8190【单独连体衣】 / 均码",
+     "price": 19,
+     "stock": 16083,
+     "image": "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg"
     },
     {
-     "name": "大骑士（紫色）盒装盒装加塑封",
-     "price": 10,
-     "stock": 12308,
-     "image": ""
+     "name": "8190+眼罩+黑丝袜 / 均码",
+     "price": 23.5,
+     "stock": 19545,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01cFsF7t25d2b6cIu44_!!2206592147548-0-cib.jpg"
     },
     {
-     "name": "小骑士（玫红色）盒装盒装加塑封",
-     "price": 9.3,
-     "stock": 12284,
-     "image": ""
+     "name": "8190+外袍+眼罩+丝袜 / 均码",
+     "price": 45.5,
+     "stock": 19867,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01oElQBu25d2b5nhlJb_!!2206592147548-0-cib.jpg"
     },
     {
-     "name": "大骑士（粉色）盒装盒装加塑封",
-     "price": 10,
-     "stock": 21311,
-     "image": ""
+     "name": "模特同款外袍 / 均码",
+     "price": 22,
+     "stock": 18860,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01UHOysJ25d2b6j1Gex_!!2206592147548-0-cib.jpg"
     },
     {
-     "name": "小骑士（黑色）盒装盒装加塑封",
-     "price": 9.3,
-     "stock": 12293,
-     "image": ""
+     "name": "8190+黑丝袜 / 均码",
+     "price": 21.5,
+     "stock": 19689,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01WJlNj325d2b6FH3ZI_!!2206592147548-0-cib.jpg"
     },
     {
-     "name": "大骑士（玫红色）盒装盒装加塑封",
-     "price": 10,
-     "stock": 21308,
-     "image": ""
+     "name": "8190+外袍+铃铛牵引+丝袜 / 均码",
+     "price": 49.5,
+     "stock": 19956,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01n8GLQK25d2b6BWAu9_!!2206592147548-0-cib.jpg"
     },
     {
-     "name": "小骑士（紫色）盒装盒装加塑封",
-     "price": 9.3,
-     "stock": 21289,
+     "name": "8190+眼罩 / 均码",
+     "price": 21,
+     "stock": 19844,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01TYkVV425d2b77AnZz_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8190+外袍+眼罩+铃铛牵引+丝袜 / 均码",
+     "price": 51.5,
+     "stock": 19285,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN017GvzJS25d2b5sn1Ye_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "模特同款铃铛牵引 / 均码",
+     "price": 6,
+     "stock": 19619,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01LHTMCe25d2b6KGPU5_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8190+黑丝袜+铃铛牵引+黑眼罩 / 均码",
+     "price": 29.5,
+     "stock": 19851,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN013awhyp25d2b7KTOFr_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8190+黑丝袜+铃铛牵引 / 均码",
+     "price": 27.5,
+     "stock": 19847,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01B2qqTJ25d2b77SFu9_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8190+外袍 / 均码",
+     "price": 41,
+     "stock": 19871,
      "image": ""
     }
    ],
-   "features": [
-    "女用"
-   ],
+   "features": [],
    "badge": "",
    "material": "—",
    "size": "—",
    "noise": "",
    "waterproof": "",
    "battery": "",
-   "originalName": "跨境爆款20频骑士震动棒女用自慰棒强震av棒成人按摩情趣用品阴蒂",
+   "originalName": "柠檬物语情趣内衣性感免脱小胸显大带钢圈睡衣新款免脱连体衣8190",
    "originalDesc": "",
-   "sourceUrl": "https://detail.1688.com/offer/1089713008390.html",
-   "collectedAt": "2026-11-25T11:36:24.725Z",
+   "sourceUrl": "https://detail.1688.com/offer/981584332995.html",
+   "collectedAt": "2026-11-25T11:46:51.390Z",
    "whiteStatus": "done"
   }
  },
