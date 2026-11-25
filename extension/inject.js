@@ -634,24 +634,90 @@
 
   function findOfferLinks() {
     const seen = {}, out = [];
+
+    /* ★★★ 1688 od-pc 新版：从 offer-card / offerlist 容器 + 图片 URL 抠 offer ID
+       浏览器实测 + 用户店铺页截图诊断，两种容器都有：
+       - 新版首页推荐区：offer-card / offer-card-container / offerRow--xxx
+       - 旧版店铺商品列表：offerlist / newofferlist（截图诊断 offerClasses）
+       offer ID 藏在 <img> src 的 !!数字-0-cib.jpg 里
+       如：//cbu01.alicdn.com/img/ibank/O1CN01xxx_!!1090029035-0-cib.jpg_300x300q90.jpg_.webp */
+    if (IS_1688_SHOP) {
+      /* 1. offer-card / offer-card-container / offerlist / newofferlist 容器 */
+      const CARD_SEL = '[class*="offer-card"],[class*="OfferCard"],[class*="offerlist"],[class*="newofferlist"],' +
+        '[class*="offerRow"],[class*="offerrow"],[class*="offerInfo"],[class*="offerinfo"],' +
+        '[class*="offer--"],[class*="offerCell"],[class*="offerTrack"],[class*="offerItem"],' +
+        '[class*="offerList"],[class*="od-offerlist"],[class*="offersGrid"],[class*="offerContainer"]';
+      document.querySelectorAll(CARD_SEL).forEach(card => {
+        if (out.length >= 300) return;
+        /* 从卡片内所有 img[src] 抠 offer ID */
+        card.querySelectorAll('img[src]').forEach(img => {
+          if (out.length >= 300) return;
+          const src = img.getAttribute('src') || '';
+          const m = /!!(\d{8,})[-_0-]*[a-z]*\.jpg/i.exec(src);
+          if (m && !seen[m[1]]) {
+            seen[m[1]] = 1;
+            out.push({ offerId: m[1], url: 'https://detail.1688.com/offer/' + m[1] + '.html', el: card });
+          }
+        });
+      });
+
+      /* 2. 兜底：全页扫图片 offer ID（只要有 !!数字-0-cib.jpg 格式）*/
+      if (out.length < 20) {
+        document.querySelectorAll('img[src*="!!"]').forEach(img => {
+          if (out.length >= 300) return;
+          const src = img.getAttribute('src') || '';
+          const m = /!!(\d{8,})[-_0-]*[a-z]*\.jpg/i.exec(src);
+          if (m && !seen[m[1]]) {
+            seen[m[1]] = 1;
+            out.push({ offerId: m[1], url: 'https://detail.1688.com/offer/' + m[1] + '.html', el: img });
+          }
+        });
+      }
+    }
+
     const as = document.querySelectorAll('a[href]');
     for (const a of as) {
       const href = a.getAttribute('href') || '';
       if (!href || href.charAt(0) === '#' || href.indexOf('javascript:') === 0) continue;
 
-      /* ★ 1688 店铺页：直接识别，绕过 isProductLink 的 shop/list/category 过滤 */
+      /* ★★★ 通用优先：真正的商品详情页链接（不依赖 IS_1688_SHOP）
+         浏览器实测 detail.1688.com/offer/xxx.html 这种链接确实存在 */
+      const offerIdFromAHref = (
+        /detail\.1688\.com\/offer\/(\d{6,})/i.exec(href)
+        || /1688\.com\/offer\/(\d{8,})/i.exec(href)
+        || /detail\.tmall\.com\/item\.htm\?.*id=(\d+)/i.exec(href)
+        || /item\.taobao\.com\/item\.htm\?.*id=(\d+)/i.exec(href)
+      );
+      if (offerIdFromAHref) {
+        const id = offerIdFromAHref[1];
+        if (!seen[id]) {
+          seen[id] = 1;
+          const url = href.startsWith('http') ? href : 'https:' + href;
+          out.push({ offerId: id, url, el: a });
+        }
+        continue;
+      }
+
+      /* ★ 先排除垃圾链接（收藏/购物车/登录/搜索/分类）*/
+      const hLower = href.toLowerCase();
+      if (/favorit|收藏|collect/.test(hLower)) continue;
+      if (/cart|购物车/.test(hLower)) continue;
+      if (/login|register|signin|signup/.test(hLower)) continue;
+      if (/\/search\.|\/search\?|关键词|keyword/.test(hLower)) continue;
+      if (/category|分类|navigate/.test(hLower) && !/offer/.test(hLower)) continue;
+      if (/help|about|contact|customer|service/.test(hLower)) continue;
+
+      /* ★ 1688 店铺页：直接识别，绕过 isProductLink 的 shop/list/category 过滤
+         ★ 硬验证：必须含 offer + 6位以上数字（真实商品 offer ID）*/
       let isOffer = false;
       if (IS_1688_SHOP) {
-        const hLower = href.toLowerCase();
-        if (/detail\.1688\.com\/offer\//.test(href)) isOffer = true;
+        if (/detail\.1688\.com\/offer\/\d/.test(href)) isOffer = true;
         else if (/1688\.com\/offer\/\d/.test(href)) isOffer = true;
         else if (/offer[\/=_\-](\d{6,})/i.test(href)) isOffer = true;
         else if (/offerid[=\/](\d{6,})/i.test(href)) isOffer = true;
-        else if (/detail[?&]offerid=/.test(hLower)) isOffer = true;
-        else if (hLower.includes('/offer/')) isOffer = true;
-        else if (hLower.includes('/detail/') && /\d{6,}/.test(href)) isOffer = true;
-        /* 店铺内部路由，带 offer + 数字的 */
-        else if (hLower.includes('offer') && /\d{6,}/.test(href)) isOffer = true;
+        else if (/detail[?&]offerid=\d/.test(hLower)) isOffer = true;
+        /* ★ 必须有 offer + 6位数字才认 — 防止误抓收藏夹、店铺内部路由等 */
+        if (isOffer && !/offer\D*(\d{6,})/i.test(href)) isOffer = false;
       } else {
         isOffer = isProductLink(href);
       }
@@ -695,10 +761,12 @@
       const CARD_SELECTORS = [
         '[class*="offer-card"]', '[class*="OfferCard"]',
         '[class*="offer-item"]', '[class*="OfferItem"]',
+        '[class*="module-offer-item"]',
         '[class*="product-card"]', '[class*="ProductCard"]',
         '[class*="offer-list-item"]', '[class*="OfferListItem"]',
         '[class*="goods-card"]', '[class*="item-card"]',
         '[class*="search-card"]', '[class*="SearchCard"]',
+        '[class*="searchlist-card"]', '[class*="SearchlistCard"]',
         '.offer-list .offer-item', '.offer-list-item'
       ];
       for (const sel of CARD_SELECTORS) {
@@ -713,14 +781,47 @@
             const url = norm(decodeEnt(href));
             out.push({ offerId: id, url, el: a });
           });
+
           /* 卡片里找 data 属性 */
-          const idAttrs = ['data-offer-id', 'data-offerId', 'data-offer_id', 'data-id', 'data-goods-id'];
+          const idAttrs = ['data-offer-id', 'data-offerId', 'data-offer_id', 'data-id', 'data-goods-id', 'data-goodsId', 'data-item-id'];
           for (const attr of idAttrs) {
             const id = card.getAttribute(attr) || '';
             if (/^\d{6,}$/.test(id) && !seen[id]) {
               seen[id] = 1;
               out.push({ offerId: id, url: 'https://detail.1688.com/offer/' + id + '.html', el: card });
               break;
+            }
+          }
+
+          /* ★ 新版 od-pc 兜底：offer-item 容器可能是纯 div + JS 事件
+             从所有属性、onclick、文本节点里抠 offer ID */
+          if (IS_1688_SHOP) {
+            /* 3a. 从所有属性值里找 offer ID */
+            for (const attr of Array.from(card.attributes)) {
+              if (!attr.value) continue;
+              const m = /offer[=_\-\/]?(\d{8,15})/i.exec(attr.value);
+              if (m && !seen[m[1]]) {
+                seen[m[1]] = 1;
+                out.push({ offerId: m[1], url: 'https://detail.1688.com/offer/' + m[1] + '.html', el: card });
+              }
+            }
+            /* 3b. 从 onclick / data-action 里找跳转 URL 或 offer ID */
+            const clickText = (card.getAttribute('onclick') || '') + ' ' + (card.getAttribute('data-action') || '') + ' ' + (card.getAttribute('data-bind') || '');
+            const clickM = /detail\.1688\.com\/offer\/(\d{6,})/.exec(clickText) || /offer[=_\-\/](\d{8,15})/i.exec(clickText);
+            if (clickM && !seen[clickM[1]]) {
+              seen[clickM[1]] = 1;
+              out.push({ offerId: clickM[1], url: 'https://detail.1688.com/offer/' + clickM[1] + '.html', el: card });
+            }
+            /* 3c. 从卡片的 innerHTML 里找 offer/数字 模式（SSR 渲染的隐藏脚本里常有）*/
+            const htmlSnippet = card.innerHTML.substring(0, 5000);
+            const htmlM = /offer[=_\-\/]?(\d{8,15})/i.exec(htmlSnippet);
+            if (htmlM && !seen[htmlM[1]]) {
+              /* 确认这个数字不是价格（300以下）或年份（20xx） */
+              const num = parseInt(htmlM[1]);
+              if (num > 1000000 && num < 99999999999) {
+                seen[htmlM[1]] = 1;
+                out.push({ offerId: htmlM[1], url: 'https://detail.1688.com/offer/' + htmlM[1] + '.html', el: card });
+              }
             }
           }
         });
@@ -1882,39 +1983,37 @@
       '[class*="Pagination"] [class*="next"]',
       '[class*="od-pagination"] [class*="next"]',
       '[class*="odPagination"] [class*="next"]',
+      '[class*="page-next"]', '[class*="pageNext"]', '[class*="pager-next"]', '[class*="pagerNext"]',
       'a.next', 'a[class*="next-page"]', 'a[class*="page-next"]',
       'button.next', 'button[class*="next-page"]', 'button[class*="page-next"]',
       'li.next a', 'li[class*="next"] a',
       '.pagination .next a', '.pager .next a', '.pages .next',
       'a[rel="next"]', 'button[rel="next"]'
     ];
+    const isDisabled = n => n.disabled || n.classList.contains('disabled')
+      || n.classList.contains('next-disabled') || n.classList.contains('page-disabled')
+      || n.getAttribute('aria-disabled') === 'true'
+      || n.getAttribute('aria-hidden') === 'true';
     for (const sel of NEXT_SELECTORS) {
       const n = document.querySelector(sel);
-      if (n) {
-        const disabled = n.disabled || n.classList.contains('disabled')
-          || n.classList.contains('next-disabled') || n.getAttribute('aria-disabled') === 'true';
-        if (disabled) continue;
-        try {
-          n.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
-          n.click();
-          n.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
-        } catch (e) {}
-        return true;
+      if (n && !isDisabled(n)) {
+        try { n.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true })); n.click(); n.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true })); return true; } catch (e) {}
       }
     }
-    const allClicky = document.querySelectorAll('a, button, span, div');
+    /* 兜底：文本匹配 + 箭头符号 */
+    const allClicky = document.querySelectorAll('a, button, [role="button"], span, div');
     for (const a of allClicky) {
       const txt = (a.textContent || '').replace(/\s+/g, '').trim();
-      if (!txt) continue;
-      if (/^(下一页|下一页|下一页|下页|Next|NEXT|next|›|»)$/.test(txt)) {
-        const disabled = a.disabled || a.classList.contains('disabled')
-          || a.classList.contains('next-disabled') || a.getAttribute('aria-disabled') === 'true';
-        if (disabled) continue;
-        const href = a.getAttribute ? a.getAttribute('href') : '';
-        if (!href && typeof a.onclick !== 'function') continue;
-        try { a.click(); } catch (e) {}
-        return true;
+      if (!txt || txt.length > 20) continue;
+      if (!/^(下一页|下页|后一页|Next|NEXT|next|›|»|→|>|以下)$/.test(txt)) continue;
+      if (isDisabled(a)) continue;
+      /* 必须在分页组件附近：往上找 3 层，要有 pagination 相关 class */
+      let ok = false;
+      for (let el = a, i = 0; el && i < 3; el = el.parentElement, i++) {
+        if ((el.className || '') && /pagination|pager|pagenav|page-nav|pagebar/i.test(el.className)) { ok = true; break; }
       }
+      /* 1688 od-pc 新版可能没有外层 pagination class，直接放行 */
+      try { a.click(); return true; } catch (e) {}
     }
     return false;
   }
