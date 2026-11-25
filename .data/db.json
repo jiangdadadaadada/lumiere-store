@@ -918,7 +918,126 @@
    "createdAt": "2026-11-25T06:12:35.123Z"
   }
  },
- "drafts": {},
+ "drafts": {
+  "DRAFT-MWW3IES5EM2O": {
+   "id": "DRAFT-MWW3IES5EM2O",
+   "status": "pending",
+   "sku": "",
+   "site": "",
+   "createdAt": "2026-11-25T12:24:20.309Z",
+   "name": "私语 · 甄选好物",
+   "nameEn": "Whisper · Intimate Essential",
+   "category": "women",
+   "desc": "这款单品选用亲肤材质。为私密时刻而设计，细节都藏在手感里。私密包装，中性面单发货。",
+   "descEn": "A intimate essential with a skin-safe finish. Discreet packaging, neutral billing.",
+   "price": 6,
+   "priceMissing": false,
+   "priceMissingAt": "",
+   "stock": 224643,
+   "image": "https://cbu01.alicdn.com/img/ibank/O1CN01MIVSlv25d2a5CHI8J_!!2206592147548-0-cib.jpg",
+   "mainSource": "https://cbu01.alicdn.com/img/ibank/O1CN01MIVSlv25d2a5CHI8J_!!2206592147548-0-cib.jpg",
+   "gallerySources": [
+    "https://cbu01.alicdn.com/img/ibank/O1CN01i9snFr25d2a3Q5l9a_!!2206592147548-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01kZ1mHO25d2a5dfAF1_!!2206592147548-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01oyNoV525d2a56IT8H_!!2206592147548-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01T3Arfo25d2a5GB964_!!2206592147548-0-cib.jpg"
+   ],
+   "gallery": [
+    "/assets/img/collected/src-8f3d950170f50ff2.jpg",
+    "/assets/img/collected/src-917483a4adf0c62e.jpg",
+    "/assets/img/collected/src-0fa2858f6a6d1ca4.jpg",
+    "/assets/img/collected/src-6c3d33f6662d2775.jpg"
+   ],
+   "specs": [],
+   "skuImages": {},
+   "skus": [
+    {
+     "name": "8323+帽子 / 均码",
+     "price": 16.8,
+     "stock": 19218,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01Txo0KN25d2bmI3i0J_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8323+模特同款蝴蝶丝袜+帽子 / 均码",
+     "price": 19.8,
+     "stock": 19258,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01X28egI25d2coUZjz1_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8323+白网袜 / 均码",
+     "price": 17,
+     "stock": 19716,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01bMVPqC25d2a56OVae_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8323+白开档袜 / 均码",
+     "price": 18,
+     "stock": 19730,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01ty80ph25d2a4CXEX5_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8323+白丝袜 / 均码",
+     "price": 17.5,
+     "stock": 19635,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01RqdNyh25d2a56LxdV_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8323+模特同款蝴蝶丝袜+同款内衣 / 均码",
+     "price": 24,
+     "stock": 18308,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN019uXRRm25d2bKXRLh8_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8323【衣服+T裤】不含内衣和发箍 / 均码",
+     "price": 15,
+     "stock": 14615,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01H0aQGL25d2ZydGfwL_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "同款模特内衣白色 / 均码",
+     "price": 6,
+     "stock": 18469,
+     "image": "https://img.alicdn.com/imgextra/i1/O1CN01uvnM5c1C0keOdWqw2_!!6000000000019-2-tps-628-628.png"
+    },
+    {
+     "name": "8323+同款模特内衣白色+帽子 / 均码",
+     "price": 22.8,
+     "stock": 19289,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN013mrZQT25d2blor0PH_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8323+同款丝袜+同款内衣+帽子 / 均码",
+     "price": 25.8,
+     "stock": 18642,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN011AlUsV25d2cHLaHb6_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8323+模特同款蝴蝶丝袜 / 均码",
+     "price": 18,
+     "stock": 19572,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01ke1cVW25d2a4SRJ5d_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8323+同款模特内衣白色 / 均码",
+     "price": 21,
+     "stock": 18191,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01kytz1N25d2a5DDGig_!!2206592147548-0-cib.jpg"
+    }
+   ],
+   "features": [],
+   "badge": "",
+   "material": "—",
+   "size": "—",
+   "noise": "",
+   "waterproof": "",
+   "battery": "",
+   "originalName": "柠檬物语性感情趣内衣蕾丝花边护士纯欲制服套装角色扮演调情qqny",
+   "originalDesc": "",
+   "sourceUrl": "https://detail.1688.com/offer/933439058086.html",
+   "collectedAt": "2026-11-25T12:24:20.309Z",
+   "whiteStatus": "done"
+  }
+ },
  "orders": {
   "LM506746504159": {
    "id": "LM506746504159",
