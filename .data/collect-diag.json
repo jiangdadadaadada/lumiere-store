@@ -1,5 +1,93 @@
 [
   {
+    "at": "2026-11-25T08:09:08.679Z",
+    "stage": "detail-fields",
+    "build": "20261124a",
+    "url": "https://feitiyu.1688.com/page/offerlist.htm?spm=a261y.7663282.shopNavigation.3.b04848e5xVwhaW&offerId=1098541264459&td_page_id=PC-DEFAULT-2026",
+    "pageTitle": "全部商品页",
+    "error": "",
+    "linkCount": 0,
+    "totalLinks": 0,
+    "skipped": {},
+    "samples": {},
+    "timings": {
+      "inject": 0,
+      "scrollParse": 0,
+      "import": 0,
+      "total": 0,
+      "wakeup": 1154
+    },
+    "probe": {
+      "attrs": [],
+      "embeds": {},
+      "href": "https://feitiyu.1688.com/page/offerlist.htm?spm=a261y.7663282.shopNavigation.3.b04848e5xVwhaW&offerId=1098541264459&td_page_id=PC-DEFAULT-2026",
+      "priceTexts": [],
+      "sku": [],
+      "skuOpts": [],
+      "title": "全部商品页"
+    }
+  },
+  {
+    "at": "2026-11-25T08:09:07.044Z",
+    "stage": "sku-dump",
+    "build": "20261124a",
+    "url": "https://feitiyu.1688.com/page/offerlist.htm?spm=a261y.7663282.shopNavigation.3.b04848e5xVwhaW&offerId=1098541264459&td_page_id=PC-DEFAULT-2026",
+    "dump": {
+      "build": "20261124a",
+      "colorChain": [
+        {
+          "bg": "none",
+          "cls": "",
+          "imgs": 1,
+          "tag": "P"
+        },
+        {
+          "bg": "none",
+          "cls": "",
+          "imgs": 1,
+          "tag": "DIV"
+        },
+        {
+          "bg": "none",
+          "cls": "",
+          "imgs": 2,
+          "tag": "DIV"
+        },
+        {
+          "bg": "none",
+          "cls": "",
+          "imgs": 49,
+          "tag": "DIV"
+        },
+        {
+          "bg": "none",
+          "cls": "",
+          "imgs": 49,
+          "tag": "DIV"
+        },
+        {
+          "bg": "none",
+          "cls": "",
+          "imgs": 49,
+          "tag": "DIV"
+        }
+      ],
+      "colorHTML": "<div style=\"position: relative; box-sizing: border-box; display: flex; flex-direction: column; align-content: flex-start; flex-shrink: 0; padding: 10px 10px 0px; overflow: hidden; height: 54px;\"><p title=\"柠檬物语性感紫色吊带睡裙骚睡衣欧美情趣内衣透视调情性趣内衣女\" style=\"margin-top: 0px; margin-bottom: 0px; font-size: 14px; line-height: 16px; color: rgb(34, 34, 34); overflow: hidden; text-overflow: ellipsis; white-space: pre-wrap; font-family: &quot;PingFang SC&quot;; height: 16px;\"><div style=\"height: 16px; display: inline-block; vertical-align: top; margin-right: 5px; line-height: 14px;\"><img src=\"https://gw.alicdn.com/imgextra/i4/O1CN01OaL0Pu264yo27cNJU_!!6000000007609-2-tps-104-56.png\" style=\"height: 16px;\"></div>柠檬物语性感紫色吊带睡裙骚睡衣欧美情趣内衣透视调情性趣内衣女</p><div style=\"position: relative; box-sizing: border-box; display: flex; flex-direction: row; align-content: flex-start; flex-shrink: 0; background-color: rgb(255, 255, 255); overflow: hidden; padding-top: 10px;\"><div style=\"background-color: rgb(252, 241, 238); padding: 0px 3px; height: 14px; border-width: 1px; border-style: solid; border-color: rgb(255, 60, 0); border-radius: 1px; margin: 0px 4px 0px 0px;\"><span style=\"color: rgb(255, 60, 0); font-size: 12px; lin",
+      "dom": [],
+      "ok": true,
+      "skuPaths": [],
+      "url": "https://feitiyu.1688.com/page/offerlist.htm?spm=a261y.7663282.shopNavigation.3.b04848e5xVwhaW&offerId=1098541264459&td_page_id=PC-DEFAULT-2026",
+      "vars": {}
+    }
+  },
+  {
+    "at": "2026-11-25T08:09:05.687Z",
+    "stage": "start",
+    "build": "20261124a",
+    "url": "https://feitiyu.1688.com/page/offerlist.htm?spm=a261y.7663282.shopNavigation.3.b04848e5xVwhaW&offerId=1098541264459&td_page_id=PC-DEFAULT-2026",
+    "directDetail": true
+  },
+  {
     "at": "2026-11-25T08:04:40.611Z",
     "stage": "detail-fields",
     "build": "20261124a",

@@ -1473,23 +1473,23 @@
   }
 
   /* ============================================================
-     全店採集 · 掃描店鋪頁的商品鏈接
+     全店采集 · 扫描店铺页的商品鏈接
      ---------------------------------------------------------
-     複用 findOfferLinks() 已有的商品鏈接識別邏輯，
-     同時返回「有沒有下一頁」+「下一頁 URL」。
-     支持多種店鋪平台的分頁：
-       - 1688: shop*.1688.com 店鋪頁有 ?beginPage= 或 ?page= 參數
-       - 淘寶/天貓: 店鋪頁 ?page=
+     复用 findOfferLinks() 已有的商品鏈接识别邏輯，
+     同时返回「有没有下一页」+「下一页 URL」。
+     支持多种店铺平台的分页：
+       - 1688: shop*.1688.com 店铺页有 ?beginPage= 或 ?page= 参数
+       - 淘寶/天貓: 店铺页 ?page=
        - 京東: ?page=
-       - 通用: 找 .pagination / .pager / .next / .next-page 之類的下一頁按鈕
+       - 通用: 找 .pagination / .pager / .next / .next-page 之类的下一页按钮
      ============================================================ */
-  /* ============ 1688 店鋪頁特徵 ============ */
+  /* ============ 1688 店铺页特徵 ============ */
   /* 新版 shopXXXX.1688.com 和舊版 xxx.1688.com 都算 */
   const IS_1688_SHOP = (() => {
     try {
       const h = location.hostname.toLowerCase();
       if (!h.endsWith('.1688.com')) return false;
-      /* 排除 detail / offer / alicdn 等非店鋪子域 */
+      /* 排除 detail / offer / alicdn 等非店铺子域 */
       if (/^(detail|offer|offers|upload|img|cbu01|cbu02|s\.alicdn|.*\.alicdn)\./.test(h)) return false;
       return true;
     } catch (e) { return false; }

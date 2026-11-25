@@ -555,22 +555,22 @@ async function runCollect(cfg) {
 }
 
 /* ============================================================
-   全店採集：掃描階段
+   全店采集：扫描階段
    ---------------------------------------------------------
-   在當前標籤頁（應該是店鋪頁）翻頁收集所有商品 URL。
+   在当前标签页（应该是店铺页）翻页收集所有商品 URL。
    流程：
-   ① 解析當前頁商品鏈接 → 存入 Set 去重
-   ② 點下一頁或構造下一頁 URL → 跳轉 → 重複 ①
-   ③ 最多翻 cfg.pages 頁
-   ④ 去重後問服務端哪些商品已存在 → 標記跳過
-   ⑤ phase = 'shop-scan-done'，popup 顯示「發現 N 款」+「開始採集」按鈕
+   ① 解析当前页商品鏈接 → 存入 Set 去重
+   ② 点下一页或构造下一页 URL → 跳轉 → 重复 ①
+   ③ 最多翻 cfg.pages 页
+   ④ 去重后問服务端哪些商品已存在 → 标记跳过
+   ⑤ phase = 'shop-scan-done'，popup 显示「发現 N 款」+「开始采集」按钮
    ============================================================ */
 async function runShopScan(cfg) {
   state.running = true;
   state.phase = 'shop-scan';
   state.url = cfg.url || '';
   state.shopUrls = []; state.shopFound = 0; state.shopUnique = 0; state.shopSkippedExisting = 0;
-  state.message = '正在掃描店鋪商品（第 1 頁）…';
+  state.message = '正在扫描店铺商品（第 1 页）…';
   state.startedAt = Date.now();
   state.timings = { inject: 0, scrollParse: 0, import: 0, total: 0, wakeup: 0 };
   state.tabId = cfg.tabId;
@@ -581,15 +581,15 @@ async function runShopScan(cfg) {
   const maxPages = cfg.pages || 30;
 
   try {
-    pushProgress('準備解析店鋪頁…');
+    pushProgress('準备解析店铺页…');
 
     for (let page = 1; page <= maxPages; page++) {
-      pushProgress('正在掃描第 ' + page + '/' + maxPages + ' 頁…');
+      pushProgress('正在扫描第 ' + page + '/' + maxPages + ' 页…');
 
-      /* 確保解析器已注入 */
+      /* 确保解析器已注入 */
       await ensureInjected(tabId, state.url);
 
-      /* 調 shopLinks 解析當前頁的商品鏈接 */
+      /* 调 shopLinks 解析当前页的商品鏈接 */
       const res = await withTimeout(chrome.scripting.executeScript({
         target: { tabId },
         world: 'MAIN',
@@ -598,35 +598,35 @@ async function runShopScan(cfg) {
           try { return await window.__LUM_COLLECT__.shopLinks({ scanLinks: true }); }
           catch (e) { return { ok: false, error: e.message }; }
         }
-      }), 10000, '店鋪頁解析');
+      }), 10000, '店铺页解析');
 
       const r = res && res[0] ? res[0].result : { ok: false, error: '無返回' };
 
       if (!r || !r.ok) {
-        if (page === 1) throw new Error((r && r.error) || '這個頁面不像店鋪頁，請打開店鋪首頁再試');
-        else { pushProgress('第 ' + page + ' 頁解析失敗，停止翻頁…'); break; }
+        if (page === 1) throw new Error((r && r.error) || '这个页面不像店铺页，请打开店铺首页再试');
+        else { pushProgress('第 ' + page + ' 页解析失敗，停止翻页…'); break; }
       }
 
       const urls = r.urls || [];
       urls.forEach(u => allUrls.add(u));
-      pushProgress('第 ' + page + ' 頁抓到 ' + urls.length + ' 款，累計 ' + allUrls.size + ' 款');
+      pushProgress('第 ' + page + ' 页抓到 ' + urls.length + ' 款，累计 ' + allUrls.size + ' 款');
 
-      /* 沒有下一頁就停 */
+      /* 没有下一页就停 */
       if (!r.hasNext) break;
 
-      /* 翻頁：解析器返回 nextUrl 的話直接跳，否則讓解析器模擬點擊下一頁 */
-      /* ★ 1688 SPA 模式：shopLinks 返回 isSpaMode=true 時，URL 可能不變，
-         翻頁後必須用 MutationObserver 監聽商品鏈接數量變化，
-         而不是等 tabs.onUpdated 的 status=complete（SPA 不觸發）。 */
+      /* 翻页：解析器返回 nextUrl 的話直接跳，否则讓解析器模拟点擊下一页 */
+      /* ★ 1688 SPA 模式：shopLinks 返回 isSpaMode=true 时，URL 可能不变，
+         翻页后必须用 MutationObserver 監聽商品鏈接数量变化，
+         而不是等 tabs.onUpdated 的 status=complete（SPA 不觸发）。 */
 
-      /* 先記錄當前頁商品鏈接數（用於翻頁後對比） */
+      /* 先记录当前页商品鏈接数（用於翻页后对比） */
       let oldLinkCount = 0;
       try {
         const cntRes = await withTimeout(chrome.scripting.executeScript({
           target: { tabId }, world: 'MAIN', func: () => {
             try { return window.__LUM_COLLECT__ && window.__LUM_COLLECT__.scanProductLinks ? window.__LUM_COLLECT__.scanProductLinks() : 0; } catch(e) { return 0; }
           }
-        }), 3000, '計數');
+        }), 3000, '计数');
         oldLinkCount = (cntRes && cntRes[0] && cntRes[0].result) || 0;
       } catch (e) {}
 
@@ -644,7 +644,7 @@ async function runShopScan(cfg) {
           });
           state.url = (await chrome.tabs.get(tabId)).url || state.url;
           await new Promise(r => setTimeout(r, 800));
-        } catch (e) { pushProgress('翻頁失敗，停止…'); break; }
+        } catch (e) { pushProgress('翻页失敗，停止…'); break; }
       } else {
         /* Click 模式（SPA 或無 nextUrl） */
         const clicked = await withTimeout(chrome.scripting.executeScript({
@@ -654,11 +654,11 @@ async function runShopScan(cfg) {
             try { return await window.__LUM_COLLECT__.shopClickNext(); }
             catch (e) { return false; }
           }
-        }), 5000, '點下一頁');
+        }), 5000, '点下一页');
         const didClick = clicked && clicked[0] && clicked[0].result;
-        if (!didClick) { pushProgress('沒有下一頁按鈕，停止翻頁'); break; }
+        if (!didClick) { pushProgress('没有下一页按钮，停止翻页'); break; }
 
-        /* ★ SPA 翻頁後等待：調 shopWaitPageChange 用 MutationObserver 監聽 */
+        /* ★ SPA 翻页后等待：调 shopWaitPageChange 用 MutationObserver 監聽 */
         try {
           await withTimeout(chrome.scripting.executeScript({
             target: { tabId }, world: 'MAIN',
@@ -668,7 +668,7 @@ async function runShopScan(cfg) {
               catch (e) { await new Promise(r => setTimeout(r, 1500)); return true; }
             },
             args: [oldLinkCount]
-          }), 12000, '等待新頁加載');
+          }), 12000, '等待新页加載');
         } catch (e) {}
 
         try { state.url = (await chrome.tabs.get(tabId)).url || state.url; } catch (e) {}
@@ -680,16 +680,16 @@ async function runShopScan(cfg) {
     state.shopFound = state.shopUrls.length;
 
     if (!state.shopUrls.length) {
-      throw new Error('這個頁面沒掃描到任何商品，請確保在店鋪商品列表頁');
+      throw new Error('这个页面没扫描到任何商品，请确保在店铺商品列表页');
     }
 
-    /* 問服務端哪些商品已存在（按 offerId 或 URL 匹配） */
-    pushProgress('檢查哪些商品已在庫中…');
+    /* 問服务端哪些商品已存在（按 offerId 或 URL 匹配） */
+    pushProgress('检查哪些商品已在库中…');
     let existingUrls = [];
     try {
-      const r = await withTimeout(apiPost('/api/collect/check-existing', { urls: state.shopUrls }), 10000, '重複檢查');
+      const r = await withTimeout(apiPost('/api/collect/check-existing', { urls: state.shopUrls }), 10000, '重复检查');
       if (r && r.ok && r.existingUrls) existingUrls = r.existingUrls;
-    } catch (e) { /* 服務端沒這個端點就跳過 */ }
+    } catch (e) { /* 服务端没这个端点就跳过 */ }
 
     const existingSet = new Set(existingUrls);
     const uniqueUrls = state.shopUrls.filter(u => !existingSet.has(u));
@@ -698,13 +698,13 @@ async function runShopScan(cfg) {
     state.shopUnique = uniqueUrls.length;
 
     state.phase = 'shop-scan-done';
-    state.message = '掃描完成：發現 ' + state.shopFound + ' 款，待采 ' + state.shopUnique + ' 款';
+    state.message = '扫描完成：发現 ' + state.shopFound + ' 款，待采 ' + state.shopUnique + ' 款';
     state.timings.total = Date.now() - state.startedAt;
     saveState();
     broadcast({ type: 'progress', state: publicState() });
   } catch (e) {
     state.phase = 'error';
-    state.message = '掃描失敗：' + (e && e.message ? e.message : e);
+    state.message = '扫描失敗：' + (e && e.message ? e.message : e);
     saveState();
     broadcast({ type: 'error', state: publicState() });
   } finally {
@@ -714,10 +714,10 @@ async function runShopScan(cfg) {
 }
 
 /* ============================================================
-   全店採集：採集階段
+   全店采集：采集階段
    ---------------------------------------------------------
-   並行打開商品詳情頁 → 注入解析器 → detail() → 入草稿箱。
-   每個商品獨立標籤頁，採完即關閉，避免積壓。
+   並行打开商品详情页 → 注入解析器 → detail() → 入草稿箱。
+   每个商品独立标签页，采完即关闭，避免積壓。
    ============================================================ */
 async function runShopCollect(cfg) {
   const urls = state.shopUrls || [];
@@ -728,7 +728,7 @@ async function runShopCollect(cfg) {
   state.total = urls.length;
   state.done = 0; state.failed = 0;
   state.imported = 0; state.importFailed = 0;
-  state.message = '開始採集 ' + urls.length + ' 款（並發 ' + concurrency + '）…';
+  state.message = '开始采集 ' + urls.length + ' 款（並发 ' + concurrency + '）…';
   state.startedAt = Date.now();
   state.timings = { inject: 0, scrollParse: 0, import: 0, total: 0, wakeup: 0 };
   saveState();
@@ -743,11 +743,11 @@ async function runShopCollect(cfg) {
       const url = urls[myIdx];
       let tab = null;
       try {
-        /* 開新標籤頁在後台加載（active: false） */
+        /* 开新标签页在后台加載（active: false） */
         tab = await chrome.tabs.create({ url, active: false });
         const tabId = tab.id;
 
-        /* 等頁面加載 */
+        /* 等页面加載 */
         await new Promise(res => {
           chrome.tabs.onUpdated.addListener(function listener(id, info) {
             if (id === tabId && info.status === 'complete') {
@@ -761,7 +761,7 @@ async function runShopCollect(cfg) {
         /* 注入解析器 */
         await ensureInjected(tabId, url);
 
-        /* 調 detail 解析 */
+        /* 调 detail 解析 */
         const res = await withTimeout(chrome.scripting.executeScript({
           target: { tabId },
           world: 'MAIN',
@@ -770,7 +770,7 @@ async function runShopCollect(cfg) {
             try { return await window.__LUM_COLLECT__.detail({}); }
             catch (e) { return { ok: false, error: e.message }; }
           }
-        }), 12000, '商品詳情解析');
+        }), 12000, '商品详情解析');
 
         const r = res && res[0] ? res[0].result : { ok: false, error: '無返回' };
 
@@ -783,7 +783,7 @@ async function runShopCollect(cfg) {
             failCount++;
             state.failed = failCount;
           } else {
-            /* 單個商品入草稿箱 */
+            /* 单个商品入草稿箱 */
             const draft = {
               name: d.name,
               price: Number(d.price) || 0,
@@ -812,27 +812,27 @@ async function runShopCollect(cfg) {
       } catch (e) {
         failCount++;
       } finally {
-        /* 關閉標籤頁 */
+        /* 关闭标签页 */
         try { if (tab && tab.id) await chrome.tabs.remove(tab.id); } catch (e) {}
       }
 
       state.done = myIdx + 1;
       state.imported = okCount;
       state.importFailed = failCount;
-      state.message = '採集中 ' + state.done + '/' + state.total + ' · 成功 ' + okCount + ' · 失敗 ' + failCount;
+      state.message = '采集中 ' + state.done + '/' + state.total + ' · 成功 ' + okCount + ' · 失敗 ' + failCount;
       saveState();
       broadcast({ type: 'progress', state: publicState() });
     }
   }
 
   try {
-    /* 啟動 concurrency 個 worker */
+    /* 启动 concurrency 个 worker */
     const workers = [];
     for (let i = 0; i < Math.min(concurrency, urls.length); i++) workers.push(worker());
     await Promise.all(workers);
 
     state.phase = 'shop-done';
-    state.message = '全店採集完成：成功 ' + okCount + ' 款' +
+    state.message = '全店采集完成：成功 ' + okCount + ' 款' +
       (failCount ? ('，失敗 ' + failCount + ' 款') : '') + '，已存草稿箱';
     state.finishedAt = Date.now();
     state.timings.total = Date.now() - state.startedAt;
@@ -840,7 +840,7 @@ async function runShopCollect(cfg) {
     broadcast({ type: 'done', state: publicState() });
   } catch (e) {
     state.phase = 'error';
-    state.message = '採集失敗：' + (e && e.message ? e.message : e);
+    state.message = '采集失敗：' + (e && e.message ? e.message : e);
     saveState();
     broadcast({ type: 'error', state: publicState() });
   } finally {
@@ -880,7 +880,7 @@ function handleCommand(msg, sender) {
         return { ok: true, url: pageUrl };
       }
 
-      /* ===== 全店採集：掃描階段 ===== */
+      /* ===== 全店采集：扫描階段 ===== */
       case 'shopScan': {
         if (state.running && state.startedAt && Date.now() - state.startedAt > 90000) {
           state.running = false; saveState();
@@ -900,7 +900,7 @@ function handleCommand(msg, sender) {
         return { ok: true };
       }
 
-      /* ===== 全店採集：採集階段 ===== */
+      /* ===== 全店采集：采集階段 ===== */
       case 'shopCollect': {
         if (state.running && state.startedAt && Date.now() - state.startedAt > 90000) {
           state.running = false; saveState();

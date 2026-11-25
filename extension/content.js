@@ -75,6 +75,38 @@
     } catch (e) {}
     return false;
   }
+  /* ============================================================
+     ★ 页面类型检测：单商品 / 店铺列表
+     决定按钮显示"一键采集单商品"还是"一键全店采集"
+     ============================================================ */
+  function detectPageType() {
+    try {
+      const h = (location.hostname || '').toLowerCase();
+      const p = (location.pathname || '') + (location.search || '');
+
+      /* 1688 店铺页 */
+      if (h.endsWith('.1688.com') && !/(^|\.)(detail|offer|offers|upload|img|cbu\d+|.*\.alicdn)\./.test(h)) {
+        if (/offerlist|search/i.test(p)) return 'shop';
+        if (/\/page\/offerlist/i.test(p)) return 'shop';
+        /* 1688 商品详情页：offer/\d+ 或 goods/detail */
+        if (/\/offer\/\d+/i.test(p) || /goods\/detail/i.test(p) || /^\/offer\.htm/i.test(p)) return 'single';
+      }
+
+      /* 通用：单商品页特征 */
+      if (document.querySelector('meta[property="og:type"][content="product"]')) return 'single';
+      if (document.querySelector('[itemtype*="schema.org/Product"]')) return 'single';
+      if (document.querySelector('meta[property="product:price:amount"]')) return 'single';
+
+      /* 通用：店铺/列表页特征 */
+      if (/\/offerlist|\/shop|\/store|\/category|\/list|\/search/i.test(p)) {
+        if (document.querySelectorAll('a[href*="/offer/"], a[href*="item.taobao"], a[href*="/goods/"]').length >= 4) {
+          return 'shop';
+        }
+      }
+    } catch (e) {}
+    return 'single';  /* 默认 */
+  }
+
   /* 当前页是不是该显示按钮 */
   function shouldShow() { return isSourceHost() || pageLooksLikeProduct(); }
 
