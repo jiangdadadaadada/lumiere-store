@@ -1658,7 +1658,8 @@
    "sourceUrl": "https://detail.1688.com/offer/948427739387.html",
    "collectedAt": "2026-11-25T10:28:04.816Z",
    "whiteStatus": "done",
-   "whiteAt": "2026-11-25T10:30:52.030Z"
+   "whiteAt": "2026-11-25T10:30:52.030Z",
+   "imageError": "图片恢复失败：图片 HTTP 404"
   },
   "DRAFT-MWVZCWGJAF4Q": {
    "id": "DRAFT-MWVZCWGJAF4Q",
