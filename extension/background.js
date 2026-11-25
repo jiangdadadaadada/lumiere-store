@@ -12,7 +12,7 @@ const STORAGE_KEY = 'lum_collect_state';
    所以不需要分批了 —— 一次全发，省掉 7 次往返。 */
 const BATCH_SIZE = 200;
 /* 与 content.js 保持一致的构建号：变了就重载扩展并把页面按钮重新挂上 */
-const BUILD = '20261124a';
+const BUILD = '20261125b';
 
 let state = {
   running: false, phase: '', url: '', total: 0, done: 0, failed: 0,
@@ -363,7 +363,7 @@ function isProductDetailUrl(url) {
    旧逻辑只要 tabId+url 没变就永不重注，页面里一旦注入了旧版解析器，
    扩展升到新版也进不去 —— 这正是「版本号升了、采集行为还是旧的」的根因。
    改成每次采集先探测页面里 __LUM_COLLECT__.__build，不符就强制重注。 */
-const PARSER_BUILD = '20261124a';
+const PARSER_BUILD = '20261125b';
 async function ensureInjected(tabId, url) {
   try {
     const probe = await chrome.scripting.executeScript({
@@ -698,10 +698,24 @@ async function runShopScan(cfg) {
     state.shopUnique = uniqueUrls.length;
 
     state.phase = 'shop-scan-done';
-    state.message = '扫描完成：发現 ' + state.shopFound + ' 款，待采 ' + state.shopUnique + ' 款';
+    state.message = '扫描完成：发现 ' + state.shopFound + ' 款，待采 ' + state.shopUnique + ' 款';
     state.timings.total = Date.now() - state.startedAt;
     saveState();
     broadcast({ type: 'progress', state: publicState() });
+
+    /* ★ 自动路由：一键采集按钮进来的，扫描完直接进采集阶段 */
+    if (cfg.autoCollect && state.shopUnique > 0) {
+      pushProgress('扫描完成，立即开始采集 ' + state.shopUnique + ' 款…');
+      /* 给 SW 留一口气，让 progress 消息先发出去再进下一阶段 */
+      await new Promise(r => setTimeout(r, 400));
+      /* 把 running 交给 runShopCollect，phase 切成 shop-collect */
+      state.running = false;  /* 先解锁，让 runShopCollect 的 state.running=true 生效 */
+      saveState();
+      return runShopCollect({
+        concurrency: cfg.concurrency || 4,
+        skipExisting: cfg.skipExisting !== false
+      });
+    }
   } catch (e) {
     state.phase = 'error';
     state.message = '扫描失敗：' + (e && e.message ? e.message : e);
@@ -878,6 +892,38 @@ function handleCommand(msg, sender) {
         if (!pageUrl || !/^https?:\/\//i.test(pageUrl)) return { ok: false, error: '当前不是网页，先打开商品页再采集' };
         runCollect({ url: pageUrl, tabId, limit: Math.max(1, Math.min(200, (msg.cfg && msg.cfg.limit) || 60)), clickAt: msg.clickAt });
         return { ok: true, url: pageUrl };
+      }
+
+      /* ★ 一键自动路由：content script 检测完页面类型发这个，
+         SW 直接走单页采集或全店扫描 → 自动进入采集（不用用户再点第二次） */
+      case 'startAuto': {
+        if (state.running && state.startedAt && Date.now() - state.startedAt > 90000) {
+          state.running = false; saveState();
+        }
+        if (state.running) return { ok: false, error: '已有任务在运行' };
+
+        const hint = (msg && msg.hint) || 'single';
+        const msgUrl = (msg && msg.url) || '';
+        const senderTabId = sender && sender.tab ? sender.tab.id : 0;
+        let pageUrl = /^https?:\/\//i.test(msgUrl) ? msgUrl : '';
+        let tabId = senderTabId;
+        if (!pageUrl || !tabId) {
+          try {
+            const tab = tabId ? await chrome.tabs.get(tabId)
+              : (await chrome.tabs.query({ active: true, currentWindow: true }))[0];
+            if (tab) { if (!pageUrl) pageUrl = tab.url || ''; if (!tabId) tabId = tab.id; }
+          } catch (e) {}
+        }
+        if (!pageUrl || !/^https?:\/\//i.test(pageUrl)) return { ok: false, error: '当前不是网页' };
+
+        if (hint === 'shop') {
+          /* 全店：扫描 → 完了自动进采集 */
+          runShopScan({ tabId, url: pageUrl, pages: 30, autoCollect: true, concurrency: 4, skipExisting: true });
+        } else {
+          /* 单页 */
+          runCollect({ url: pageUrl, tabId, limit: 60, clickAt: msg.clickAt });
+        }
+        return { ok: true, url: pageUrl, mode: hint };
       }
 
       /* ===== 全店采集：扫描階段 ===== */

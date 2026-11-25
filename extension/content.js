@@ -129,6 +129,12 @@
 
   function mount() {
     if (document.getElementById('lum-fab')) return;
+
+    /* ★ 检测页面类型，决定按钮文案 */
+    const pageType = detectPageType();
+    const btnText = pageType === 'shop' ? '◈ 一键全店采集' : '◈ 一键采集单商品';
+    const isShop = pageType === 'shop';
+
     const style = document.createElement('style');
     style.textContent = CSS;
     document.head.appendChild(style);
@@ -136,7 +142,7 @@
     const wrap = document.createElement('div');
     wrap.id = 'lum-fab';
     wrap.innerHTML = `
-      <button class="lum-btn" id="lum-fab-btn">◈ 一键采集到草稿箱</button>
+      <button class="lum-btn" id="lum-fab-btn">${btnText}</button>
       <div class="lum-info" id="lum-fab-info">
         <span id="lum-fab-msg"></span>
         <div class="lum-sub" id="lum-fab-sub" style="display:none"></div>
@@ -160,27 +166,27 @@
     };
 
     btn.addEventListener('click', () => {
-      /* ★ 点击只做采集，绝不在点击路径里触发 registerBuild：
-         registerBuild 一旦触发 chrome.runtime.reload()，会销毁正在处理的 start 消息，
-         SW 一死，按钮就永远卡在「采集中…」。版本更新交给 ①页面加载时(见文件头) ②SW 启动时 ③popup 自查，
-         刷新一次页面即可完成更新，点击本身保持纯粹、不被打断。 */
       btn.disabled = true;
       btn.textContent = '采集中…';
       info.classList.add('show');
-      setMsg('正在读取当前页面…');
+      setMsg(isShop ? '正在扫描店铺商品…' : '正在读取当前页面…');
       setBar(0);
-      /* ★ 把当前页面的真实 URL 随消息带上：SW 不再靠 chrome.tabs.query(active)
-         去猜「当前标签」，多标签时激活态可能是别的页面，导致采错页面。 */
-      chrome.runtime.sendMessage({ type: 'start', cfg: { limit: 60 }, clickAt: Date.now(), url: location.href }, (r) => {
+      /* ★ startAuto：SW 自己判断走单页还是全店，用户不用选 */
+      chrome.runtime.sendMessage({
+        type: 'startAuto',
+        url: location.href,
+        clickAt: Date.now(),
+        hint: isShop ? 'shop' : 'single'
+      }, (r) => {
         if (chrome.runtime.lastError) {
           btn.disabled = false;
-          btn.textContent = '◈ 再采集一次';
-          setMsg('扩展刚更新，请再点一次采集');
+          btn.textContent = btnText;
+          setMsg('扩展刚更新，请再点一次');
           return;
         }
         if (!r || !r.ok) {
           btn.disabled = false;
-          btn.textContent = '◈ 一键采集到草稿箱';
+          btn.textContent = btnText;
           setMsg('启动失败：' + ((r && r.error) || '未知错误'));
         }
       });

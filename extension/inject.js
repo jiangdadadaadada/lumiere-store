@@ -13,7 +13,7 @@
   /* ★ 版本化覆盖：OLD 解析器若版本不同就允许新版覆盖它。
      之前这里直接 return，导致同一页面反复采集永远用第一次注入的旧解析器 ——
      扩展版本升到 z、页面里却还是几小时前的代码，改了等于没改。 */
-  const INJECT_BUILD = '20261124a';
+  const INJECT_BUILD = '20261125b';
   if (window.__LUM_COLLECT__ && window.__LUM_COLLECT__.__build === INJECT_BUILD) return;
 
   /* ---------------- 通用工具 ---------------- */
@@ -640,6 +640,69 @@
       seen[key] = 1;
       out.push({ offerId: id, url, el: a });
     }
+
+    /* ★ 1688 兜底：od-pc 新版店铺 offerlist 页很多商品卡用
+       data-offer-id / data-href 属性而不是 <a href>，
+       或者 href 是 //detail.1688.com/offer/xxx.html 这种 detail 子域名
+       （IS_1688_SHOP 的排除规则只排除了子域名检测，没排除链接里的 detail） */
+    try {
+      /* 1. data-offer-id 属性 */
+      document.querySelectorAll('[data-offer-id], [data-offerId], [data-offer_id]').forEach(el => {
+        const id = el.getAttribute('data-offer-id') || el.getAttribute('data-offerId') || el.getAttribute('data-offer_id') || '';
+        if (!/^\d{6,}$/.test(id)) return;
+        if (seen[id]) return; seen[id] = 1;
+        out.push({ offerId: id, url: 'https://detail.1688.com/offer/' + id + '.html', el });
+      });
+
+      /* 2. data-href / data-url 属性（部分 1688 SPA 组件用这个） */
+      document.querySelectorAll('[data-href], [data-url], [data-link]').forEach(el => {
+        const href = el.getAttribute('data-href') || el.getAttribute('data-url') || el.getAttribute('data-link') || '';
+        if (!href || href.indexOf('javascript:') === 0 || href.charAt(0) === '#') return;
+        if (!isProductLink(href)) return;
+        const url = norm(decodeEnt(href));
+        const id = offerIdOf(href) || offerIdOf(url);
+        const key = id || url;
+        if (seen[key]) return; seen[key] = 1;
+        out.push({ offerId: id, url, el });
+      });
+
+      /* 3. 全页扫 offer ID（文本/属性里任何 6-12 位数字在 offer 上下文里） */
+      /* 但这步太激进，可能抓到非商品数字，做保守点：只在商品卡 DOM 容器里扫 */
+      const CARD_SELECTORS = [
+        '[class*="offer-card"]', '[class*="OfferCard"]',
+        '[class*="offer-item"]', '[class*="OfferItem"]',
+        '[class*="product-card"]', '[class*="ProductCard"]',
+        '[class*="offer-list-item"]', '[class*="OfferListItem"]',
+        '[class*="goods-card"]', '[class*="item-card"]',
+        '[class*="search-card"]', '[class*="SearchCard"]',
+        '.offer-list .offer-item', '.offer-list-item'
+      ];
+      for (const sel of CARD_SELECTORS) {
+        document.querySelectorAll(sel).forEach(card => {
+          /* 卡片里找任何 href 含 offer 的链接 */
+          card.querySelectorAll('a[href]').forEach(a => {
+            const href = a.getAttribute('href') || '';
+            const m = /\/offer\/(\d{6,})\.html/i.exec(href) || /offerId[=\/](\d{6,})/i.exec(href);
+            if (!m) return;
+            const id = m[1];
+            if (seen[id]) return; seen[id] = 1;
+            const url = norm(decodeEnt(href));
+            out.push({ offerId: id, url, el: a });
+          });
+          /* 卡片里找 data 属性 */
+          const idAttrs = ['data-offer-id', 'data-offerId', 'data-offer_id', 'data-id', 'data-goods-id'];
+          for (const attr of idAttrs) {
+            const id = card.getAttribute(attr) || '';
+            if (/^\d{6,}$/.test(id) && !seen[id]) {
+              seen[id] = 1;
+              out.push({ offerId: id, url: 'https://detail.1688.com/offer/' + id + '.html', el: card });
+              break;
+            }
+          }
+        });
+      }
+    } catch (e) {}
+
     return out;
   }
 

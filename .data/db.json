@@ -966,6 +966,61 @@
    "collectedAt": "2026-11-25T08:00:44.128Z",
    "whiteStatus": "failed",
    "whiteError": "Unable to allocate 1.86 GiB for an array with shape (250000000,) and data type int64"
+  },
+  "DRAFT-MWVURZZOLPYC": {
+   "id": "DRAFT-MWVURZZOLPYC",
+   "status": "pending",
+   "sku": "",
+   "site": "",
+   "createdAt": "2026-11-25T08:19:51.156Z",
+   "name": "私语 · 甄选好物",
+   "nameEn": "Whisper · Intimate Essential",
+   "category": "women",
+   "desc": "这款单品采用涤纶（聚酯纤维）。为私密时刻而设计，细节都藏在手感里。细节：5.0 10+条评价好评率 100%。私密包装，中性面单发货。",
+   "descEn": "A intimate essential made from 涤纶（聚酯纤维）. Discreet packaging, neutral billing.",
+   "price": 21,
+   "priceMissing": false,
+   "priceMissingAt": "",
+   "stock": 0,
+   "image": "/assets/img/collected/src-e46291b8fbd9ac15.webp",
+   "mainSource": "https://cbu01.alicdn.com/img/ibank/O1CN014fzf3khhU9F1chua_!!2206592147548-0-cib.jpg_.webp",
+   "gallerySources": [
+    "https://cbu01.alicdn.com/img/ibank/O1CN01wbvOwFkG0iD1chua_!!2206592147548-0-cib.jpg_.webp",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01LeaEgYXgiaK2Ap2M_!!2206592147548-0-cib.jpg_.webp",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01Bazbw1HLD3K2Ap2M_!!2206592147548-0-cib.jpg_.webp",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01bFFgOR7mEPD24uCu_!!2206592147548-0-cib.jpg_.webp"
+   ],
+   "gallery": [
+    "/assets/img/collected/src-7d26f6e93dab410d.webp",
+    "/assets/img/collected/src-01026330b1945117.webp",
+    "/assets/img/collected/src-ffef4e73de851825.webp",
+    "/assets/img/collected/src-a0e1e7d6abeabc4e.webp"
+   ],
+   "specs": [
+    {
+     "k": "spec_color",
+     "v": "尺码"
+    },
+    {
+     "k": "spec_count",
+     "v": "100以内"
+    }
+   ],
+   "skuImages": {},
+   "skus": [],
+   "features": [],
+   "badge": "",
+   "material": "涤纶（聚酯纤维）",
+   "size": "—",
+   "noise": "",
+   "waterproof": "",
+   "battery": "",
+   "originalName": "柠檬物语情趣内衣性感火辣连体衣开裆免脱小胸显大带胸垫调情战袍近7天铺货量+367%近7天代发TOP30%商品库存高稳定48小时揽收率100%10+人好评商品复购率36%",
+   "originalDesc": "5.0 10+条评价好评率 100%",
+   "sourceUrl": "https://detail.1688.com/offer/1098541264459.html",
+   "collectedAt": "2026-11-25T08:19:51.156Z",
+   "whiteStatus": "failed",
+   "whiteError": "Unable to allocate 1.86 GiB for an array with shape (250000000,) and data type int64"
   }
  },
  "orders": {

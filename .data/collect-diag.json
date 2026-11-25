@@ -1,5 +1,256 @@
 [
   {
+    "at": "2026-11-25T08:19:53.460Z",
+    "stage": "sku-dump",
+    "build": "20261125b",
+    "url": "https://detail.1688.com/offer/1098541264459.html?_t=1795594386494&spm=a2615.7691456/2506.co_0_0_wangpu_score_0_0_0_0_0_0_0000_0.0",
+    "dump": {
+      "build": "20261125b",
+      "colorChain": [
+        {
+          "bg": "none",
+          "cls": "",
+          "imgs": 0,
+          "tag": "SPAN"
+        },
+        {
+          "bg": "none",
+          "cls": "ant-table-cell",
+          "imgs": 0,
+          "tag": "TD"
+        },
+        {
+          "bg": "none",
+          "cls": "ant-table-row ant-table-row-level-0",
+          "imgs": 0,
+          "tag": "TR"
+        },
+        {
+          "bg": "none",
+          "cls": "ant-table-tbody",
+          "imgs": 0,
+          "tag": "TBODY"
+        },
+        {
+          "bg": "none",
+          "cls": "",
+          "imgs": 0,
+          "tag": "TABLE"
+        },
+        {
+          "bg": "none",
+          "cls": "ant-table-content",
+          "imgs": 0,
+          "tag": "DIV"
+        }
+      ],
+      "colorHTML": "<td class=\"ant-table-cell\"><span>10132黑红【连体衣】、10132黑红【连体衣】+黑红拼色丝袜、10132黑红【连体衣】+黑丝袜、10132黑红【连体衣】+红丝袜、10132黑红【连体衣】+眼罩、10132紫色【连体衣】、10132紫色+黑眼罩、10132紫色+黑丝袜、10132紫色+黑眼罩+黑丝袜、10132紫色+黑眼罩+手套、10132紫色+黑眼罩+手套+黑丝袜、10132紫色+黑眼罩+手套+黑丝袜+手拍、10132衣服+眼罩+手套+手拍+黑丝袜+【牵引套装】</span></td>",
+      "dom": [
+        {
+          "bg": [],
+          "cls": "module-od-sku-selection cart-gap",
+          "imgCount": 13,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN013ViFQJyuBCH1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            },
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01neaGdeAEYII1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            },
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01N0MIJSRgMhL1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "DIV",
+          "text": "颜色 10132黑红【连体衣】 10132黑红【连体衣】+黑红拼色丝袜 10132黑红【连体衣】+黑丝袜 10132黑红【连体衣】+红丝袜 10132黑红【连体衣】+眼罩 10132紫色【连体衣】 10132紫色+黑眼罩 10132紫色+黑"
+        },
+        {
+          "bg": [],
+          "cls": "sku-filter-button v-flex active",
+          "imgCount": 1,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN013ViFQJyuBCH1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "BUTTON",
+          "text": "10132黑红【连体衣】"
+        },
+        {
+          "bg": [],
+          "cls": "sku-filter-button v-flex",
+          "imgCount": 1,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01neaGdeAEYII1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "BUTTON",
+          "text": "10132黑红【连体衣】+黑红拼色丝袜"
+        },
+        {
+          "bg": [],
+          "cls": "sku-filter-button v-flex",
+          "imgCount": 1,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01N0MIJSRgMhL1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "BUTTON",
+          "text": "10132黑红【连体衣】+黑丝袜"
+        },
+        {
+          "bg": [],
+          "cls": "sku-filter-button v-flex",
+          "imgCount": 1,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01GcwrkhMDECL1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "BUTTON",
+          "text": "10132黑红【连体衣】+红丝袜"
+        },
+        {
+          "bg": [],
+          "cls": "sku-filter-button v-flex",
+          "imgCount": 1,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN013BUDj9tmhmE1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "BUTTON",
+          "text": "10132黑红【连体衣】+眼罩"
+        },
+        {
+          "bg": [],
+          "cls": "sku-filter-button v-flex",
+          "imgCount": 1,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01rcvqvMVX8UB1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "BUTTON",
+          "text": "10132紫色【连体衣】"
+        },
+        {
+          "bg": [],
+          "cls": "sku-filter-button v-flex",
+          "imgCount": 1,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01xQO9jI1rx5I1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "BUTTON",
+          "text": "10132紫色+黑眼罩"
+        },
+        {
+          "bg": [],
+          "cls": "sku-filter-button v-flex",
+          "imgCount": 1,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01lokkkCILCMI1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "BUTTON",
+          "text": "10132紫色+黑丝袜"
+        },
+        {
+          "bg": [],
+          "cls": "sku-filter-button v-flex",
+          "imgCount": 1,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN014LZ3qzfAVHK1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "BUTTON",
+          "text": "10132紫色+黑眼罩+黑丝袜"
+        },
+        {
+          "bg": [],
+          "cls": "sku-filter-button v-flex",
+          "imgCount": 1,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01xOQQGckJ6ZF1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "BUTTON",
+          "text": "10132紫色+黑眼罩+手套"
+        },
+        {
+          "bg": [],
+          "cls": "sku-filter-button v-flex",
+          "imgCount": 1,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN014kJieXWS1OG1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "BUTTON",
+          "text": "10132紫色+黑眼罩+手套+黑丝袜"
+        },
+        {
+          "bg": [],
+          "cls": "sku-filter-button v-flex",
+          "imgCount": 1,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN0189LJg9vQoUL1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "BUTTON",
+          "text": "10132紫色+黑眼罩+手套+黑丝袜+手拍"
+        },
+        {
+          "bg": [],
+          "cls": "sku-filter-button v-flex tooltip-value",
+          "imgCount": 1,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01Vih8KLDdDlB1chua_!!2206592147548-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "BUTTON",
+          "text": "10132衣服+眼罩+手套+手拍+黑丝袜+【牵引套装】"
+        }
+      ],
+      "ok": true,
+      "skuPaths": [],
+      "url": "https://detail.1688.com/offer/1098541264459.html?_t=1795594386494&spm=a2615.7691456/2506.co_0_0_wangpu_score_0_0_0_0_0_0_0000_0.0",
+      "vars": {}
+    }
+  },
+  {
+    "at": "2026-11-25T08:19:50.521Z",
+    "stage": "start",
+    "build": "20261125b",
+    "url": "https://detail.1688.com/offer/1098541264459.html?_t=1795594386494&spm=a2615.7691456/2506.co_0_0_wangpu_score_0_0_0_0_0_0_0000_0.0",
+    "directDetail": true
+  },
+  {
     "at": "2026-11-25T08:09:08.679Z",
     "stage": "detail-fields",
     "build": "20261124a",
