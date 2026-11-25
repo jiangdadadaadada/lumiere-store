@@ -1302,7 +1302,9 @@ server.listen(PORT, () => {
   console.log(`  后端健康: http://localhost:${PORT}/api/health`);
   console.log(`  地理定位: http://localhost:${PORT}/api/geo`);
   console.log(`  订单列表: http://localhost:${PORT}/api/orders\n`);
-  setupAutoPublish();
+  /* ★ 全局禁用 autoPublish：采集入库改 db.json 会触发 fs.watch → 3秒后 execSync 阻塞事件循环 30-60 秒，
+     所有 HTTP 请求全超时。云端发布改为手动点 /api/publish，或用 wrangler deploy 命令。 */
+  // setupAutoPublish();
   /* 自愈巡检（文件丢了自动重建，不抠白底） */
   setTimeout(() => { healImages().catch(() => {}); }, 800);
   /* 历史草稿里仍是外链的图集 / SKU 选项图，启动时排进本地缓存，

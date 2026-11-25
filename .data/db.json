@@ -923,7 +923,7 @@
    "id": "DRAFT-MWW267I6VWFU",
    "status": "pending",
    "sku": "",
-   "site": "",
+   "site": "lumiere",
    "createdAt": "2026-11-25T11:46:51.390Z",
    "name": "私语 · 甄选好物",
    "nameEn": "Whisper · Intimate Essential",
@@ -934,7 +934,7 @@
    "priceMissing": false,
    "priceMissingAt": "",
    "stock": 232317,
-   "image": "https://cbu01.alicdn.com/img/ibank/O1CN01VJgGzA25d2b6cIMnL_!!2206592147548-0-cib.jpg",
+   "image": "/assets/img/collected/src-a9e451df24de5401.jpg",
    "mainSource": "https://cbu01.alicdn.com/img/ibank/O1CN01VJgGzA25d2b6cIMnL_!!2206592147548-0-cib.jpg",
    "gallerySources": [
     "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg",
@@ -1035,7 +1035,8 @@
    "originalDesc": "",
    "sourceUrl": "https://detail.1688.com/offer/981584332995.html",
    "collectedAt": "2026-11-25T11:46:51.390Z",
-   "whiteStatus": "done"
+   "whiteStatus": "done",
+   "updatedAt": "2026-11-25T11:47:28.523Z"
   }
  },
  "orders": {
