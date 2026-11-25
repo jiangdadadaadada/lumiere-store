@@ -12,7 +12,7 @@ const STORAGE_KEY = 'lum_collect_state';
    所以不需要分批了 —— 一次全发，省掉 7 次往返。 */
 const BATCH_SIZE = 200;
 /* 与 content.js 保持一致的构建号：变了就重载扩展并把页面按钮重新挂上 */
-const BUILD = '20261125m';
+const BUILD = '20261125n';
 
 let state = {
   running: false, phase: '', url: '', total: 0, done: 0, failed: 0,
@@ -889,7 +889,9 @@ async function runShopCollect(cfg) {
       state.done = myIdx + 1;
       state.imported = okCount;
       state.importFailed = failCount;
-      state.message = '采集中 ' + state.done + '/' + state.total + ' · 成功 ' + okCount + ' · 失败 ' + failCount;
+      state.message = state.lastError
+        ? ('第 ' + (myIdx + 1) + ' 款失败：' + state.lastError + '（采集中 ' + state.done + '/' + state.total + '）')
+        : ('采集中 ' + state.done + '/' + state.total + ' · 成功 ' + okCount + ' · 失败 ' + failCount);
       saveState();
       broadcast({ type: 'progress', state: publicState() });
     }
