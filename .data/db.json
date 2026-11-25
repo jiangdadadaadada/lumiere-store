@@ -2136,7 +2136,7 @@
    "priceMissing": false,
    "priceMissingAt": "",
    "stock": 0,
-   "image": "https://cbu01.alicdn.com/img/ibank/O1CN01J2erVw25d2eynODKk_!!2206592147548-0-cib.jpg",
+   "image": "/assets/img/collected/CQ-03307067.webp",
    "mainSource": "https://cbu01.alicdn.com/img/ibank/O1CN01J2erVw25d2eynODKk_!!2206592147548-0-cib.jpg",
    "gallerySources": [
     "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg_60x60q90.jpg",
@@ -2164,7 +2164,8 @@
    "originalDesc": "柠檬物语 原创设计，本款已申请国家专利，阿里同行误仿款以及盗用， 违者必究",
    "sourceUrl": "https://detail.1688.com/offer/1025329322318.html",
    "collectedAt": "2026-11-25T10:41:42.459Z",
-   "whiteStatus": "pending"
+   "whiteStatus": "done",
+   "whiteAt": "2026-11-25T10:42:29.698Z"
   }
  },
  "orders": {
