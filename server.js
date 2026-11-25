@@ -913,10 +913,20 @@ if (pathname === '/api/health') {
           return { files: cnt };
         });
 
-        /* Step 5: wrangler deploy */
+        /* Step 5: wrangler deploy（即时线上更新） */
         step('部署 Worker', () => ({
           out: execSync(`"${WRRANGLER}" deploy`,
             { cwd: ROOT, encoding: 'utf-8', timeout: 180000 }).trim().slice(-200)
+        }));
+
+        /* Step 6: git commit + push（版本管理 + 如果 CF 連了 GitHub 就自動 CI） */
+        step('Git commit', () => ({
+          out: execSync('git add -A && git diff --cached --quiet || git commit -m "auto-publish ' + new Date().toISOString().slice(0,19).replace(/[:T]/g,'-') + '"',
+            { cwd: ROOT, encoding: 'utf-8', timeout: 30000 }).trim().slice(-100)
+        }));
+        step('Git push', () => ({
+          out: execSync('git push origin main',
+            { cwd: ROOT, encoding: 'utf-8', timeout: 60000 }).trim().slice(-100)
         }));
 
         return send(res, 200, { ok, steps, url: 'https://lumiere-store.lumiere-store.workers.dev' });
