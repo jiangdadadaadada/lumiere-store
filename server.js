@@ -850,86 +850,9 @@ if (pathname === '/api/health') {
        ============================================================ */
     if (pathname === '/api/publish' && req.method === 'POST') {
       try {
-        const WRRANGLER = path.join(ROOT, 'node_modules', '.bin', 'wrangler.cmd');
-        const dbPath = path.join(ROOT, '.data', 'db.json');
-        const tmpDir = path.join(ROOT, '_tmp');
-        if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
-
-        let steps = [], ok = true;
-        const step = (name, fn) => {
-          try { const r = fn(); steps.push({ name, ok: true, ...r }); return r; }
-          catch (e) { steps.push({ name, ok: false, error: e.message }); ok = false; return null; }
-        };
-
-        step('生成 seed SQL', () => {
-          const prods = JSON.parse(fs.readFileSync(dbPath, 'utf-8')).products || {};
-          const seed = Object.entries(prods).map(([sku, p]) => {
-            const d = JSON.stringify(p).replace(/'/g, "''");
-            const t = String(p.name || '').replace(/'/g, "''");
-            const now = new Date().toISOString();
-            return `INSERT OR REPLACE INTO products (id, data, title, price, created_at) VALUES ('${sku}', '${d}', '${t}', ${p.price || 0}, '${now}');`;
-          }).join('\n');
-          const sqlPath = path.join(tmpDir, 'seed-latest.sql');
-          fs.writeFileSync(sqlPath, seed, 'utf-8');
-          return { count: Object.keys(prods).length, file: 'seed-latest.sql' };
-        });
-
-        /* Step 2: 清空 D1 舊商品 */
-        step('清空 D1', () => ({
-          out: execSync(`"${WRRANGLER}" d1 execute lumiere-db --remote --command "DELETE FROM products;"`,
-            { cwd: ROOT, encoding: 'utf-8', timeout: 30000 }).trim().slice(-100)
-        }));
-
-        /* Step 3: Seed D1 新商品 */
-        step('Seed D1', () => ({
-          out: execSync(`"${WRRANGLER}" d1 execute lumiere-db --remote --file "${path.join(tmpDir, 'seed-latest.sql')}"`,
-            { cwd: ROOT, encoding: 'utf-8', timeout: 60000 }).trim().slice(-100)
-        }));
-
-        /* Step 4: 同步前端到 deploy/www */
-        step('同步前端', () => {
-          const wwwDir = path.join(ROOT, 'deploy', 'www');
-          for (const f of fs.readdirSync(ROOT)) {
-            if (f.endsWith('.html')) fs.copyFileSync(path.join(ROOT, f), path.join(wwwDir, f));
-          }
-          const assetsSrc = path.join(ROOT, 'assets');
-          const assetsDst = path.join(wwwDir, 'assets');
-          const cpDir = (s, d) => {
-            if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
-            for (const e of fs.readdirSync(s)) {
-              const sp = path.join(s, e), dp = path.join(d, e);
-              fs.statSync(sp).isDirectory()
-                ? (fs.existsSync(dp) ? fs.rmSync(dp, { recursive: true }) : null, cpDir(sp, dp))
-                : fs.copyFileSync(sp, dp);
-            }
-          };
-          for (const e of fs.readdirSync(assetsSrc)) {
-            const sp = path.join(assetsSrc, e), dp = path.join(assetsDst, e);
-            fs.statSync(sp).isDirectory() ? cpDir(sp, dp) : fs.copyFileSync(sp, dp);
-          }
-          const blogSrc = path.join(ROOT, 'blog');
-          if (fs.existsSync(blogSrc)) cpDir(blogSrc, path.join(wwwDir, 'blog'));
-          const cnt = fs.readdirSync(wwwDir, { recursive: true }).filter(f => !fs.statSync(path.join(wwwDir, f)).isDirectory()).length;
-          return { files: cnt };
-        });
-
-        /* Step 5: wrangler deploy（即时线上更新） */
-        step('部署 Worker', () => ({
-          out: execSync(`"${WRRANGLER}" deploy`,
-            { cwd: ROOT, encoding: 'utf-8', timeout: 180000 }).trim().slice(-200)
-        }));
-
-        /* Step 6: git commit + push（版本管理 + 如果 CF 連了 GitHub 就自動 CI） */
-        step('Git commit', () => ({
-          out: execSync('git add -A && git diff --cached --quiet || git commit -m "auto-publish ' + new Date().toISOString().slice(0,19).replace(/[:T]/g,'-') + '"',
-            { cwd: ROOT, encoding: 'utf-8', timeout: 30000 }).trim().slice(-100)
-        }));
-        step('Git push', () => ({
-          out: execSync('git push origin main',
-            { cwd: ROOT, encoding: 'utf-8', timeout: 60000 }).trim().slice(-100)
-        }));
-
-        return send(res, 200, { ok, steps, url: 'https://lumiere-store.lumiere-store.workers.dev' });
+        /* 调用同一个 runPublish() 函数（和 watcher 复用） */
+        const result = await runPublish();
+        return send(res, 200, { ...result, url: 'https://lumiere-store.lumiere-store.workers.dev' });
       } catch (e) {
         return send(res, 500, { ok: false, error: e.message, stack: e.stack?.slice(0, 500) });
       }
@@ -1397,12 +1320,130 @@ function buildDupIndex(targetSite) {
   });
 });
 
+/* ============================================================
+   自動同步發布：db.json 一改動 → debounce 3 秒 → 自動跑完整發布
+   不論是 admin 保存 / seed 腳本 / 手動編輯，都會自動同步到雲端
+   ============================================================ */
+const AUTO_PUBLISH_DEBOUNCE_MS = 3000;
+let _autoPublishTimer = null;
+let _autoPublishRunning = false;
+
+function setupAutoPublish(){
+  const dbPath = path.join(ROOT, '.data', 'db.json');
+  if (!fs.existsSync(dbPath)) return;
+
+  // db.json 變化 → debounce → 自動發布
+  fs.watch(path.dirname(dbPath), { persistent: false }, (eventType, filename) => {
+    if (filename !== 'db.json') return;
+    if (_autoPublishRunning) return;   // 正在發布 → 跳過
+    clearTimeout(_autoPublishTimer);
+    _autoPublishTimer = setTimeout(() => {
+      _autoPublishRunning = true;
+      console.log('\n🔄 [AUTO] db.json 改動，自動發布到雲端...');
+      runPublish().then(result => {
+        const fail = result.steps.filter(s => !s.ok);
+        if (fail.length){
+          console.error('❌ [AUTO] 自動發布失敗:', fail.map(s=>s.name+': '+s.error).join(', '));
+        } else {
+          console.log('✅ [AUTO] 自動發布完成 — 線上已更新');
+        }
+        _autoPublishRunning = false;
+      }).catch(e => {
+        console.error('❌ [AUTO] 自動發布報錯:', e.message);
+        _autoPublishRunning = false;
+      });
+    }, AUTO_PUBLISH_DEBOUNCE_MS);
+  });
+  console.log('  📡 自動同步發布已啟用（db.json 改動 → 3 秒後自動發布）\n');
+}
+
+/* 把 /api/publish 的邏輯抽成可復用函式 */
+async function runPublish(){
+  const WRRANGLER = path.join(ROOT, 'node_modules', '.bin', 'wrangler.cmd');
+  const dbPath = path.join(ROOT, '.data', 'db.json');
+  const tmpDir = path.join(ROOT, '_tmp');
+  if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
+
+  let steps = [], ok = true;
+  const step = (name, fn) => {
+    try { const r = fn(); steps.push({ name, ok: true, ...r }); return r; }
+    catch (e) { steps.push({ name, ok: false, error: e.message }); ok = false; return null; }
+  };
+
+  step('生成 seed SQL', () => {
+    const prods = JSON.parse(fs.readFileSync(dbPath, 'utf-8')).products || {};
+    const seed = Object.entries(prods).map(([sku, p]) => {
+      const d = JSON.stringify(p).replace(/'/g, "''");
+      const t = String(p.name || '').replace(/'/g, "''");
+      const now = new Date().toISOString();
+      return `INSERT OR REPLACE INTO products (id, data, title, price, created_at) VALUES ('${sku}', '${d}', '${t}', ${p.price || 0}, '${now}');`;
+    }).join('\n');
+    const sqlPath = path.join(tmpDir, 'seed-latest.sql');
+    fs.writeFileSync(sqlPath, seed, 'utf-8');
+    return { count: Object.keys(prods).length, file: 'seed-latest.sql' };
+  });
+
+  step('清空 D1', () => ({
+    out: execSync(`"${WRRANGLER}" d1 execute lumiere-db --remote --command "DELETE FROM products;"`,
+      { cwd: ROOT, encoding: 'utf-8', timeout: 30000 }).trim().slice(-100)
+  }));
+
+  step('Seed D1', () => ({
+    out: execSync(`"${WRRANGLER}" d1 execute lumiere-db --remote --file "${path.join(tmpDir, 'seed-latest.sql')}"`,
+      { cwd: ROOT, encoding: 'utf-8', timeout: 60000 }).trim().slice(-100)
+  }));
+
+  step('同步前端', () => {
+    const wwwDir = path.join(ROOT, 'deploy', 'www');
+    for (const f of fs.readdirSync(ROOT)) {
+      if (f.endsWith('.html')) fs.copyFileSync(path.join(ROOT, f), path.join(wwwDir, f));
+    }
+    const assetsSrc = path.join(ROOT, 'assets');
+    const assetsDst = path.join(wwwDir, 'assets');
+    const cpDir = (s, d) => {
+      if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
+      for (const e of fs.readdirSync(s)) {
+        const sp = path.join(s, e), dp = path.join(d, e);
+        fs.statSync(sp).isDirectory()
+          ? (fs.existsSync(dp) ? fs.rmSync(dp, { recursive: true }) : null, cpDir(sp, dp))
+          : fs.copyFileSync(sp, dp);
+      }
+    };
+    for (const e of fs.readdirSync(assetsSrc)) {
+      const sp = path.join(assetsSrc, e), dp = path.join(assetsDst, e);
+      fs.statSync(sp).isDirectory() ? cpDir(sp, dp) : fs.copyFileSync(sp, dp);
+    }
+    const blogSrc = path.join(ROOT, 'blog');
+    if (fs.existsSync(blogSrc)) cpDir(blogSrc, path.join(wwwDir, 'blog'));
+    const cnt = fs.readdirSync(wwwDir, { recursive: true }).filter(f => !fs.statSync(path.join(wwwDir, f)).isDirectory()).length;
+    return { files: cnt };
+  });
+
+  step('部署 Worker', () => ({
+    out: execSync(`"${WRRANGLER}" deploy`,
+      { cwd: ROOT, encoding: 'utf-8', timeout: 180000 }).trim().slice(-200)
+  }));
+
+  step('Git commit', () => ({
+    out: execSync('git add -A && git diff --cached --quiet || git commit -m "auto-publish ' + new Date().toISOString().slice(0,19).replace(/[:T]/g,'-') + '"',
+      { cwd: ROOT, encoding: 'utf-8', timeout: 30000 }).trim().slice(-100)
+  }));
+
+  step('Git push', () => ({
+    out: execSync('git push origin main',
+      { cwd: ROOT, encoding: 'utf-8', timeout: 60000 }).trim().slice(-100)
+  }));
+
+  return { ok, steps };
+}
+
 server.listen(PORT, () => {
   console.log(`\n  LUMIÈRE 本地服务已启动`);
   console.log(`  网站:     http://localhost:${PORT}`);
   console.log(`  后端健康: http://localhost:${PORT}/api/health`);
   console.log(`  地理定位: http://localhost:${PORT}/api/geo`);
   console.log(`  订单列表: http://localhost:${PORT}/api/orders\n`);
+  setupAutoPublish();
   /* 先自愈巡检（文件丢了自动重建），再恢复未转完的白底队列 */
   setTimeout(() => { healImages().then(() => resumeWhiteQueue()); }, 800);
   /* 历史草稿里仍是外链的图集 / SKU 选项图，启动时排进本地缓存，
