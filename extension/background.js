@@ -625,7 +625,11 @@ async function runShopScan(cfg) {
       const rows = r.rows || [];
       rows.forEach(row => {
         if (row.offerId && !allOffers.has(row.offerId)) {
-          const url = row.url || ('https://detail.1688.com/offer/' + row.offerId + '.html');
+          /* ★ 强制转换成真实详情页 URL（ERP list() 返回的可能是 SPA 模板页链接）*/
+          let url = row.url || '';
+          if (!url.includes('detail.1688.com/offer/') || !/\/offer\/\d+\.html/i.test(url)) {
+            url = 'https://detail.1688.com/offer/' + row.offerId + '.html';
+          }
           allOffers.set(row.offerId, { offerId: row.offerId, url, title: row.title || '', image: row.image || '', price: row.price || '' });
         }
       });
