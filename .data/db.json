@@ -1023,6 +1023,52 @@
    "whiteStatus": "done",
    "whiteError": "Unable to allocate 1.86 GiB for an array with shape (250000000,) and data type int64",
    "updatedAt": "2026-11-25T08:21:00.111Z"
+  },
+  "DRAFT-MWVX2RH6Q12F": {
+   "id": "DRAFT-MWVX2RH6Q12F",
+   "status": "pending",
+   "sku": "",
+   "site": "",
+   "createdAt": "2026-11-25T09:24:12.570Z",
+   "name": "私语 · 甄选好物",
+   "nameEn": "Whisper · Intimate Essential",
+   "category": "women",
+   "desc": "这款单品选用亲肤材质。为私密时刻而设计，细节都藏在手感里。细节：阿里巴巴 1688.com 是全球企业间 B2B 电子商务的著名品牌，汇集海量供求信息，是全球领先的网上交易市场和商人社区。首家拥有超过1400万网商的电子商务网站，遍布220个国家地区，成为全球商人销售产品、拓展市场及网络推广的首选网站。私密包装，中性面单发货。",
+   "descEn": "A intimate essential with a skin-safe finish. Discreet packaging, neutral billing.",
+   "price": 10,
+   "priceMissing": false,
+   "priceMissingAt": "",
+   "stock": 0,
+   "image": "/assets/img/collected/CQ-98652730.webp",
+   "mainSource": "https://cbu01.alicdn.com/img/ibank/O1CN01zSHyMg1l4skmEEMG7_!!2218200974766-0-cib.jpg",
+   "gallerySources": [
+    "https://cbu01.alicdn.com/img/ibank/O1CN011ViTbd9yIYH1chua_!!1805416467-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01X1kpuZFm3kE21stE_!!2536413621-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01RbHIcfk2uVB1CtuN_!!2222708774880-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01ehNM3Q1t5oHgUpnCM_!!2207946075851-0-cib.jpg"
+   ],
+   "gallery": [
+    "/assets/img/collected/src-74dcdfafba109b69.jpg",
+    "/assets/img/collected/src-895d9fb6b7d25829.jpg",
+    "/assets/img/collected/src-0a5e712ac052e5ce.jpg",
+    "/assets/img/collected/src-ed37caf1d6dd4a5a.jpg"
+   ],
+   "specs": [],
+   "skuImages": {},
+   "skus": [],
+   "features": [],
+   "badge": "",
+   "material": "—",
+   "size": "—",
+   "noise": "",
+   "waterproof": "",
+   "battery": "",
+   "originalName": "跨境爆品 Funny Shart Survival Kit有趣的便便礼品套装亚马逊热",
+   "originalDesc": "阿里巴巴（1688.com）是全球企业间（B2B）电子商务的著名品牌，汇集海量供求信息，是全球领先的网上交易市场和商人社区。首家拥有超过1400万网商的电子商务网站，遍布220个国家地区，成为全球商人销售产品、拓展市场及网络推广的首选网站",
+   "sourceUrl": "https://purchase.1688.com/favorites/favorite_offer.htm",
+   "collectedAt": "2026-11-25T09:24:12.570Z",
+   "whiteStatus": "done",
+   "whiteAt": "2026-11-25T09:24:13.306Z"
   }
  },
  "orders": {
