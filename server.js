@@ -283,17 +283,10 @@ let wbRunning = false;
 /* done/failed 是本进程生命周期内的累计数，pending 是当前队列剩余 */
 const wbState = { done: 0, failed: 0, current: '' };
 
-function wbEnqueue(draftId, imageUrl) {
-  wbQueue.push({ id: draftId, url: imageUrl });
-}
+function wbEnqueue(draftId, imageUrl) { /* ★ 全局禁用白底抠图 */ }
 
-/* 批量入队：一次性塞进队列，只启动一次泵。
-   逐个 wbEnqueue 会每条都调一次 wbPump（虽然被 wbRunning 挡住，
-   但仍有额外开销），批量入队更干净。 */
-function wbEnqueueBatch(jobs) {
-  for (const j of jobs) wbQueue.push(j);
-  setImmediate(wbPump);
-}
+/* 批量入队：★ 全局禁用 */
+function wbEnqueueBatch(jobs) { /* no-op */ }
 
 /* 一次处理一批任务：
    ① 下载并行（慢的是网络等待，并行最划算）
@@ -302,7 +295,8 @@ function wbEnqueueBatch(jobs) {
    60 张图最坏要串行等 60×15 秒，整个队列被拖死。 */
 const WB_BATCH = 6;
 
-async function wbPump() {
+/* ★ 全局禁用：整个白底 pump 循环不跑 */
+async function wbPump() { return; }
   if (wbRunning) return;
   const batch = wbQueue.splice(0, WB_BATCH);
   if (!batch.length) return;
