@@ -766,7 +766,8 @@ async function runShopScan(cfg) {
    ============================================================ */
 async function runShopCollect(cfg) {
   const urls = state.shopUrls || [];
-  const concurrency = Math.max(1, Math.min(10, cfg.concurrency || 4));
+  /* ★ 默认并发 1（串行，一条一条采），避免 1688 反爬 */
+  const concurrency = 1;
 
   state.running = true;
   state.phase = 'shop-collect';
@@ -789,11 +790,11 @@ async function runShopCollect(cfg) {
       const url = typeof urlEntry === 'string' ? urlEntry : (urlEntry.url || '');
       let tab = null;
       try {
-        /* 开新标签页在后台加載（active: false） */
-        tab = await chrome.tabs.create({ url, active: false });
+        /* ★ active:true 前台打开，避免 1688 后台标签页被反爬拦截 */
+        tab = await chrome.tabs.create({ url, active: true });
         const tabId = tab.id;
 
-        /* 等页面加載 */
+        /* 等页面加載（加长到 20 秒） */
         await new Promise(res => {
           chrome.tabs.onUpdated.addListener(function listener(id, info) {
             if (id === tabId && info.status === 'complete') {
@@ -801,8 +802,9 @@ async function runShopCollect(cfg) {
               res();
             }
           });
-          setTimeout(res, 15000);
+          setTimeout(res, 20000);
         });
+        await new Promise(r => setTimeout(r, 1500));  /* 多等一会儿让 SPA 渲染 */
 
         /* 等 ERP 引擎就绪 */
         let ready = false;
@@ -823,21 +825,27 @@ async function runShopCollect(cfg) {
           target: { tabId }, world: 'MAIN',
           func: async () => {
             try {
-              /* 滚动一下让懒加载资源都出来 */
-              if (typeof window.scrollTo === 'function') window.scrollTo(0, Math.max(200, document.body.scrollHeight * 0.3));
-              await new Promise(r => setTimeout(r, 800));
+              window.scrollTo(0, Math.max(300, document.body.scrollHeight * 0.4));
+              await new Promise(r => setTimeout(r, 1200));
               const d = window.__c1688.detail();
               return { ok: true, data: d };
             } catch (e) {
               return { ok: false, error: e.message };
             }
           }
-        }), 20000, 'ERP 详情解析');
+        }), 30000, 'ERP 详情解析');
 
         const r = res && res[0] ? res[0].result : { ok: false, error: '无返回' };
 
-        if (!r || !r.ok || !r.data || !r.data.title) {
+        if (!r || !r.ok || !r.data) {
           failCount++; state.failed = failCount;
+          state.lastError = '解析失败: ' + ((r && r.error) || 'detail 无返回');
+        } else if (!r.data.title) {
+          failCount++; state.failed = failCount;
+          state.lastError = '商品标题为空，可能被反爬拦截';
+        } else if (!r.data.images || !r.data.images.length) {
+          failCount++; state.failed = failCount;
+          state.lastError = '图片为空，页面没渲染完';
         } else {
           const d = r.data;
           const draft = {
