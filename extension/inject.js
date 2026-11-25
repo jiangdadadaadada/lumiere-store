@@ -1321,7 +1321,94 @@
       const m = /offer\/(\d{6,})\.html/i.exec(location.href);
       if (m) out.offerId = m[1];
     }
+
+    /* ★ SKU 诊断：如果 skus 和 skuOptions 都是空的，把 1688 详情页上 SKU 区的真实 DOM 带回
+       这样下次采集完就能看到 "页面上到底有没有 SKU 容器"，精准补选择器 */
+    if (!out.skus.length && !out.skuOptions.length) {
+      out.skuDiag = collectSkuDiag();
+    }
     return out;
+  }
+
+  function collectSkuDiag() {
+    try {
+      const r = {};
+      /* 1. 内嵌 JSON 里有没有 skuProps / skuBase / skuModel */
+      try {
+        const emb = readEmbedded();
+        if (emb) {
+          let found = [];
+          (function walk(obj, path) {
+            if (!obj || typeof obj !== 'object') return;
+            for (const k of Object.keys(obj)) {
+              const np = path ? path + '.' + k : k;
+              if (/^sku|sale|variant|prop/i.test(k)) found.push(np);
+              if (found.length >= 20) return;
+              const v = obj[k];
+              if (v && typeof v === 'object' && (Array.isArray(v) || typeof v === 'object') && path.split('.').length < 6) walk(v, np);
+            }
+          })(emb, 'root');
+          r.embeddedSkuPaths = found.slice(0, 20);
+          /* 试着找几个已知 SKU 字段名 */
+          const allText = JSON.stringify(emb).substring(0, 80000);
+          r.hasSkuProps = /"skuProps"/.test(allText);
+          r.hasSkuBase = /"skuBase"/.test(allText);
+          r.hasSkuModel = /"skuModel"/.test(allText);
+          r.hasSaleProps = /"saleProps"/.test(allText);
+          r.hasSaleProperty = /"saleProperty"/.test(allText);
+          r.hasSkuPrice = /"skuPrice"/.test(allText);
+          r.hasPriceInfo = /"priceInfo"/.test(allText);
+          /* 抓几个 SKU 结构的样例 */
+          const m1 = /"skuProps"\s*:\s*(\[[\s\S]{0,500}?\])/.exec(allText);
+          if (m1) r.sampleSkuProps = m1[1].substring(0, 300);
+          const m2 = /"skuBase"\s*:\s*(\{[\s\S]{0,500}?\})/.exec(allText);
+          if (m2) r.sampleSkuBase = m2[1].substring(0, 300);
+        }
+      } catch (e) { r.embeddedErr = String(e); }
+
+      /* 2. DOM 里有没有 SKU 容器 class 名 */
+      const skuContainerClasses = document.querySelectorAll(
+        '[class*="sku-selection"],[class*="skuSelection"],[class*="sku-selector"],' +
+        '[class*="skuSelector"],[class*="module-od-sku"],[class*="sku-item"],[class*="skuItem"],' +
+        '[class*="sku-attr"],[class*="skuAttr"],[class*="sale-prop"],[class*="saleProp"],' +
+        '[class*="sku-card"],[class*="skuCard"],[class*="sku-list"],[class*="skuList"],' +
+        '[class*="prop-sku"],[class*="propSku"],[class*="sale-sku"],[class*="saleSku"]'
+      );
+      r.skuContainerCount = skuContainerClasses.length;
+      const containerSnippets = [];
+      for (const el of skuContainerClasses) {
+        const box = (el.innerText || '').replace(/\s+/g, ' ').trim();
+        if (box && containerSnippets.length < 5) containerSnippets.push({
+          cls: (el.className + '').substring(0, 80),
+          text: box.substring(0, 200)
+        });
+      }
+      r.skuContainerSamples = containerSnippets;
+
+      /* 3. 全页扫：含「规格」「颜色」「款式」关键词的 class 名和文本块 */
+      const skuLikeTexts = [];
+      const allEls = document.querySelectorAll('div,span,li,p');
+      for (const el of allEls) {
+        const t = (el.innerText || '').replace(/\s+/g, ' ').trim();
+        if (!t || t.length < 4 || t.length > 120) continue;
+        if (!/规格|颜色|款式|选择|尺码/i.test(t)) continue;
+        if (!/[¥￥]|库存|起批/.test(t)) continue;
+        if (skuLikeTexts.length < 8) skuLikeTexts.push({
+          cls: (el.className + '').substring(0, 60),
+          text: t
+        });
+      }
+      r.skuLikeTextBlocks = skuLikeTexts;
+
+      /* 4. body 后半部分的 SKU 区域关键词密度 */
+      const bodyText = ((document.body && document.body.innerText) || '').slice(-3000).replace(/\s+/g, ' ').trim();
+      r.bodyTailSnippet = bodyText.substring(0, 500);
+      r.hasPriceInTail = /[¥￥]/.test(bodyText);
+      r.hasStockInTail = /库存|起批/.test(bodyText);
+      r.hasSpecInTail = /规格|颜色|款式/.test(bodyText);
+
+      return r;
+    } catch (e) { return { error: String(e) }; }
   }
 
   /* 采集现场快照：价格/属性抓不到时，把页面里到底有什么带回去，

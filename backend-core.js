@@ -324,6 +324,10 @@ export async function handleApi({ method, path, body, request, env, mem, site, a
       skuImages: normalizeSkuImages(body.skuImages),
       /* SKU 组合矩阵（可售单元）：组合名 + 价格 + 库存 + 图 */
       skus: normalizeSkus(body.skus),
+      /* SKU 销售属性选项组：颜色分类/尺码等，每个组里多个选项 */
+      skuOptions: Array.isArray(body.skuOptions) ? body.skuOptions : [],
+      /* 采集诊断：SKU 没采到时的页面结构快照 */
+      skuDiag: body.skuDiag || null,
       site: body.site || SITE,
       category: body.category, badge: body.badge || '',
       price: Number(body.price) || 0,
@@ -353,7 +357,7 @@ export async function handleApi({ method, path, body, request, env, mem, site, a
     const p = await dbGetProduct(env, mem, id);
     if (!p || !inSite(p, SITE)) return { status:404, data:{ error:'not found' } };
     body = body || {};
-    const fields = ['name','nameEn','descEn','detail','detailEn','gallery','specs','category','badge','price','theme','fg','accent','variant','image','material','size','noise','waterproof','battery','features','desc','i18n','pack','weight','origin','packaging','packEn','weightEn','originEn','packagingEn','sourceUrl','collectedAt','active'];
+    const fields = ['name','nameEn','descEn','detail','detailEn','gallery','specs','category','badge','price','theme','fg','accent','variant','image','material','size','noise','waterproof','battery','features','desc','i18n','pack','weight','origin','packaging','packEn','weightEn','originEn','packagingEn','sourceUrl','collectedAt','active','skuOptions','skuDiag'];
     fields.forEach(f => { if (body[f] !== undefined) p[f] = body[f]; });
     if (body.specs !== undefined) p.specs = normalizeSpecs(body.specs);
     if (body.skuImages !== undefined) p.skuImages = normalizeSkuImages(body.skuImages);

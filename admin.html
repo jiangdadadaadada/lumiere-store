@@ -629,6 +629,7 @@ tr.row-sel td{background:#f6f4ff}
       <button type="button" class="pf-tab" data-tone="3" onclick="switchPfTab('3')"><span class="pf-tab-n">3</span>商品描述</button>
       <button type="button" class="pf-tab" data-tone="4" onclick="switchPfTab('4')"><span class="pf-tab-n">4</span>规格参数</button>
       <button type="button" class="pf-tab" data-tone="5" onclick="switchPfTab('5')"><span class="pf-tab-n">5</span>图片配色</button>
+      <button type="button" class="pf-tab" data-tone="6" onclick="switchPfTab('6')"><span class="pf-tab-n">6</span>SKU规格</button>
     </div>
     <div class="modal-b">
       <input type="hidden" id="pf-id">
@@ -703,6 +704,33 @@ tr.row-sel td{background:#f6f4ff}
         <div class="grid-2" style="gap:14px;align-items:end">
           <div class="field"><label>主题配色</label><input type="color" id="pf-fg" value="#7F77DD" style="width:100%;height:40px;padding:3px"></div>
           <div class="field"><label>&nbsp;</label><button type="button" class="btn btn-ghost" style="width:100%;height:40px" onclick="document.getElementById('pf-fg').value='#7F77DD';document.getElementById('pf-image').value='';document.getElementById('pf-preview').style.display='none';document.getElementById('pf-preview-ph').style.display=''">↺ 重置为默认图</button></div>
+        </div>
+      </div>
+
+      <!-- 6 SKU规格 -->
+      <div class="pf-sec" data-tone="6">
+        <div class="pf-sec-h"><span class="pf-sec-n">6</span><span class="pf-sec-t">SKU规格</span><span class="pf-sec-d">颜色款式 + SKU组合矩阵</span></div>
+
+        <!-- SKU 组合矩阵（每个可售单元的名称/价格/库存/图） -->
+        <div class="field"><label>SKU组合矩阵<span class="lbl-note">每行一个可售单元：名称 + 价格 + 库存（可选图）</span></label>
+          <div id="pf-skus-box" style="border:1px solid var(--ink-4);border-radius:8px;padding:10px;max-height:200px;overflow-y:auto;font-size:12px">
+            <div style="color:var(--ink-3);text-align:center;padding:20px">暂无 SKU 组合矩阵（1688采集应自动带入）</div>
+          </div>
+          <div style="margin-top:6px"><button type="button" class="btn btn-ghost" style="height:28px;font-size:12px" onclick="addSkuRow()">+ 添加SKU行</button></div>
+        </div>
+
+        <!-- 颜色/款式选项组 -->
+        <div class="field"><label>颜色/款式选项组<span class="lbl-note">每组 = 规格维度（颜色/尺码等），组内 = 具体选项</span></label>
+          <div id="pf-skuopts-box" style="border:1px solid var(--ink-4);border-radius:8px;padding:10px;min-height:80px;max-height:180px;overflow-y:auto;font-size:12px">
+            <div style="color:var(--ink-3);text-align:center;padding:20px">暂无选项组</div>
+          </div>
+          <div style="margin-top:6px"><button type="button" class="btn btn-ghost" style="height:28px;font-size:12px" onclick="addSkuOptGroup()">+ 添加选项组</button></div>
+        </div>
+
+        <!-- 采集诊断（SKU没采到时显示） -->
+        <div class="field" id="pf-skudiag-wrap" style="display:none">
+          <label>采集诊断<span class="lbl-note">SKU规格没采到时自动带出，帮助定位问题</span></label>
+          <div id="pf-skudiag" style="border:1px dashed var(--ink-4);border-radius:8px;padding:10px;font-size:11px;color:var(--ink-2);max-height:150px;overflow-y:auto;background:rgba(127,119,221,0.04)"></div>
         </div>
       </div>
     </div>
@@ -1408,6 +1436,15 @@ function openProductForm(id){
   set('fg',p&&p.fg?p.fg:'#7F77DD');
   setPreview(p&&p.image?p.image:'');
   document.getElementById('pf-file').value='';
+
+  /* ★ SKU 规格 tab：从商品数据带入 */
+  _skuDraft = {
+    skus: Array.isArray(p?.skus) ? p.skus : [],
+    skuOptions: Array.isArray(p?.skuOptions) ? p.skuOptions : [],
+    skuDiag: p?.skuDiag || null
+  };
+  renderSkuTab();
+
   document.getElementById('prodModal').classList.add('show');
 }
 /* 统一处理商品图预览：有图显示图片，无图显示占位文字 */
@@ -1447,13 +1484,19 @@ async function saveProduct(){
     const k=l.slice(0,i).trim(),v=l.slice(i+1).trim();
     return k&&v?{k,v}:null;
   }).filter(Boolean);
+
+  /* ★ 从 SKU tab 收集 skus 和 skuOptions */
+  const skuCollected = collectSkuTab();
+
   const payload={
     name,nameEn:g('nameEn'),descEn:g('descEn'),category,price:Math.round(usd2cny(Number(price))),stock:Number(g('stock'))||0,badge:g('badge'),
     material:g('material')||'—',size:g('size')||'—',noise:g('noise')||'—',
     waterproof:g('waterproof')||'—',battery:g('battery')||'—',
     specs,
     features:g('features')?g('features').split(/[,，]/).map(s=>s.trim()).filter(Boolean):[],
-    desc:g('desc'),image:g('image'),fg:g('fg')||'#7F77DD'
+    desc:g('desc'),image:g('image'),fg:g('fg')||'#7F77DD',
+    skus: skuCollected.skus.length ? skuCollected.skus : undefined,
+    skuOptions: skuCollected.skuOptions.length ? skuCollected.skuOptions : undefined
   };
   const id=g('id');
   const method=id?'PUT':'POST';
@@ -1698,6 +1741,90 @@ function askConfirm(msg, opt){
 }
 
 function closeModal(id){document.getElementById(id).classList.remove('show')}
+
+/* ===== SKU 规格 tab 辅助函数 ===== */
+let _skuDraft = { skus: [], skuOptions: [], skuDiag: null };
+
+function renderSkuTab() {
+  /* 1. SKU 组合矩阵 */
+  const box = document.getElementById('pf-skus-box');
+  if (_skuDraft.skus && _skuDraft.skus.length) {
+    box.innerHTML = _skuDraft.skus.map((s, i) =>
+      `<div style="display:grid;grid-template-columns:1fr 80px 80px 30px;gap:6px;margin-bottom:6px;align-items:center" data-i="${i}">
+        <input class="sku-name" value="${(s.name||'').replace(/"/g,'&quot;')}" placeholder="SKU名（如：樱花点潮笔 紫色 袋装）" style="padding:4px 6px;font-size:12px;border:1px solid var(--ink-4);border-radius:4px">
+        <input class="sku-price" value="${s.price||''}" placeholder="价格" type="number" step="0.01" style="padding:4px 6px;font-size:12px;border:1px solid var(--ink-4);border-radius:4px">
+        <input class="sku-stock" value="${s.stock||''}" placeholder="库存" type="number" style="padding:4px 6px;font-size:12px;border:1px solid var(--ink-4);border-radius:4px">
+        <button type="button" class="btn btn-ghost" style="padding:2px;font-size:14px" onclick="this.parentElement.remove()">×</button>
+      </div>`
+    ).join('');
+  } else {
+    box.innerHTML = '<div style="color:var(--ink-3);text-align:center;padding:20px">暂无 SKU 组合矩阵（1688采集应自动带入）</div>';
+  }
+  /* 2. 颜色/款式选项组 */
+  const obox = document.getElementById('pf-skuopts-box');
+  if (_skuDraft.skuOptions && _skuDraft.skuOptions.length) {
+    obox.innerHTML = _skuDraft.skuOptions.map((g, gi) => {
+      const itemsHtml = (g.items || []).map((it, ii) =>
+        `<span style="display:inline-flex;align-items:center;gap:3px;margin:2px;padding:2px 6px;border:1px solid var(--ink-4);border-radius:12px;font-size:11px" data-g="${gi}" data-i="${ii}">
+          ${it.name}${it.image ? ' <small style="color:var(--ink-3)">·带图</small>' : ''}
+          <button type="button" style="border:none;background:none;color:var(--ink-3);cursor:pointer;font-size:10px;padding:0" onclick="this.parentElement.remove()">×</button>
+        </span>`
+      ).join('');
+      return `<div style="margin-bottom:8px">
+        <div style="font-size:11px;color:var(--ink-2);margin-bottom:3px">
+          <input value="${(g.group||'').replace(/"/g,'&quot;')}" class="skuopt-group" placeholder="规格维度名（颜色/尺码等）" style="padding:2px 4px;font-size:11px;border:1px solid var(--ink-4);border-radius:3px;width:100px">
+          <span style="color:var(--ink-3)">选项（点击×删除）：</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap">${itemsHtml}</div>
+      </div>`;
+    }).join('');
+  } else {
+    obox.innerHTML = '<div style="color:var(--ink-3);text-align:center;padding:20px">暂无选项组</div>';
+  }
+  /* 3. 采集诊断 */
+  const diagWrap = document.getElementById('pf-skudiag-wrap');
+  const diagEl = document.getElementById('pf-skudiag');
+  if (_skuDraft.skuDiag) {
+    diagWrap.style.display = '';
+    diagEl.textContent = JSON.stringify(_skuDraft.skuDiag, null, 2).substring(0, 2000);
+  } else {
+    diagWrap.style.display = 'none';
+    diagEl.textContent = '';
+  }
+}
+
+function collectSkuTab() {
+  /* 从 DOM 收集 skus */
+  const skus = [];
+  document.querySelectorAll('#pf-skus-box [data-i]').forEach(row => {
+    const name = row.querySelector('.sku-name')?.value?.trim() || '';
+    const price = Number(row.querySelector('.sku-price')?.value) || 0;
+    const stock = Number(row.querySelector('.sku-stock')?.value) || 0;
+    if (name) skus.push({ name, price, stock });
+  });
+  /* 从 DOM 收集 skuOptions */
+  const optGroups = {};
+  document.querySelectorAll('#pf-skuopts-box [data-g]').forEach(el => {
+    const g = el.getAttribute('data-g');
+    if (!optGroups[g]) optGroups[g] = [];
+    const name = el.textContent.replace(/×$/, '').trim();
+    if (name) optGroups[g].push(name);
+  });
+  const skuOptions = Object.values(optGroups).map(names => {
+    const groupEl = document.querySelector(`#pf-skuopts-box [data-g="${Object.keys(optGroups)[Object.values(optGroups).indexOf(names)]}"]`)?.previousElementSibling?.querySelector('.skuopt-group');
+    return { group: groupEl?.value?.trim() || '规格', items: names.map(n => ({ name: n, image: '' })) };
+  });
+  return { skus, skuOptions };
+}
+
+function addSkuRow() {
+  _skuDraft.skus.push({ name: '', price: 0, stock: 0, image: '' });
+  renderSkuTab();
+}
+function addSkuOptGroup() {
+  _skuDraft.skuOptions.push({ group: '颜色分类', items: [{ name: '', image: '' }] });
+  renderSkuTab();
+}
 
 function renderSiteSettings(){
   const s = siteNow();
