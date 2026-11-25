@@ -84,13 +84,16 @@
       const h = (location.hostname || '').toLowerCase();
       const p = (location.pathname || '') + (location.search || '');
 
-      /* 1688 店铺页 */
-      if (h.endsWith('.1688.com') && !/(^|\.)(detail|offer|offers|upload|img|cbu\d+|.*\.alicdn)\./.test(h)) {
-        if (/offerlist|search/i.test(p)) return 'shop';
-        if (/\/page\/offerlist/i.test(p)) return 'shop';
-        /* 1688 商品详情页：offer/\d+ 或 goods/detail */
-        if (/\/offer\/\d+/i.test(p) || /goods\/detail/i.test(p) || /^\/offer\.htm/i.test(p)) return 'single';
+      /* 1688 店铺页（兜底优先：先排除详情页 hostname）*/
+      if (/\.1688\.com$/i.test(h) && !/(^|\.)(detail|offers?|goods?|upload|img|cbu\d+|.*\.alicdn|peixun|club|bbs)\.1688\.com$/.test(h)) {
+        /* 明确的详情页路径 → single */
+        if (/\/offer\/\d{5,}/i.test(location.pathname)) return 'single';
+        /* 所有其他 1688 店铺 hostname → shop（offerlist/search/首页/category 都是店铺上下文）*/
+        return 'shop';
       }
+
+      /* 1688 详情页 hostname */
+      if (/^detail\.1688\.com$/i.test(h)) return 'single';
 
       /* 通用：单商品页特征 */
       if (document.querySelector('meta[property="og:type"][content="product"]')) return 'single';
@@ -166,17 +169,20 @@
     };
 
     btn.addEventListener('click', () => {
+      /* ★ 实时检测页面类型，不用 mount() 缓存值 */
+      const nowType = detectPageType();
+      const nowIsShop = nowType === 'shop';
       btn.disabled = true;
       btn.textContent = '采集中…';
       info.classList.add('show');
-      setMsg(isShop ? '正在扫描店铺商品…' : '正在读取当前页面…');
+      setMsg(nowIsShop ? '正在扫描店铺商品…' : '正在读取当前页面…');
       setBar(0);
       /* ★ startAuto：SW 自己判断走单页还是全店，用户不用选 */
       chrome.runtime.sendMessage({
         type: 'startAuto',
         url: location.href,
         clickAt: Date.now(),
-        hint: isShop ? 'shop' : 'single'
+        hint: nowIsShop ? 'shop' : 'single'
       }, (r) => {
         if (chrome.runtime.lastError) {
           btn.disabled = false;
