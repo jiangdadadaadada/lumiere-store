@@ -828,7 +828,7 @@ async function runShopCollect(cfg) {
   let okCount = 0, failCount = 0;
   let idx = 0;
 
-  /* 並行 worker */
+  /* 並行 worker（ERP 插件风格：active:false 后台 tab + 强制渲染）*/
   async function worker() {
     while (idx < urls.length) {
       const myIdx = idx++;
@@ -836,32 +836,57 @@ async function runShopCollect(cfg) {
       const url = typeof urlEntry === 'string' ? urlEntry : (urlEntry.url || '');
       let tab = null;
       try {
-        /* ★ active:true 前台打开，避免 1688 后台标签页被反爬拦截 */
-        tab = await chrome.tabs.create({ url, active: true });
+        /* ★ active:false 后台打开，不抢焦点、不跳转 */
+        tab = await chrome.tabs.create({ url, active: false });
         const tabId = tab.id;
 
-        /* 等页面加載（加长到 20 秒） */
-        await new Promise(res => {
-          chrome.tabs.onUpdated.addListener(function listener(id, info) {
-            if (id === tabId && info.status === 'complete') {
-              chrome.tabs.onUpdated.removeListener(listener);
-              res();
-            }
-          });
-          setTimeout(res, 20000);
-        });
+        /* 等页面加载（最多 15 × 800ms = 12 秒）*/
+        let loaded = false;
+        for (let i = 0; i < 15 && !loaded; i++) {
+          await new Promise(r => setTimeout(r, 800));
+          try {
+            const st = await chrome.tabs.get(tabId);
+            if (st.status === 'complete') loaded = true;
+          } catch (e) { break; }
+        }
         await new Promise(r => setTimeout(r, 1500));
 
-        /* ★ 验证新标签页是否真的是详情页（防止 404 或 SPA 模板页）*/
+        /* ★ 强制渲染（后台 tab 的 IntersectionObserver 不触发懒加载，手动补）*/
+        try {
+          await withTimeout(chrome.scripting.executeScript({
+            target: { tabId }, world: 'MAIN',
+            func: () => {
+              try {
+                // ① 滚到底（触发基础懒加载）
+                window.scrollTo(0, document.documentElement.scrollHeight);
+                // ② 移除所有常见 lazy/fold/collapsed 属性
+                document.querySelectorAll('[data-lazy-load],[data-require],[data-lazy],[data-fold],[data-collapsed],[aria-expanded="false"]').forEach(el => {
+                  try { el.removeAttribute('data-lazy-load'); el.removeAttribute('data-require'); el.removeAttribute('data-lazy'); el.removeAttribute('data-fold'); el.removeAttribute('data-collapsed'); el.removeAttribute('aria-hidden'); el.removeAttribute('aria-expanded'); } catch(e){}
+                });
+                // ③ 强制展开所有 class 含 lazy/fold/collapse 的元素
+                document.querySelectorAll('[class*="lazy"],[class*="fold"],[class*="collapse"],[class*="hidden"]').forEach(el => {
+                  try { el.style.display = ''; el.style.visibility = 'visible'; el.style.opacity = '1'; } catch(e){}
+                });
+                // ④ 强制触发布局回流
+                void document.documentElement.getBoundingClientRect();
+                // ⑤ dispatch scroll 事件（让 IntersectionObserver 回调手动执行）
+                window.dispatchEvent(new Event('scroll', { bubbles: true }));
+              } catch (e) {}
+            }
+          }), 5000, '强制渲染');
+        } catch (e) {}
+        await new Promise(r => setTimeout(r, 1500));
+
+        /* 验证新标签页是否真的是详情页 */
         let tabUrl = url;
-        try { const tab = await chrome.tabs.get(tabId); tabUrl = tab.url || url; } catch(e) {}
+        try { const t = await chrome.tabs.get(tabId); tabUrl = t.url || url; } catch(e) {}
         const isRealDetail = /detail\.1688\.com\/offer\/\d+\.html/i.test(tabUrl);
         if (!isRealDetail) {
           failCount++; state.failed = failCount;
-          state.lastError = '被 404/反爬拦截（实际跳转到: ' + tabUrl.substring(0,60) + '）';
+          state.lastError = '被 404/反爬拦截（实际: ' + tabUrl.substring(0,60) + '）';
           try { if (tab && tab.id) await chrome.tabs.remove(tab.id); } catch(e) {}
           state.done = myIdx + 1;
-          state.message = '第 ' + (myIdx + 1) + ' 款跳过：404 反爬（采集中 ' + state.done + '/' + state.total + '）';
+          state.message = '第 ' + (myIdx + 1) + ' 款跳过：404 反爬';
           saveState(); broadcast({ type: 'progress', state: publicState() });
           continue;
         }
@@ -878,15 +903,13 @@ async function runShopCollect(cfg) {
           } catch (e) {}
           if (!ready) await new Promise(r => setTimeout(r, 300));
         }
-        if (!ready) { failCount++; state.failed = failCount; continue; }
+        if (!ready) { failCount++; state.failed = failCount; state.lastError = 'ERP 引擎未就绪'; continue; }
 
         /* ★ 核心：调 ERP 的 detail() 拿完整数据（含 SKU）*/
         const res = await withTimeout(chrome.scripting.executeScript({
           target: { tabId }, world: 'MAIN',
           func: async () => {
             try {
-              window.scrollTo(0, Math.max(300, document.body.scrollHeight * 0.4));
-              await new Promise(r => setTimeout(r, 1200));
               const d = window.__c1688.detail();
               return { ok: true, data: d };
             } catch (e) {
@@ -899,13 +922,13 @@ async function runShopCollect(cfg) {
 
         if (!r || !r.ok || !r.data) {
           failCount++; state.failed = failCount;
-          state.lastError = '解析失败: ' + ((r && r.error) || 'detail 无返回');
+          state.lastError = 'detail 无返回';
         } else if (!r.data.title) {
           failCount++; state.failed = failCount;
-          state.lastError = '商品标题为空，可能被反爬拦截';
+          state.lastError = '标题为空，可能被反爬';
         } else if (!r.data.images || !r.data.images.length) {
           failCount++; state.failed = failCount;
-          state.lastError = '图片为空，页面没渲染完';
+          state.lastError = '图片为空';
         } else {
           const d = r.data;
           const draft = {
