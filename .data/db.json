@@ -923,7 +923,7 @@
    "id": "DRAFT-MWW0XYW3B9V2",
    "status": "pending",
    "sku": "",
-   "site": "",
+   "site": "lumiere",
    "createdAt": "2026-11-25T11:12:27.363Z",
    "name": "私语 · 甄选好物",
    "nameEn": "Whisper · Intimate Essential",
@@ -1036,7 +1036,8 @@
    "sourceUrl": "https://detail.1688.com/offer/981584332995.html",
    "collectedAt": "2026-11-25T11:12:27.363Z",
    "whiteStatus": "done",
-   "whiteAt": "2026-11-25T11:12:30.300Z"
+   "whiteAt": "2026-11-25T11:12:30.300Z",
+   "updatedAt": "2026-11-25T11:27:03.452Z"
   }
  },
  "orders": {
