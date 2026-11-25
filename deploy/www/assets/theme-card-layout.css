@@ -1,0 +1,167 @@
+/* ============================================================
+   LUMIÈRE · 商品卡片排版（僅改結構/間距/比例，不改配色）
+   放在 style.css 之後，只覆蓋卡片相關樣式
+   ============================================================ */
+
+/* ---------- 网格：3 列更宽，间距更大 ---------- */
+.prod-grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 32px 28px !important;
+}
+
+/* ---------- 卡片整體 ---------- */
+.prod-card {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-direction: column !important;
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  padding: 0 !important;
+}
+.prod-card:hover {
+  transform: translateY(-6px);
+  box-shadow: none !important;
+}
+
+/* ---------- 圖片區：更高的 4:5 比例 ---------- */
+.prod-thumb {
+  position: relative !important;
+  aspect-ratio: 4 / 5 !important;
+  overflow: hidden !important;
+  background: var(--purple-50, #f5f5fb) !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--line, #e9e7f0) !important;
+  margin-bottom: 0 !important;
+}
+.prod-thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+.prod-card:hover .prod-thumb img {
+  transform: scale(1.06) !important;
+}
+
+/* ---------- Badge：右上角玻璃膠囊 ---------- */
+.prod-badge {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  left: auto !important;
+  background: var(--purple-700, #534AB7) !important;
+  color: #fff !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  padding: 5px 12px !important;
+  border-radius: 100px !important;
+  letter-spacing: 0.1em;
+}
+
+/* ---------- 多圖計數器 ---------- */
+.pc-count {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+
+/* ---------- 文字區 ---------- */
+.prod-body {
+  padding: 20px 4px 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+/* ---------- 商品名稱 ---------- */
+.prod-name {
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  color: var(--ink, #1d1b2e) !important;
+  margin-bottom: 6px !important;
+  line-height: 1.4 !important;
+}
+
+/* ---------- 分類 + 產地 ---------- */
+.prod-cat {
+  font-size: 11px !important;
+  color: var(--ink-3, #8a879c) !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 14px !important;
+}
+
+/* ---------- 規格膠囊：隱藏 ---------- */
+.pc-specs {
+  display: none !important;
+}
+
+/* ---------- 價格區 ---------- */
+.prod-foot {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+.prod-price-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.prod-price {
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  color: var(--purple-900, #26215C) !important;
+}
+.prod-price-orig {
+  font-size: 0.8rem;
+  color: var(--ink-3, #8a879c);
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+/* ---------- 加入按鈕：完整膠囊，不再是小圓加號 ---------- */
+.prod-add {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px;
+  border: 1px solid var(--purple-500, #7F77DD) !important;
+  background: transparent !important;
+  color: var(--purple-700, #534AB7) !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 7px 16px !important;
+  border-radius: 100px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+.prod-add:hover {
+  background: var(--purple-700, #534AB7) !important;
+  color: #fff !important;
+  border-color: var(--purple-700, #534AB7) !important;
+}
+.prod-add-icon { font-size: 14px; font-weight: 400; line-height: 1; }
+.prod-add-text { font-size: 11px; }
+
+/* ---------- 響應式 ---------- */
+@media (max-width: 1100px) {
+  .prod-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 640px) {
+  .prod-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
+  .prod-thumb { aspect-ratio: 4 / 3 !important; }
+}

@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUMIÈRE · Intimate Wellness — Retail &amp; Wholesale</title>
+  <link rel="canonical" href="https://lumiere-store.lumiere-store.workers.dev/">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LUMIÈRE">
+  <meta property="og:url" content="https://lumiere-store.lumiere-store.workers.dev/">
+<meta name="description" content="LUMIÈRE — premium intimate wellness for shoppers and trade buyers. Buy single units with discreet delivery, or wholesale from 10 pcs per SKU with OEM and private label.">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/theme-card-layout.css">
+  <link rel="stylesheet" href="assets/rtl.css">
+</head>
+<body>
+
+  <div class="agegate" id="agegate" hidden>
+    <div class="agegate-card">
+      <div class="agegate-mark">18+</div>
+      <h2 data-i18n="age_title">你已年满 18 周岁了吗？</h2>
+      <p data-i18n="age_body">本站商品仅供成年人购买与使用。</p>
+      <p class="fine" data-i18n="age_fine">点击进入即代表你确认已符合所在地区的法定购买年龄。</p>
+      <div class="agegate-actions">
+        <button class="btn btn-ghost" id="age-no" data-i18n="age_no">未满 18 岁</button>
+        <button class="btn btn-primary" id="age-yes" data-i18n="age_yes">我已满 18 岁，进入</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">LUMIÈRE<span class="brand-dot">.</span></a>
+      <nav class="nav">
+        <a href="index.html" data-i18n="nav_home">首页</a>
+        <a href="category.html?cat=women" data-i18n="nav_women">女性用品</a>
+        <a href="category.html?cat=men" data-i18n="nav_men">男性用品</a>
+        <a href="category.html?cat=couples" data-i18n="nav_couples">情侣共悦</a>
+        <a href="category.html?cat=health" data-i18n="nav_health">健康护理</a>
+        <a href="wholesale.html" class="nav-b2b">Wholesale</a>
+      </nav>
+      <div class="nav-tools">
+        <div class="pk" id="pk-lang">
+          <button type="button" class="pk-trigger" id="lang-trigger" aria-label="Language"></button>
+          <div class="pk-pop">
+            <div class="pk-search-wrap"><input id="pk-search" type="text" placeholder="搜索语言 / Search…"></div>
+            <div class="pk-menu" data-type="lang"></div>
+          </div>
+        </div>
+        <div class="pk" id="pk-cur">
+          <button type="button" class="pk-trigger" id="cur-trigger" aria-label="Currency"></button>
+          <div class="pk-pop">
+            <div class="pk-search-wrap"><input class="pk-search-cur" type="text" placeholder="搜索货币 / Search…"></div>
+            <div class="pk-menu" data-type="cur"></div>
+          </div>
+        </div>
+        <button class="cart-btn" onclick="location.href='cart.html'"><span data-i18n="nav_cart">购物袋</span> <span class="cart-count" id="cart-count">0</span></button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">INTIMATE WELLNESS</p>
+      <h1 class="hero-title" data-i18n="hero_title">取悦自己，是一件认真的事</h1>
+      <p class="hero-sub" data-i18n="hero_sub">精选全球设计 · 身体安全材质 · 全程隐私配送</p>
+      <div class="hero-cta">
+        <a href="category.html" class="btn btn-primary" data-i18n="hero_cta">探索精选</a>
+        <a href="#categories" class="btn btn-ghost" data-i18n="hero_cta2">浏览分类</a>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="section" id="categories">
+    <div class="container">
+      <div class="section-head">
+        <h2 data-i18n="cat_title">按你的心意挑选</h2>
+        <p data-i18n="cat_sub">为每一种亲密需求而设计</p>
+      </div>
+      <div class="cat-grid" id="cat-grid"></div>
+    </div>
+  </section>
+
+  <section class="section-sm">
+    <div class="container">
+      <div class="section-head">
+        <h2 data-i18n="feat_title">本周精选</h2>
+        <a href="category.html" data-i18n="feat_more">查看全部 →</a>
+      </div>
+      <div class="prod-grid" id="featured-grid"></div>
+    </div>
+  </section>
+
+
+  <section class="b2b-band">
+    <div class="container">
+      <div class="b2b-inner">
+        <div class="b2b-copy">
+          <p class="hero-eyebrow">FOR BUSINESS BUYERS</p>
+          <h2>Wholesale from 10 pieces. OEM when you are ready.</h2>
+          <p class="b2b-sub">We supply distributors, boutiques, marketplace sellers and private-label founders — with documents, neutral export packing and one consolidated shipment per order.</p>
+          <ul class="b2b-points">
+            <li><b>MOQ 10+</b> per SKU on stock items, 100–300 pcs for private label</li>
+            <li><b>Tiered pricing</b> quoted per order — goods, packing and freight split out</li>
+            <li><b>Offline settlement</b> by proforma invoice: deposit, then balance before dispatch</li>
+            <li><b>Document pack</b> per model: spec sheet, test reports on request, battery and export papers</li>
+          </ul>
+          <div class="path-actions">
+            <a href="wholesale.html" class="btn btn-primary">Wholesale overview</a>
+            <a href="quote.html" class="btn btn-ghost">Request a quote</a>
+          </div>
+        </div>
+        <div class="b2b-side">
+          <div class="b2b-stat"><b>10+</b><span>MOQ per SKU</span></div>
+          <div class="b2b-stat"><b>3–7</b><span>days to dispatch</span></div>
+          <div class="b2b-stat"><b>15–30</b><span>days private label</span></div>
+          <a class="b2b-guides" href="blog.html">Buying guides for trade buyers →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="trust-bar">
+    <div class="container trust-inner">
+      <div class="trust-item"><span class="dot"></span><span data-i18n="trust_1">不透明中性包装</span></div>
+      <div class="trust-item"><span class="dot"></span><span data-i18n="trust_2">账单显示中性名称</span></div>
+      <div class="trust-item"><span class="dot"></span><span data-i18n="trust_3">全球隐私直邮</span></div>
+      <div class="trust-item"><span class="dot"></span><span data-i18n="trust_4">7×24 客服</span></div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand">LUMIÈRE<span class="brand-dot">.</span></div>
+          <p data-i18n="footer_desc">高端私密健康生活方式品牌。我们相信，取悦自己是认真而美好的事。</p>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer_shop">选购</h4>
+          <a href="category.html?cat=women" data-i18n="nav_women">女性用品</a>
+          <a href="category.html?cat=men" data-i18n="nav_men">男性用品</a>
+          <a href="category.html?cat=couples" data-i18n="nav_couples">情侣共悦</a>
+          <a href="category.html?cat=health" data-i18n="nav_health">健康护理</a>
+        <a href="wholesale.html" class="nav-b2b">Wholesale</a>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer_service">服务</h4>
+          <a href="privacy.html" data-i18n="foot_privacy">隐私政策</a>
+          <a href="privacy.html" data-i18n="foot_return">退换货说明</a>
+          <a href="privacy.html" data-i18n="foot_discreet">隐私配送</a>
+          <a href="contact.html" data-i18n="foot_contact">联系我们</a>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer_legal">注意</h4>
+          <a href="privacy.html" data-i18n="foot_age">18+ 购买须知</a>
+          <a href="privacy.html" data-i18n="foot_compliance">合规声明</a>
+          <a href="privacy.html" data-i18n="foot_terms">使用条款</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 LUMIÈRE. <span data-i18n="footer_rights">保留所有权利。</span></span>
+        <span data-i18n="footer_adult">本站仅供成年人访问 · 请理性消费</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/i18n/zh.js"></script>
+  <script src="assets/i18n/en.js"></script>
+  <script src="assets/i18n/de.js"></script>
+  <script src="assets/i18n/fr.js"></script>
+  <script src="assets/i18n/es.js"></script>
+  <script src="assets/i18n/ja.js"></script>
+  <script src="assets/i18n/ko.js"></script>
+  <script src="assets/i18n/th.js"></script>
+  <script src="assets/i18n/vi.js"></script>
+  <script src="assets/i18n/ar.js"></script>
+  <script src="assets/i18n/pt.js"></script>
+  <script src="assets/i18n/ru.js"></script>
+  <script src="assets/i18n/id.js"></script>
+  <script src="assets/i18n/it.js"></script>
+  <script src="assets/i18n/nl.js"></script>
+  <script src="assets/i18n/pl.js"></script>
+  <script src="assets/i18n/sv.js"></script>
+  <script src="assets/i18n/da.js"></script>
+  <script src="assets/i18n/no.js"></script>
+  <script src="assets/i18n/fi.js"></script>
+  <script src="assets/i18n/cs.js"></script>
+  <script src="assets/i18n/el.js"></script>
+  <script src="assets/i18n/hu.js"></script>
+  <script src="assets/i18n/ro.js"></script>
+  <script src="assets/i18n/uk.js"></script>
+  <script src="assets/i18n/he.js"></script>
+  <script src="assets/i18n/fa.js"></script>
+  <script src="assets/i18n/ur.js"></script>
+  <script src="assets/i18n/tr.js"></script>
+  <script src="assets/i18n/hi.js"></script>
+  <script src="assets/i18n/bn.js"></script>
+  <script src="assets/i18n/mr.js"></script>
+  <script src="assets/i18n/ta.js"></script>
+  <script src="assets/i18n/ms.js"></script>
+  <script src="assets/i18n/tl.js"></script>
+  <script src="assets/i18n/km.js"></script>
+  <script src="assets/i18n/my.js"></script>
+  <script src="assets/i18n/sr.js"></script>
+  <script src="assets/i18n/sw.js"></script>
+  <script src="assets/i18n/af.js"></script>
+  <script src="assets/i18n/kk.js"></script>
+  <script src="assets/i18n-shell.js"></script>
+  <script src="assets/i18n-order.js"></script>
+  <script src="assets/i18n-extra.js"></script>
+  <script src="assets/geo.js"></script>
+  <script src="assets/products.js"></script>
+  <script src="assets/zh-hant.js"></script>
+  <script src="assets/lo.js"></script>
+  <script src="assets/i18n-eu.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/chat.js"></script>
+</body>
+</html>

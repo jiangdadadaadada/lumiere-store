@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>LUMIÈRE 采集器</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hd">
+    <div class="logo">L</div>
+    <div class="hd-txt">
+      <div class="t1">LUMIÈRE 采集器</div>
+      <div class="t2" id="srv">检查本地服务…</div>
+    </div>
+  </div>
+
+  <div class="verbar" id="verbar">
+    <span id="verTxt">版本检查中…</span>
+    <button id="btnReload" class="mini hidden">立即更新</button>
+  </div>
+
+  <div class="sec">
+    <button id="btnStart" class="primary big">采集当前页并入库</button>
+    <div class="hint">自动抓商品 → 逐个补全图集 → 转白底 → 存进 LUMIÈRE</div>
+    <div class="row2 line">
+      <span class="lb2">最多抓</span>
+      <input id="limit" type="number" value="60" min="1" max="200">
+      <span class="lb2">款</span>
+    </div>
+    <div id="prog" class="prog hidden">
+      <div class="bar"><i id="bar"></i></div>
+      <div class="ptext"><span id="pmsg">…</span><span id="pnum"></span></div>
+    </div>
+  </div>
+
+  <div class="sec hidden" id="resSec">
+    <div class="lhead">
+      <div class="lt">已入库 <b id="cnt">0</b> 款</div>
+      <button id="btnAdmin" class="mini">打开后台</button>
+    </div>
+    <div id="impMsg" class="note"></div>
+  </div>
+
+</div>
+<script src="popup.js"></script>
+</body>
+</html>

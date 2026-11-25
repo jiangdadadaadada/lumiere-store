@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Admin and API endpoints
+Disallow: /admin.html
+Disallow: /admin-shop.html
+Disallow: /admin-cloud.html
+Disallow: /api/
+
+Sitemap: https://lumiere-store.lumiere-store.workers.dev/sitemap.xml

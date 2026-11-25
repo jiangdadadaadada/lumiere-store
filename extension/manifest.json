@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "LUMIÈRE 商品采集器",
+  "version": "1.0.1",
+  "description": "在 1688 / 淘宝天猫 / 拼多多 / 京东 / AliExpress / Amazon / Temu / 独立站等货源与电商页自动出现「一键采集」，自动转白底图并入库 LUMIÈRE；其他页面不显示。",
+  "permissions": [
+    "tabs",
+    "scripting",
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1/*",
+    "http://localhost/*",
+    "*://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle",
+      "exclude_matches": [
+        "*://127.0.0.1/*",
+        "*://localhost/*"
+      ]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "LUMIÈRE 采集器",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

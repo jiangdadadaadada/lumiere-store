@@ -1,0 +1,1384 @@
+{
+ "products": {
+  "LUM-W07": {
+   "id": "LUM-W07",
+   "name": "云弧 · G点静音震动按摩棒",
+   "nameEn": "Arc · Quiet G-Spot Vibrator",
+   "descEn": "The head is angled upward, so you stop hunting for the spot. At 40 dB it stays on your side of the wall. The soft-touch body warms in the hand quickly — fifteen quiet minutes, nothing but breathing.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [
+    "/assets/img/w07-3.webp",
+    "/assets/img/w07-4.webp",
+    "/assets/img/w07-5.webp",
+    "/assets/img/w07-6.webp"
+   ],
+   "specs": [
+    {
+     "k": "spec_length",
+     "v": "全长 19.1 cm",
+     "vEn": "Length 19.1 cm"
+    },
+    {
+     "k": "spec_maxdiameter",
+     "v": "最粗 3.3 cm",
+     "vEn": "Max Ø 3.3 cm"
+    },
+    {
+     "k": "spec_netweight",
+     "v": "净重 96 g",
+     "vEn": "Net weight 96 g"
+    },
+    {
+     "k": "spec_packsize",
+     "v": "礼盒 23 × 8 × 4 cm",
+     "vEn": "Gift box 23 × 8 × 4 cm"
+    },
+    {
+     "k": "spec_material",
+     "v": "TPE 软胶 + ABS 机身",
+     "vEn": "TPE soft-touch + ABS body"
+    },
+    {
+     "k": "spec_color",
+     "v": "雾粉 / 象牙白",
+     "vEn": "Misty pink / Ivory"
+    }
+   ],
+   "skuImages": {},
+   "skus": [],
+   "site": "lumiere",
+   "category": "women",
+   "badge": "主推",
+   "price": 279,
+   "theme": "#FDEBF1",
+   "fg": "#C2557E",
+   "accent": "#F6CBDC",
+   "variant": 0,
+   "image": "/assets/img/w07-3.webp",
+   "material": "TPE 软胶 + ABS 机身",
+   "size": "全长 19.1 cm · 最粗 3.3 cm（包装 23 × 8 × 4 cm）",
+   "noise": "≤ 40 分贝",
+   "waterproof": "不可整机浸泡，湿布擦拭",
+   "battery": "电池款 · 2 节 AAA",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "头部 15° 上翘贴合G点",
+    "40 分贝静音",
+    "多档变频",
+    "TPE 软胶包覆"
+   ],
+   "desc": "头部做了上翘角度，进去之后不用再反复找位置。40 分贝，隔着一道墙就听不见了。软胶包覆的机身握起来不冰手，睡前那十几分钟，安静得只剩呼吸。",
+   "i18n": {
+    "en": {
+     "material": "TPE soft-touch + ABS body",
+     "size": "19.1 cm length · 3.3 cm max Ø (pack 23 × 8 × 4 cm)",
+     "noise": "≤ 40 dB",
+     "waterproof": "Not submersible — wipe clean",
+     "battery": "Battery powered · 2 × AAA",
+     "features": [
+      "Angled head for G-spot reach",
+      "40 dB quiet",
+      "Multi-speed vibration",
+      "TPE soft-touch body"
+     ]
+    }
+   },
+   "sourceUrl": "",
+   "collectedAt": "",
+   "createdAt": "2026-11-24T12:58:58.574Z"
+  },
+  "LUM-W08": {
+   "id": "LUM-W08",
+   "name": "迷情兔 · 双头兔子震动棒",
+   "nameEn": "Duo Rabbit · Dual-Head Vibrator",
+   "descEn": "Two heads, one rhythm — the inner shaft presses while the outer ear keeps pace, and the tempo is yours to set. The rechargeable version lasts the night and is still going the next day.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [
+    "/assets/img/w08-2.webp",
+    "/assets/img/w08-3.webp",
+    "/assets/img/w08-4.webp"
+   ],
+   "specs": [
+    {
+     "k": "spec_length",
+     "v": "全长 17 cm",
+     "vEn": "Length 17 cm"
+    },
+    {
+     "k": "spec_diameter",
+     "v": "直径 3 cm",
+     "vEn": "Ø 3 cm"
+    },
+    {
+     "k": "spec_netweight",
+     "v": "净重 120 g",
+     "vEn": "Net weight 120 g"
+    },
+    {
+     "k": "spec_packsize",
+     "v": "礼盒 23.5 × 7 × 4 cm",
+     "vEn": "Gift box 23.5 × 7 × 4 cm"
+    },
+    {
+     "k": "spec_material",
+     "v": "TPE 软胶",
+     "vEn": "TPE soft-touch"
+    },
+    {
+     "k": "spec_version",
+     "v": "电池款 / 充电款",
+     "vEn": "Battery / Rechargeable"
+    },
+    {
+     "k": "spec_color",
+     "v": "浅紫 / 白",
+     "vEn": "Lilac / White"
+    }
+   ],
+   "skuImages": {},
+   "skus": [],
+   "site": "lumiere",
+   "category": "women",
+   "badge": "热卖",
+   "price": 259,
+   "theme": "#F3E9FD",
+   "fg": "#7A54B8",
+   "accent": "#E2D2F8",
+   "variant": 1,
+   "image": "/assets/img/w08-2.webp",
+   "material": "TPE",
+   "size": "全长 17 cm · 直径 3 cm（包装 23.5 × 7 × 4 cm · 120 g）",
+   "noise": "厂商标称低噪（见包装）",
+   "waterproof": "不可整机浸泡，湿布擦拭",
+   "battery": "USB 充电 · 充电款",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "内外双头同步",
+    "兔耳外部刺激",
+    "USB 充电",
+    "电池款 / 充电款可选"
+   ],
+   "desc": "两个头，一个节奏。里面的头顶着，外面的兔耳跟着走，快慢是你自己调的。充电款充满能撑一整晚，用完拔掉，第二天还在。",
+   "i18n": {
+    "en": {
+     "material": "TPE",
+     "size": "17 cm length · 3 cm Ø (pack 23.5 × 7 × 4 cm · 120 g)",
+     "noise": "Low-noise per manufacturer (see packaging)",
+     "waterproof": "Not submersible — wipe clean",
+     "battery": "USB rechargeable",
+     "features": [
+      "Inner + outer heads in sync",
+      "Rabbit-ear external stimulation",
+      "USB charging",
+      "Battery or rechargeable version"
+     ]
+    }
+   },
+   "sourceUrl": "",
+   "collectedAt": "",
+   "createdAt": "2026-11-24T12:58:58.584Z"
+  },
+  "LUM-W09": {
+   "id": "LUM-W09",
+   "name": "角斗士 · 无线遥控跳蛋",
+   "nameEn": "Gladiator · Remote-Control Egg",
+   "descEn": "Hand him the remote and the tempo stops being yours. At 80 g you forget it is there — for the nights when you would rather be led than talk.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [
+    "/assets/img/w09-2.webp",
+    "/assets/img/w09-3.webp"
+   ],
+   "specs": [
+    {
+     "k": "spec_length",
+     "v": "长 9.2 cm",
+     "vEn": "Length 9.2 cm"
+    },
+    {
+     "k": "spec_diameter",
+     "v": "直径 3.5 cm",
+     "vEn": "Ø 3.5 cm"
+    },
+    {
+     "k": "spec_netweight",
+     "v": "净重 80 g",
+     "vEn": "Net weight 80 g"
+    },
+    {
+     "k": "spec_packsize",
+     "v": "礼盒 13.2 × 8.5 × 3.8 cm",
+     "vEn": "Gift box 13.2 × 8.5 × 3.8 cm"
+    },
+    {
+     "k": "spec_material",
+     "v": "硅胶",
+     "vEn": "Silicone"
+    },
+    {
+     "k": "spec_color",
+     "v": "粉色 / 薄荷绿",
+     "vEn": "Pink / Mint green"
+    },
+    {
+     "k": "spec_cablelength",
+     "v": "遥控无线连接",
+     "vEn": "Wireless remote link"
+    }
+   ],
+   "skuImages": {},
+   "skus": [],
+   "site": "lumiere",
+   "category": "women",
+   "badge": "",
+   "price": 249,
+   "theme": "#E8F3F5",
+   "fg": "#3F7B85",
+   "accent": "#C9E4E8",
+   "variant": 2,
+   "image": "/assets/img/w09-2.webp",
+   "material": "硅胶",
+   "size": "3.5 × 9.2 cm（包装 13.2 × 8.5 × 3.8 cm · 80 g）",
+   "noise": "低噪（厂商标称见包装）",
+   "waterproof": "不可整机浸泡，湿布擦拭",
+   "battery": "电池款 · 机身按键 + 无线遥控",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "无线遥控",
+    "机身按键双控",
+    "硅胶亲肤表面",
+    "粉色 / 薄荷绿双色"
+   ],
+   "desc": "遥控器交到他手里，节奏就不再由你决定。80 克，轻到忘了它在。适合那些不想说话、只想被带着走的晚上。",
+   "i18n": {
+    "en": {
+     "material": "Silicone",
+     "size": "3.5 × 9.2 cm (pack 13.2 × 8.5 × 3.8 cm · 80 g)",
+     "noise": "Low-noise per manufacturer (see packaging)",
+     "waterproof": "Not submersible — wipe clean",
+     "battery": "Battery powered · body button + wireless remote",
+     "features": [
+      "Wireless remote",
+      "Dual control: body button + remote",
+      "Silicone surface",
+      "Pink / mint green"
+     ]
+    }
+   },
+   "sourceUrl": "",
+   "collectedAt": "",
+   "createdAt": "2026-11-24T12:58:58.598Z"
+  },
+  "LUM-M07": {
+   "id": "LUM-M07",
+   "name": "形 · 阴臀倒模名器",
+   "nameEn": "Form · Hip Mold Stroker",
+   "descEn": "One piece, with real weight in the hand instead of the hollow give of cheap moulds. The canal runs in two textures, flips inside out under the tap, and dries before you put it away.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [
+    "/assets/img/m07-2.webp",
+    "/assets/img/m07-3.webp"
+   ],
+   "specs": [
+    {
+     "k": "spec_length",
+     "v": "全长 18 cm",
+     "vEn": "Length 18 cm"
+    },
+    {
+     "k": "spec_height",
+     "v": "高 13 cm",
+     "vEn": "Height 13 cm"
+    },
+    {
+     "k": "spec_width",
+     "v": "宽 7 cm",
+     "vEn": "Width 7 cm"
+    },
+    {
+     "k": "spec_netweight",
+     "v": "净重 390 g",
+     "vEn": "Net weight 390 g"
+    },
+    {
+     "k": "spec_packsize",
+     "v": "礼盒 18 × 13 × 7 cm",
+     "vEn": "Gift box 18 × 13 × 7 cm"
+    },
+    {
+     "k": "spec_material",
+     "v": "一体成型硅胶",
+     "vEn": "One-piece silicone"
+    },
+    {
+     "k": "spec_opening",
+     "v": "内腔可翻洗",
+     "vEn": "Invertible, rinse-clean canal"
+    }
+   ],
+   "skuImages": {},
+   "skus": [],
+   "site": "lumiere",
+   "category": "men",
+   "badge": "",
+   "price": 189,
+   "theme": "#EEF1F8",
+   "fg": "#4C5A85",
+   "accent": "#D5DBEC",
+   "variant": 3,
+   "image": "/assets/img/m07-2.webp",
+   "material": "硅胶",
+   "size": "包装 18 × 13 × 7 cm · 净重 390 g",
+   "noise": "—（无源手动）",
+   "waterproof": "内腔可翻洗",
+   "battery": "—（手动）",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "一体成型硅胶",
+    "内腔分段纹理",
+    "可翻洗内腔",
+    "390 g 实重手感"
+   ],
+   "desc": "一体成型，拿在手里有实打实的重量，不是那种一捏就塌的轻货。内腔纹理分两段，冲水就能翻出来洗，晾干再收。",
+   "i18n": {
+    "en": {
+     "material": "Silicone",
+     "size": "Pack 18 × 13 × 7 cm · 390 g net",
+     "noise": "— (manual, no motor)",
+     "waterproof": "Invertible, rinse-clean canal",
+     "battery": "— (manual)",
+     "features": [
+      "One-piece silicone",
+      "Two-section canal texture",
+      "Invertible for cleaning",
+      "390 g solid weight"
+     ]
+    }
+   },
+   "sourceUrl": "",
+   "collectedAt": "",
+   "createdAt": "2026-11-24T12:58:58.614Z"
+  },
+  "LUM-M08": {
+   "id": "LUM-M08",
+   "name": "火舞 · 3D 立体臀型名器",
+   "nameEn": "Ember · 3D Hip Stroker",
+   "descEn": "Just over a kilo, so it stays where you put it and you keep both hands free. The sculpted 3D hip reads far more like the real thing than a flat mould — and it goes straight under the tap afterwards.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [
+    "/assets/img/m08-3.webp",
+    "/assets/img/m08-2.webp"
+   ],
+   "specs": [
+    {
+     "k": "spec_length",
+     "v": "全长 20 cm",
+     "vEn": "Length 20 cm"
+    },
+    {
+     "k": "spec_height",
+     "v": "高 20 cm",
+     "vEn": "Height 20 cm"
+    },
+    {
+     "k": "spec_width",
+     "v": "宽 10 cm",
+     "vEn": "Width 10 cm"
+    },
+    {
+     "k": "spec_netweight",
+     "v": "净重 1040 g",
+     "vEn": "Net weight 1040 g"
+    },
+    {
+     "k": "spec_packsize",
+     "v": "礼盒 20 × 20 × 10 cm",
+     "vEn": "Gift box 20 × 20 × 10 cm"
+    },
+    {
+     "k": "spec_material",
+     "v": "实心硅胶",
+     "vEn": "Solid silicone"
+    },
+    {
+     "k": "spec_color",
+     "v": "暖棕肤色",
+     "vEn": "Warm tan"
+    }
+   ],
+   "skuImages": {},
+   "skus": [],
+   "site": "lumiere",
+   "category": "men",
+   "badge": "新品",
+   "price": 309,
+   "theme": "#FBEFE9",
+   "fg": "#B0673F",
+   "accent": "#F2D8C8",
+   "variant": 4,
+   "image": "/assets/img/m08-3.webp",
+   "material": "硅胶",
+   "size": "包装 20 × 20 × 10 cm · 净重 1040 g",
+   "noise": "—（无源手动）",
+   "waterproof": "可整只水洗",
+   "battery": "—（手动）",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "1 kg 实心倒模",
+    "3D 立体臀型",
+    "硅胶亲肤表面",
+    "可整只水洗"
+   ],
+   "desc": "一公斤出头，压在桌面上不会滑走，也不用一只手按着。3D 立体臀型，触感比平面倒模实在得多。用完直接拿到水龙头下冲。",
+   "i18n": {
+    "en": {
+     "material": "Silicone",
+     "size": "Pack 20 × 20 × 10 cm · 1040 g net",
+     "noise": "— (manual, no motor)",
+     "waterproof": "Fully washable",
+     "battery": "— (manual)",
+     "features": [
+      "1 kg solid mould",
+      "Sculpted 3D hip",
+      "Silicone surface",
+      "Washable as a whole"
+     ]
+    }
+   },
+   "sourceUrl": "",
+   "collectedAt": "",
+   "createdAt": "2026-11-24T12:58:58.629Z"
+  },
+  "LUM-C03": {
+   "id": "LUM-C03",
+   "name": "緋 · 毛绒捆绑七件套",
+   "nameEn": "Scarlet · Plush Bondage Set of 7",
+   "descEn": "Plush against skin, then the click of the buckle — that is where the night starts. The hardware has real weight to it, not the kind that loosens after two uses. Seven pieces will last you a long while.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [
+    "/assets/img/c03-2.webp",
+    "/assets/img/c03-3.webp",
+    "/assets/img/c03-4.webp",
+    "/assets/img/c03-5.webp",
+    "/assets/img/c03-6.webp"
+   ],
+   "specs": [
+    {
+     "k": "spec_length",
+     "v": "套装长 22 cm",
+     "vEn": "Set length 22 cm"
+    },
+    {
+     "k": "spec_height",
+     "v": "套装高 16 cm",
+     "vEn": "Set height 16 cm"
+    },
+    {
+     "k": "spec_width",
+     "v": "套装宽 7 cm",
+     "vEn": "Set width 7 cm"
+    },
+    {
+     "k": "spec_count",
+     "v": "共 7 件",
+     "vEn": "7 pieces"
+    },
+    {
+     "k": "spec_netweight",
+     "v": "净重 480 g",
+     "vEn": "Net weight 480 g"
+    },
+    {
+     "k": "spec_packsize",
+     "v": "礼盒 22 × 16 × 7 cm",
+     "vEn": "Gift box 22 × 16 × 7 cm"
+    },
+    {
+     "k": "spec_material",
+     "v": "PU 皮革 + 毛绒内衬",
+     "vEn": "PU leather + plush lining"
+    },
+    {
+     "k": "spec_color",
+     "v": "黑 / 红 / 粉",
+     "vEn": "Black / Red / Pink"
+    }
+   ],
+   "skuImages": {},
+   "skus": [],
+   "site": "lumiere",
+   "category": "couples",
+   "badge": "主推",
+   "price": 219,
+   "theme": "#F7E9EA",
+   "fg": "#8E3B47",
+   "accent": "#EBCFD2",
+   "variant": 5,
+   "image": "/assets/img/c03-2.webp",
+   "material": "PU 皮革 + 毛绒内衬",
+   "size": "套装包装 22 × 16 × 7 cm · 净重 480 g",
+   "noise": "—",
+   "waterproof": "擦拭清洁",
+   "battery": "—",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "七件套：手铐 / 脚铐 / 口球 / 眼罩 / 鞭 / 绳 / 束带",
+    "毛绒内衬不磨肤",
+    "金属扣件",
+    "黑 / 红 / 粉三色"
+   ],
+   "desc": "绒面贴着皮肤，扣子收紧的那一下是整晚的开场。金属件做得很沉，不像是用两次就松的东西。七件，够你们玩很久。",
+   "i18n": {
+    "en": {
+     "material": "PU leather + plush lining",
+     "size": "Set pack 22 × 16 × 7 cm · 480 g net",
+     "noise": "—",
+     "waterproof": "Wipe clean",
+     "battery": "—",
+     "features": [
+      "7 pieces: cuffs, ankle cuffs, ball gag, blindfold, flogger, rope, straps",
+      "Plush lining, no chafing",
+      "Metal buckles",
+      "Black / red / pink"
+     ]
+    }
+   },
+   "sourceUrl": "",
+   "collectedAt": "",
+   "createdAt": "2026-11-24T12:58:58.632Z"
+  },
+  "LUM-C04": {
+   "id": "LUM-C04",
+   "name": "蝶 · 震动延时环",
+   "nameEn": "Butterfly · Vibrating Ring",
+   "descEn": "The ring stretches to fit without pinching, and the butterfly pad sits where you both feel it. Thirty grams — light enough to forget mid-way.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [
+    "/assets/img/c04-2.webp",
+    "/assets/img/c04-3.webp"
+   ],
+   "specs": [
+    {
+     "k": "spec_opening",
+     "v": "环体内径 4.5 cm（可拉伸）",
+     "vEn": "Inner Ø 4.5 cm (stretchable)"
+    },
+    {
+     "k": "spec_netweight",
+     "v": "净重 30 g",
+     "vEn": "Net weight 30 g"
+    },
+    {
+     "k": "spec_material",
+     "v": "TRE 弹性胶",
+     "vEn": "TRE elastic gel"
+    },
+    {
+     "k": "spec_color",
+     "v": "浅紫 / 透明",
+     "vEn": "Lilac / Clear"
+    }
+   ],
+   "skuImages": {},
+   "skus": [],
+   "site": "lumiere",
+   "category": "couples",
+   "badge": "",
+   "price": 79,
+   "theme": "#F1EAF9",
+   "fg": "#6B4B9E",
+   "accent": "#DDD0F2",
+   "variant": 0,
+   "image": "/assets/img/c04-2.webp",
+   "material": "TRE 弹性胶",
+   "size": "环体可拉伸 · 净重 30 g",
+   "noise": "震动款 · 纽扣电池供电",
+   "waterproof": "不可整机浸泡",
+   "battery": "纽扣电池",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "蝶形外贴震动",
+    "弹力环体不勒",
+    "双人同时感受",
+    "轻至 30 g"
+   ],
+   "desc": "环体有弹力，戴上不勒。蝶形那一片贴在外面，震动两个人都收得到。三十克，轻到中途会忘记。",
+   "i18n": {
+    "en": {
+     "material": "TRE elastic gel",
+     "size": "Stretch-to-fit ring · 30 g net",
+     "noise": "Vibrating · button-cell powered",
+     "waterproof": "Not submersible",
+     "battery": "Button cell",
+     "features": [
+      "Butterfly pad with vibration",
+      "Stretch ring, no pinch",
+      "Felt by both partners",
+      "Only 30 g"
+     ]
+    }
+   },
+   "sourceUrl": "",
+   "collectedAt": "",
+   "createdAt": "2026-11-24T12:58:58.641Z"
+  },
+  "LUM-H04": {
+   "id": "LUM-H04",
+   "name": "净润 · 水基润滑剂 50 ml",
+   "nameEn": "Slide · Water-Based Lubricant 50 ml",
+   "descEn": "Water-based, clear, unscented. It will not degrade silicone toys, and it rinses off with water. Fifty millilitres disappears into a bag.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [
+    "/assets/img/h04-2.webp",
+    "/assets/img/h04-3.webp"
+   ],
+   "specs": [
+    {
+     "k": "spec_volume",
+     "v": "容量 50 ml",
+     "vEn": "Volume 50 ml"
+    },
+    {
+     "k": "spec_length",
+     "v": "瓶高 13.5 cm",
+     "vEn": "Bottle height 13.5 cm"
+    },
+    {
+     "k": "spec_width",
+     "v": "瓶宽 5.5 cm",
+     "vEn": "Bottle width 5.5 cm"
+    },
+    {
+     "k": "spec_netweight",
+     "v": "净重 55 g",
+     "vEn": "Net weight 55 g"
+    },
+    {
+     "k": "spec_packsize",
+     "v": "外盒 5.5 × 3.5 × 13.5 cm",
+     "vEn": "Outer box 5.5 × 3.5 × 13.5 cm"
+    },
+    {
+     "k": "spec_material",
+     "v": "水基配方（水、甘油等）",
+     "vEn": "Water-based (water, glycerin)"
+    }
+   ],
+   "skuImages": {},
+   "skus": [],
+   "site": "lumiere",
+   "category": "health",
+   "badge": "",
+   "price": 69,
+   "theme": "#EAF4F0",
+   "fg": "#3F7F6A",
+   "accent": "#CCE6DC",
+   "variant": 1,
+   "image": "/assets/img/h04-2.webp",
+   "material": "水基配方（水、甘油等）",
+   "size": "容量 50 ml（包装 5.5 × 3.5 × 13.5 cm）",
+   "noise": "—",
+   "waterproof": "—",
+   "battery": "—",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "水基配方",
+    "透明无味",
+    "可与硅胶玩具同用",
+    "50 ml 随身装"
+   ],
+   "desc": "水基，透明，没有味道。和硅胶玩具一起用不会咬胶，事后清水冲一冲就干净。50 ml 塞进包里也占不了地方。",
+   "i18n": {
+    "en": {
+     "material": "Water-based (water, glycerin)",
+     "size": "50 ml (pack 5.5 × 3.5 × 13.5 cm)",
+     "noise": "—",
+     "waterproof": "—",
+     "battery": "—",
+     "features": [
+      "Water-based formula",
+      "Clear and unscented",
+      "Silicone-toy safe",
+      "50 ml travel size"
+     ]
+    }
+   },
+   "sourceUrl": "",
+   "collectedAt": "",
+   "createdAt": "2026-11-24T12:58:58.659Z"
+  },
+  "LUM-W05": {
+   "id": "LUM-W05",
+   "name": "兔耳系列 · 双刺激振动器",
+   "nameEn": "Bunny Duo · Dual-Stimulation Vibrator",
+   "descEn": "A flexible neck follows your inner curve while the outer bunny ear works in sync. Ten intensities, from a morning-light hum to a late-night rumble.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [],
+   "specs": [],
+   "skuImages": {},
+   "skus": [],
+   "site": "lumiere",
+   "category": "women",
+   "badge": "新品",
+   "price": 469,
+   "theme": "#F4E9FB",
+   "fg": "#8B5FBF",
+   "accent": "#E3CDF5",
+   "variant": 1,
+   "image": "",
+   "material": "医用级硅胶 + ABS",
+   "size": "全长 21 cm · 可插入 12 cm · 周长 11 cm",
+   "noise": "≤ 45 分贝",
+   "waterproof": "IPX7 全身防水",
+   "battery": "磁吸充电 · 续航 90 分钟",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "兔耳双重刺激",
+    "可弯曲颈部",
+    "10 档震动",
+    "磁吸充电"
+   ],
+   "desc": "可弯曲的颈部顺着体内曲线走，外侧兔耳同步照顾。10 档强度从晨间的轻，到深夜的重。",
+   "i18n": {
+    "en": {
+     "material": "Medical-grade silicone + ABS",
+     "size": "Total length 21 cm · Insertable 12 cm · Circumference 11 cm",
+     "noise": "≤ 45 dB",
+     "waterproof": "IPX7 fully waterproof",
+     "battery": "Magnetic charging · 90 min runtime",
+     "features": [
+      "Dual-stimulation bunny ear",
+      "Flexible neck",
+      "10 vibration levels",
+      "Magnetic charging"
+     ]
+    }
+   },
+   "sourceUrl": "",
+   "collectedAt": "",
+   "createdAt": "2026-11-24T12:59:24.597Z"
+  },
+  "LUM-W06": {
+   "id": "LUM-W06",
+   "name": "潮汐系列 · 吸吮震动双效",
+   "nameEn": "Tidal · Suction & Vibration Duo",
+   "descEn": "Pressure pulses instead of contact. Two independent motors — use suction alone, vibration alone, or both stacked.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [],
+   "specs": [],
+   "skuImages": {},
+   "skus": [],
+   "site": "lumiere",
+   "category": "women",
+   "badge": "主推",
+   "price": 559,
+   "theme": "#E7F2FA",
+   "fg": "#4A7FA8",
+   "accent": "#C6DFF0",
+   "variant": 2,
+   "image": "",
+   "material": "医用级硅胶",
+   "size": "高 16 cm · 吸口内径 1.4 cm",
+   "noise": "≤ 42 分贝",
+   "waterproof": "IPX7 全身防水",
+   "battery": "USB 充电 · 续航 120 分钟",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "气压脉冲吸吮",
+    "11 档强度",
+    "双马达独立控制",
+    "可水洗"
+   ],
+   "desc": "不靠接触，用气压脉冲推动。双马达独立调节，吸吮与震动可以只用一种，也可以叠在一起。",
+   "i18n": {
+    "en": {
+     "material": "Medical-grade silicone",
+     "size": "Height 16 cm · Nozzle Ø 1.4 cm",
+     "noise": "≤ 42 dB",
+     "waterproof": "IPX7 fully waterproof",
+     "battery": "USB charging · 120 min runtime",
+     "features": [
+      "Pressure-wave suction",
+      "11 intensity levels",
+      "Dual independent motors",
+      "Water washable"
+     ]
+    }
+   },
+   "sourceUrl": "",
+   "collectedAt": "",
+   "createdAt": "2026-11-24T12:59:24.604Z"
+  },
+  "LUM-M05": {
+   "id": "LUM-M05",
+   "name": "磐石系列 · 前列腺按摩器",
+   "nameEn": "Bedrock · Prostate Massager",
+   "descEn": "Shaped to the angle you actually need, so there is no readjusting. The base leaves an external contact point for dual stimulation.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [],
+   "specs": [],
+   "skuImages": {},
+   "skus": [],
+   "site": "lumiere",
+   "category": "men",
+   "badge": "",
+   "price": 699,
+   "theme": "#EDEFF7",
+   "fg": "#4B5680",
+   "accent": "#D2D8EA",
+   "variant": 3,
+   "image": "",
+   "material": "医用级硅胶",
+   "size": "可插入 11 cm · 最粗处 3.4 cm",
+   "noise": "≤ 40 分贝",
+   "waterproof": "IPX7 全身防水",
+   "battery": "USB 充电 · 续航 150 分钟",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "双马达",
+    "无线遥控",
+    "人体工学弧度",
+    "静音设计"
+   ],
+   "desc": "按人体工学的弧度弯好，进入角度不需要反复调整。底座留出外部接触面，内外同时。",
+   "i18n": {
+    "en": {
+     "material": "Medical-grade silicone",
+     "size": "Insertable 11 cm · Max Ø 3.4 cm",
+     "noise": "≤ 40 dB",
+     "waterproof": "IPX7 fully waterproof",
+     "battery": "USB charging · 150 min runtime",
+     "features": [
+      "Dual motors",
+      "Wireless remote",
+      "Ergonomic curve",
+      "Quiet design"
+     ]
+    }
+   },
+   "sourceUrl": "",
+   "collectedAt": "",
+   "createdAt": "2026-11-24T12:59:24.619Z"
+  },
+  "LUM-M06": {
+   "id": "LUM-M06",
+   "name": "暖石系列 · 加温飞机杯",
+   "nameEn": "Warmstone · Heated Stroker",
+   "descEn": "The sleeve warms to near body temperature, with eleven vibration levels and adjustable suction. The inner sleeve detaches for washing.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [],
+   "specs": [],
+   "skuImages": {},
+   "skus": [],
+   "site": "lumiere",
+   "category": "men",
+   "badge": "新品",
+   "price": 529,
+   "theme": "#FBEEE6",
+   "fg": "#B5714C",
+   "accent": "#F0D6C4",
+   "variant": 4,
+   "image": "",
+   "material": "TPE 内胆 + ABS 外壳",
+   "size": "全长 24 cm · 内腔 18 cm",
+   "noise": "≤ 48 分贝",
+   "waterproof": "内胆可拆洗",
+   "battery": "USB 充电 · 续航 80 分钟",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "40°C 恒温加热",
+    "11 档震动",
+    "可拆洗内胆",
+    "可调吸力"
+   ],
+   "desc": "内壁恒温到接近体温，11 档震动叠加可调吸力。内胆可拆下单独清洗。",
+   "i18n": {
+    "en": {
+     "material": "TPE sleeve + ABS shell",
+     "size": "Total length 24 cm · Canal 18 cm",
+     "noise": "≤ 48 dB",
+     "waterproof": "Removable washable sleeve",
+     "battery": "USB charging · 80 min runtime",
+     "features": [
+      "40°C warming",
+      "11 vibration levels",
+      "Removable sleeve",
+      "Adjustable suction"
+     ]
+    }
+   },
+   "sourceUrl": "",
+   "collectedAt": "",
+   "createdAt": "2026-11-24T12:59:24.634Z"
+  },
+  "LUM-H03": {
+   "id": "LUM-H03",
+   "name": "净润系列 · 水基润滑剂 250ml",
+   "nameEn": "Slide · Water-Based Lubricant 250 ml",
+   "descEn": "Water-based and silicone-safe, rinses clean with water. The big bottle sits by the bed, so you stop rationing it.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [],
+   "specs": [],
+   "skuImages": {},
+   "skus": [],
+   "site": "lumiere",
+   "category": "health",
+   "badge": "",
+   "price": 99,
+   "theme": "#EAF4EE",
+   "fg": "#4E8B6A",
+   "accent": "#CBE4D6",
+   "variant": 5,
+   "image": "",
+   "material": "水基配方 · 无甘油",
+   "size": "容量 250 ml",
+   "noise": "—",
+   "waterproof": "—",
+   "battery": "—",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "水基易清洗",
+    "不黏腻",
+    "可与硅胶玩具同用",
+    "250 ml 大瓶"
+   ],
+   "desc": "水基配方，与硅胶玩具安全同用，清水即可洗净。大瓶装放在床头柜，不用省。",
+   "i18n": {
+    "en": {
+     "material": "Water-based · Glycerin-free",
+     "size": "250 ml",
+     "noise": "—",
+     "waterproof": "—",
+     "battery": "—",
+     "features": [
+      "Water-based, rinses clean",
+      "Non-sticky",
+      "Silicone-toy safe",
+      "250 ml bottle"
+     ]
+    }
+   },
+   "sourceUrl": "",
+   "collectedAt": "",
+   "createdAt": "2026-11-24T12:59:24.651Z"
+  },
+  "LUM-87122986": {
+   "id": "LUM-87122986",
+   "name": "星跳 · 吮吸女用跳蛋",
+   "nameEn": "Pulse · Suction For Her Vibrating Egg",
+   "descEn": "This vibrator is made of liquid silicone. Suction + for women, with intensity under your control. It's so small that you can forget it's there, but you'll remember it when the vibrations start. Private packaging, shipped with a neutral shipping label.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [
+    "/assets/img/collected/CQ-56744482.webp",
+    "/assets/img/collected/src-32d1ca86276e1b56.webp",
+    "/assets/img/collected/tr-10ca0a95c8bb0175.webp",
+    "/assets/img/collected/src-949d4b54e529f0ca.webp",
+    "/assets/img/collected/src-fad446b224e1c3b8.webp"
+   ],
+   "specs": [],
+   "skuImages": {},
+   "skus": [
+    {
+     "name": "相见欢 红色",
+     "price": 72,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01YIQpagob1WK1chua_!!2223125782003-0-cib.jpg_sum.jpg"
+    },
+    {
+     "name": "相见欢 粉色",
+     "price": 72,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN013sYGWE2FxFL3thOC_!!2223125782003-0-cib.jpg_sum.jpg"
+    },
+    {
+     "name": "相见欢 紫色",
+     "price": 72,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01QAYCtqmKPWD3thOC_!!2223125782003-0-cib.jpg_sum.jpg"
+    },
+    {
+     "name": "相见欢 黑色",
+     "price": 72,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01CwQmdhLuBrE3thOC_!!2223125782003-0-cib.jpg_sum.jpg"
+    },
+    {
+     "name": "相见欢 淡蓝色",
+     "price": 72,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN0103gNT2M9c6L3thOC_!!2223125782003-0-cib.jpg_sum.jpg"
+    },
+    {
+     "name": "念奴娇 {红色}",
+     "price": 72,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01FZrcVcMMBCG1chua_!!2223125782003-0-cib.jpg_sum.jpg"
+    },
+    {
+     "name": "念奴娇 {紫色}",
+     "price": 72,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01dmkZ9cXWmCD1NTb1_!!2223125782003-0-cib.jpg_sum.jpg"
+    },
+    {
+     "name": "念奴娇 {粉色}",
+     "price": 72,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01Euj61g4qG1K1chua_!!2223125782003-0-cib.jpg_sum.jpg"
+    }
+   ],
+   "site": "lumiere",
+   "category": "women",
+   "badge": "",
+   "price": 72,
+   "theme": "#EEEDFE",
+   "fg": "#7F77DD",
+   "accent": "#CECBF6",
+   "variant": 0,
+   "image": "/assets/img/collected/CQ-56744482.webp",
+   "material": "液态硅胶",
+   "size": "—",
+   "noise": "≤50",
+   "waterproof": "—",
+   "battery": "磁吸充电",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "吮吸",
+    "女用"
+   ],
+   "desc": "这款跳蛋采用液态硅胶。吮吸 + 女用，力度随你掌控。小到可以忘记它的存在，震动一来又想起它。私密包装，中性面单发货。",
+   "i18n": {},
+   "sourceUrl": "https://detail.1688.com/offer/1086870059406.html",
+   "collectedAt": "2026-11-21T10:25:44.223Z",
+   "createdAt": "2026-11-25T06:12:02.986Z"
+  },
+  "LUM-87155123": {
+   "id": "LUM-87155123",
+   "name": "云弧 · 女用震动棒",
+   "nameEn": "Arc · For Her Vibrator",
+   "descEn": "This vibrator is made of silicone and ABS. Designed for women, with intensity under your control. The angle is pre-designed, so there's no need to fumble around in the dark to find the right spot. Discreet packaging, shipped with a neutral shipping label.",
+   "detail": "",
+   "detailEn": "",
+   "gallery": [
+    "/assets/img/collected/CQ-52533194.webp",
+    "/assets/img/collected/tr-212012285f02aace.webp",
+    "/assets/img/collected/src-5e2c949d7f2d6790.webp",
+    "/assets/img/collected/src-a51cc71462d9790d.webp",
+    "/assets/img/collected/tr-540ba67b522aa4a8.webp"
+   ],
+   "specs": [],
+   "skuImages": {},
+   "skus": [
+    {
+     "name": "大骑士（黑色）",
+     "price": 266,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01PeL4EdIc5NI1cSIn_!!2223125782003-0-cib.jpg_sum.jpg"
+    },
+    {
+     "name": "大骑士（玫红色）",
+     "price": 266,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01Q818K0IvSsE1cSIo_!!2223125782003-0-cib.jpg_sum.jpg"
+    },
+    {
+     "name": "大骑士（紫色）",
+     "price": 266,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01TMcx0lUvnoC1cpiS_!!2223125782003-0-cib.jpg_sum.jpg"
+    },
+    {
+     "name": "大骑士（粉色）",
+     "price": 266,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01OTYkIE1wR8F1chua_!!2223125782003-0-cib.jpg_sum.jpg"
+    },
+    {
+     "name": "小骑士（黑色）",
+     "price": 266,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01dD4AkB20L7C1chua_!!2223125782003-0-cib.jpg_sum.jpg"
+    },
+    {
+     "name": "小骑士（玫红色）",
+     "price": 266,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01sdQzsq7ColD1chua_!!2223125782003-0-cib.jpg_sum.jpg"
+    },
+    {
+     "name": "小骑士（紫色）",
+     "price": 266,
+     "stock": 100,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01XV9kDaTxzkJ1chua_!!2223125782003-0-cib.jpg_sum.jpg"
+    }
+   ],
+   "site": "lumiere",
+   "category": "women",
+   "badge": "新品",
+   "price": 266,
+   "theme": "#EEEDFE",
+   "fg": "#7F77DD",
+   "accent": "#CECBF6",
+   "variant": 0,
+   "image": "/assets/img/collected/CQ-52533194.webp",
+   "material": "硅胶、ABS",
+   "size": "—",
+   "noise": "40db",
+   "waterproof": "—",
+   "battery": "针孔",
+   "pack": "—",
+   "weight": "—",
+   "origin": "—",
+   "packaging": "—",
+   "features": [
+    "女用"
+   ],
+   "desc": "这款震动棒采用硅胶、ABS。女用，力度随你掌控。角度是提前设计好的，不用在黑暗里反复寻找位置。私密包装，中性面单发货。",
+   "i18n": {},
+   "sourceUrl": "https://detail.1688.com/offer/1089713008390.html",
+   "collectedAt": "2026-11-21T09:15:33.006Z",
+   "createdAt": "2026-11-25T06:12:35.123Z"
+  }
+ },
+ "drafts": {},
+ "orders": {
+  "LM506746504159": {
+   "id": "LM506746504159",
+   "customer": {
+    "name": "江少",
+    "email": "jiang.test@example.com",
+    "addr": "Sheikh Zayed Road, Building 22",
+    "addr2": "Apt 1503",
+    "city": "Dubai",
+    "state": "Dubai",
+    "zip": "00000",
+    "country": "AE",
+    "phone": "+971 50 123 4567"
+   },
+   "items": [
+    {
+     "id": "LUM-W07",
+     "name": "云弧 · G点静音震动按摩棒",
+     "qty": 2,
+     "price": 279,
+     "specs": [
+      {
+       "k": "spec_length",
+       "label": "长度",
+       "value": "全长 19.1 cm"
+      }
+     ]
+    }
+   ],
+   "total": 597,
+   "currency": "CNY",
+   "payment": "cod",
+   "lang": "zh",
+   "status": "completed",
+   "history": [
+    {
+     "status": "pending",
+     "at": "2026-11-19T05:51:05.041Z",
+     "note": "订单已提交，等待审核"
+    },
+    {
+     "status": "approved",
+     "at": "2026-11-19T05:51:12.399Z",
+     "note": ""
+    },
+    {
+     "status": "awaiting_payment",
+     "at": "2026-11-19T05:51:12.541Z",
+     "note": ""
+    },
+    {
+     "status": "paid",
+     "at": "2026-11-19T05:51:12.709Z",
+     "note": ""
+    },
+    {
+     "status": "shipped",
+     "at": "2026-11-19T05:51:12.869Z",
+     "note": ""
+    },
+    {
+     "status": "completed",
+     "at": "2026-11-19T05:51:13.020Z",
+     "note": ""
+    }
+   ],
+   "createdAt": "2026-11-19T05:51:05.041Z",
+   "approvedAt": "2026-11-19T05:51:12.399Z",
+   "paidAt": "2026-11-19T05:51:12.709Z",
+   "shippedAt": "2026-11-19T05:51:12.869Z",
+   "completedAt": "2026-11-19T05:51:13.020Z"
+  }
+ },
+ "stock": {
+  "LUM-W05": 36,
+  "LUM-W06": 28,
+  "LUM-M05": 22,
+  "LUM-M06": 30,
+  "LUM-H03": 150,
+  "LUM-88202205": 5,
+  "LUM-88202209": 3,
+  "LUM-88588815": 0,
+  "LUM-88589815": 0,
+  "LUM-91073912": 0,
+  "LUM-91074052": 0,
+  "LUM-91074147": 0,
+  "LUM-91349938": 0,
+  "LUM-91350013": 0,
+  "LUM-91350102": 0,
+  "LUM-91555851": 0,
+  "LUM-91681219": 0,
+  "LUM-91681324": 0,
+  "LUM-91681435": 0,
+  "LUM-93705245": 3,
+  "LUM-43992306": 0,
+  "LUM-44008717": 0,
+  "LUM-44024321": 0,
+  "LUM-44040387": 0,
+  "LUM-48192882": 0,
+  "TEST-SKU-001": 0,
+  "LUM-50611425": 0,
+  "LUM-50654255": 0,
+  "LUM-54155392": 5,
+  "LUM-28873816": 162334,
+  "LUM-36750396": 5,
+  "LUM-36823774": 5,
+  "LUM-36837781": 5,
+  "LUM-W07": 40,
+  "LUM-W08": 32,
+  "LUM-W09": 45,
+  "LUM-M07": 30,
+  "LUM-M08": 24,
+  "LUM-C03": 26,
+  "LUM-C04": 60,
+  "LUM-H04": 120,
+  "LUM-87122986": 800,
+  "LUM-87155123": 700
+ },
+ "chats": {
+  "CHmwpuofubpsy0d": {
+   "id": "CHmwpuofubpsy0d",
+   "type": "chat",
+   "name": "",
+   "email": "",
+   "subject": "",
+   "lang": "zh",
+   "country": "CN",
+   "createdAt": "2026-11-21T03:30:28.019Z",
+   "messages": [
+    {
+     "from": "user",
+     "text": "hi",
+     "ts": "2026-11-21T03:30:28.019Z"
+    }
+   ],
+   "unread": 0,
+   "staffRead": true,
+   "lastAt": "2026-11-21T03:30:28.019Z"
+  }
+ },
+ "sites": [
+  {
+   "id": "lumiere",
+   "name": "LUMIÈRE",
+   "domain": "lumiere.store",
+   "aliases": [],
+   "currency": "USD",
+   "rate": 0.139,
+   "accent": "#7F77DD",
+   "active": true,
+   "isDefault": true
+  }
+ ],
+ "settings": {
+  "paymentEnabled": true,
+  "payments": {
+   "cod": {
+    "enabled": true
+   },
+   "card": {
+    "enabled": true
+   },
+   "crypto": {
+    "enabled": true
+   }
+  },
+  "chatEnabled": true,
+  "contact": {
+   "email": "care@lumiere.store",
+   "whatsapp": "+86 13800000000",
+   "hours": "7×24",
+   "responseHours": 8,
+   "wechat": ""
+  },
+  "updatedAt": "2026-11-21T09:17:19.127Z",
+  "collectSite": "",
+  "shipping": {
+   "cutoff": "14:00",
+   "minDays": 7,
+   "maxDays": 10,
+   "zh": "",
+   "en": ""
+  },
+  "seededAt": "2026-11-21T09:11:51.461Z"
+ }
+}

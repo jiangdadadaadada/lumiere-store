@@ -1,0 +1,63 @@
+# 🛠 Node
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# 🛠 Wrangler
+.wrangler/
+.wrangler-state/
+
+# 🛠 所有臨時/快取/工具輸出
+_tmp/
+_temp/
+_pipcache/
+_pylib/
+_pylib312/
+_npm-cache/
+.npm-cache/
+.npm-cache2/
+_models/
+_shell/
+_workbuddy/
+tools/
+
+# 🛠 備份/臨時
+*.bak*
+*.backup*
+*.old
+*.orig
+.recycle_bin/
+
+# 🛠 .data 裡的密碼/快取
+.data/cf-*.txt
+.data/*token*
+.data/img-backup*
+.data/*.txt
+
+# 🛠 日誌
+*.log
+.data/*.log
+!blog/*.html
+
+# 🛠 密碼/密鑰
+.env
+.env.local
+!public/.env
+
+# 🛠 操作系統
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# 🛠 編輯器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 🛠 Python
+__pycache__/
+*.pyc
+
+# 🛠 Git 本身
+.gitignore.old

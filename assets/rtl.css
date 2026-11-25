@@ -1,0 +1,44 @@
+/* ============================================================
+   LUMIÈRE · RTL 布局（阿拉伯语等从右到左语言）
+   仅在 html[dir="rtl"] 时生效
+   ============================================================ */
+
+html[dir="rtl"] body { text-align: right; }
+html[dir="rtl"] .header-inner { flex-direction: row-reverse; }
+html[dir="rtl"] .nav,
+html[dir="rtl"] .nav-tools,
+html[dir="rtl"] .hero-cta,
+html[dir="rtl"] .trust-inner,
+html[dir="rtl"] .feature-tags,
+html[dir="rtl"] .detail-actions,
+html[dir="rtl"] .agegate-actions { flex-direction: row-reverse; }
+html[dir="rtl"] .footer-grid { direction: rtl; }
+html[dir="rtl"] .section-head { flex-direction: row-reverse; }
+html[dir="rtl"] .prod-foot,
+html[dir="rtl"] .sum-row,
+html[dir="rtl"] .cart-summary .sum-row { flex-direction: row-reverse; }
+html[dir="rtl"] .prod-badge { left: auto; right: 12px; }
+html[dir="rtl"] .cart-item { grid-template-columns: auto 1fr auto auto; }
+html[dir="rtl"] .cart-item img { direction: ltr; }
+html[dir="rtl"] .spec-table td:first-child { width: auto; }
+html[dir="rtl"] .pay-method { flex-direction: row-reverse; }
+html[dir="rtl"] .pay-method .pay-radio { margin-left: 0; }
+html[dir="rtl"] .footer-bottom { flex-direction: row-reverse; }
+html[dir="rtl"] .form-field input,
+html[dir="rtl"] .form-field select { text-align: right; }
+html[dir="rtl"] .detail-price,
+html[dir="rtl"] .prod-price,
+html[dir="rtl"] .c-price,
+html[dir="rtl"] .sum-row span:last-child { direction: ltr; display: inline-block; }
+html[dir="rtl"] .cat-layout { direction: rtl; }
+html[dir="rtl"] .cat-toolbar { direction: rtl; }
+html[dir="rtl"] .fs-opt input:checked + .fs-box::after { left: 50%; }
+html[dir="rtl"] .filter-sidebar { direction: rtl; }
+html[dir="rtl"] .pk-pop { right: auto; left: 0; }
+html[dir="rtl"] .pk-opt { text-align: right; }
+html[dir="rtl"] .pk-sub { margin-left: 0; margin-right: auto; text-align: left; }
+html[dir="rtl"] .pk-search-wrap input { text-align: right; }
+html[dir="rtl"] .hero { direction: rtl; }
+html[dir="rtl"] .page-head h1,
+html[dir="rtl"] .section-head h2,
+html[dir="rtl"] .hero-title { font-family: var(--font-sans); }

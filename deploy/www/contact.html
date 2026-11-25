@@ -1,0 +1,301 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact · LUMIÈRE</title>
+  <link rel="canonical" href="https://lumiere-store.lumiere-store.workers.dev/contact.html">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LUMIÈRE">
+  <meta property="og:url" content="https://lumiere-store.lumiere-store.workers.dev/contact.html">
+<meta name="description" content="LUMIÈRE — premium intimate wellness. Body-safe materials, discreet worldwide delivery.">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/theme-card-layout.css">
+  <link rel="stylesheet" href="assets/rtl.css">
+</head>
+<body>
+
+  <div class="agegate" id="agegate" hidden>
+    <div class="agegate-card">
+      <div class="agegate-mark">18+</div>
+      <h2 data-i18n="age_title">你已年满 18 周岁了吗？</h2>
+      <p data-i18n="age_body">本站商品仅供成年人购买与使用。</p>
+      <p class="fine" data-i18n="age_fine">点击进入即代表你确认已符合所在地区的法定购买年龄。</p>
+      <div class="agegate-actions">
+        <button class="btn btn-ghost" id="age-no" data-i18n="age_no">未满 18 岁</button>
+        <button class="btn btn-primary" id="age-yes" data-i18n="age_yes">我已满 18 岁，进入</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">LUMIÈRE<span class="brand-dot">.</span></a>
+      <nav class="nav">
+        <a href="index.html" data-i18n="nav_home">首页</a>
+        <a href="category.html?cat=women" data-i18n="nav_women">女性用品</a>
+        <a href="category.html?cat=men" data-i18n="nav_men">男性用品</a>
+        <a href="category.html?cat=couples" data-i18n="nav_couples">情侣共悦</a>
+        <a href="category.html?cat=health" data-i18n="nav_health">健康护理</a>
+        <a href="wholesale.html" class="nav-b2b">Wholesale</a>
+      </nav>
+      <div class="nav-tools">
+        <div class="pk" id="pk-lang">
+          <button type="button" class="pk-trigger" id="lang-trigger" aria-label="Language"></button>
+          <div class="pk-pop">
+            <div class="pk-search-wrap"><input id="pk-search" type="text" placeholder="搜索语言 / Search…"></div>
+            <div class="pk-menu" data-type="lang"></div>
+          </div>
+        </div>
+        <div class="pk" id="pk-cur">
+          <button type="button" class="pk-trigger" id="cur-trigger" aria-label="Currency"></button>
+          <div class="pk-pop">
+            <div class="pk-search-wrap"><input class="pk-search-cur" type="text" placeholder="搜索货币 / Search…"></div>
+            <div class="pk-menu" data-type="cur"></div>
+          </div>
+        </div>
+        <button class="cart-btn" onclick="location.href='cart.html'"><span data-i18n="nav_cart">购物袋</span> <span class="cart-count" id="cart-count">0</span></button>
+      </div>
+    </div>
+  </header>
+  <main class="contact-wrap">
+    <div class="contact-head">
+      <h1 data-i18n="contact_title">联系我们</h1>
+      <p data-i18n="contact_sub">关于尺寸、材质、配送隐私或订单，我们都在。</p>
+    </div>
+
+    <div class="channel-grid">
+      <div class="channel-card">
+        <div class="ch-ico" aria-hidden="true">◍</div>
+        <h3 data-i18n="contact_chat">站内聊天</h3>
+        <p data-i18n="contact_chat_desc">点右下角气泡即可对话，通常几分钟内回复。</p>
+        <a href="#" class="ch-val" id="open-chat" data-i18n="contact_chat_cta">立即对话 →</a>
+      </div>
+      <div class="channel-card">
+        <div class="ch-ico" aria-hidden="true">✉</div>
+        <h3 data-i18n="contact_email">邮件</h3>
+        <p data-i18n="contact_email_desc">适合订单、退换货与较复杂的问题。</p>
+        <a class="ch-val" id="contact-email" href="mailto:care@lumiere.store">care@lumiere.store</a>
+      </div>
+      <div class="channel-card">
+        <div class="ch-ico" aria-hidden="true">◷</div>
+        <h3 data-i18n="contact_time">在线时间</h3>
+        <p data-i18n="contact_time_desc">全年无休，节假日照常值守。</p>
+        <div class="ch-val" id="contact-hours">7×24</div>
+      </div>
+    </div>
+
+    <div class="contact-main">
+      <section class="contact-panel">
+        <h2 data-i18n="contact_form_title">给我们留言</h2>
+        <p class="cp-sub" data-i18n="contact_form_sub">留下邮箱，我们会在 12 小时内回复。</p>
+        <form id="contact-form" autocomplete="on">
+          <div class="cf-row">
+            <div class="cf-field">
+              <label data-i18n="contact_name">称呼</label>
+              <input id="c-name" maxlength="60" required>
+            </div>
+            <div class="cf-field">
+              <label data-i18n="contact_email_label">邮箱</label>
+              <input id="c-email" type="email" maxlength="120" required>
+            </div>
+          </div>
+          <div class="cf-field">
+            <label data-i18n="contact_subject">问题类型</label>
+            <input id="c-subject" maxlength="120" data-i18n-ph="contact_subject_ph" placeholder="订单 / 配送 / 商品咨询">
+          </div>
+          <div class="cf-field">
+            <label data-i18n="contact_message">内容</label>
+            <textarea id="c-msg" maxlength="2000" required data-i18n-ph="contact_message_ph" placeholder="请描述你的问题…"></textarea>
+          </div>
+          <button class="btn btn-primary btn-block" type="submit" data-i18n="contact_send">发送留言</button>
+          <div id="contact-result"></div>
+        </form>
+      </section>
+
+      <section class="contact-panel">
+        <h2 data-i18n="contact_faq">常见问题</h2>
+        <p class="cp-sub" data-i18n="contact_faq_sub">先看看这里，也许立刻就有答案。</p>
+        <div id="faq-list">
+          <div class="faq-item">
+            <button class="faq-q" type="button"><span data-i18n="faq1_q">包装是否保密？</span><span>+</span></button>
+            <div class="faq-a" data-i18n="faq1_a">默认不透明中性包装，外箱无品牌标识，面单发货名为中性名称，不写任何商品内容。</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" type="button"><span data-i18n="faq2_q">多久发货，支持全球直邮吗？</span><span>+</span></button>
+            <div class="faq-a" data-i18n="faq2_a">现货 24 小时内出库，全球直邮，时效约 5–14 个工作日，具体按目的地而定。</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" type="button"><span data-i18n="faq3_q">可以退换吗？</span><span>+</span></button>
+            <div class="faq-a" data-i18n="faq3_a">未拆封商品 14 天内可退。出于卫生考虑，已拆封的贴身用品不支持非质量问题退换；质量问题 30 天内换新。</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" type="button"><span data-i18n="faq4_q">支持哪些付款方式？</span><span>+</span></button>
+            <div class="faq-a" data-i18n="faq4_a">按你所在地区自动匹配：货到付款、银行卡或加密货币。结账页只显示当前实际可用的方式。</div>
+          </div>
+        </div>
+        <div class="contact-meta">
+          <span data-i18n="contact_meta_1"><b>隐私：</b>所有对话与留言仅用于处理你的问题。</span>
+        </div>
+      </section>
+    </div>
+  </main>
+<footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand">LUMIÈRE<span class="brand-dot">.</span></div>
+          <p data-i18n="footer_desc">高端私密健康生活方式品牌。我们相信，取悦自己是认真而美好的事。</p>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer_shop">选购</h4>
+          <a href="category.html?cat=women" data-i18n="nav_women">女性用品</a>
+          <a href="category.html?cat=men" data-i18n="nav_men">男性用品</a>
+          <a href="category.html?cat=couples" data-i18n="nav_couples">情侣共悦</a>
+          <a href="category.html?cat=health" data-i18n="nav_health">健康护理</a>
+        <a href="wholesale.html" class="nav-b2b">Wholesale</a>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer_service">服务</h4>
+          <a href="privacy.html" data-i18n="foot_privacy">隐私政策</a>
+          <a href="privacy.html" data-i18n="foot_return">退换货说明</a>
+          <a href="privacy.html" data-i18n="foot_discreet">隐私配送</a>
+          <a href="contact.html" data-i18n="foot_contact">联系我们</a>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer_legal">注意</h4>
+          <a href="privacy.html" data-i18n="foot_age">18+ 购买须知</a>
+          <a href="privacy.html" data-i18n="foot_compliance">合规声明</a>
+          <a href="privacy.html" data-i18n="foot_terms">使用条款</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 LUMIÈRE. <span data-i18n="footer_rights">保留所有权利。</span></span>
+        <span data-i18n="footer_adult">本站仅供成年人访问 · 请理性消费</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/i18n/zh.js"></script>
+  <script src="assets/i18n/en.js"></script>
+  <script src="assets/i18n/de.js"></script>
+  <script src="assets/i18n/fr.js"></script>
+  <script src="assets/i18n/es.js"></script>
+  <script src="assets/i18n/ja.js"></script>
+  <script src="assets/i18n/ko.js"></script>
+  <script src="assets/i18n/th.js"></script>
+  <script src="assets/i18n/vi.js"></script>
+  <script src="assets/i18n/ar.js"></script>
+  <script src="assets/i18n/pt.js"></script>
+  <script src="assets/i18n/ru.js"></script>
+  <script src="assets/i18n/id.js"></script>
+  <script src="assets/i18n/it.js"></script>
+  <script src="assets/i18n/nl.js"></script>
+  <script src="assets/i18n/pl.js"></script>
+  <script src="assets/i18n/sv.js"></script>
+  <script src="assets/i18n/da.js"></script>
+  <script src="assets/i18n/no.js"></script>
+  <script src="assets/i18n/fi.js"></script>
+  <script src="assets/i18n/cs.js"></script>
+  <script src="assets/i18n/el.js"></script>
+  <script src="assets/i18n/hu.js"></script>
+  <script src="assets/i18n/ro.js"></script>
+  <script src="assets/i18n/uk.js"></script>
+  <script src="assets/i18n/he.js"></script>
+  <script src="assets/i18n/fa.js"></script>
+  <script src="assets/i18n/ur.js"></script>
+  <script src="assets/i18n/tr.js"></script>
+  <script src="assets/i18n/hi.js"></script>
+  <script src="assets/i18n/bn.js"></script>
+  <script src="assets/i18n/mr.js"></script>
+  <script src="assets/i18n/ta.js"></script>
+  <script src="assets/i18n/ms.js"></script>
+  <script src="assets/i18n/tl.js"></script>
+  <script src="assets/i18n/km.js"></script>
+  <script src="assets/i18n/my.js"></script>
+  <script src="assets/i18n/sr.js"></script>
+  <script src="assets/i18n/sw.js"></script>
+  <script src="assets/i18n/af.js"></script>
+  <script src="assets/i18n/kk.js"></script>
+  <script src="assets/i18n-shell.js"></script>
+  <script src="assets/i18n-order.js"></script>
+  <script src="assets/i18n-extra.js"></script>
+  <script src="assets/geo.js"></script>
+  <script src="assets/products.js"></script>
+  <script src="assets/zh-hant.js"></script>
+  <script src="assets/lo.js"></script>
+  <script src="assets/i18n-eu.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/chat.js"></script>
+
+  <script>
+  (function(){
+    var form = document.getElementById('contact-form');
+    var result = document.getElementById('contact-result');
+    var emailEl = document.getElementById('contact-email');
+    var hoursEl = document.getElementById('contact-hours');
+
+    /* 后台配置的联系方式覆盖默认文案 */
+    function paintContact(s){
+      if (!s || !s.contact) return;
+      if (s.contact.email && emailEl) { emailEl.textContent = s.contact.email; emailEl.href = 'mailto:' + s.contact.email; }
+      if (s.contact.hours && hoursEl) hoursEl.textContent = s.contact.hours;
+      var sub = document.querySelector('[data-i18n="contact_form_sub"]');
+      if (sub && s.contact.responseHours) {
+        var txt = (typeof t === 'function') ? t('contact_form_sub') : '';
+        if (txt) sub.textContent = txt.replace(/\d+/, s.contact.responseHours);
+      }
+    }
+    fetch('/api/settings').then(function(r){ return r.json(); }).then(paintContact).catch(function(){});
+
+    /* FAQ 折叠 */
+    document.querySelectorAll('.faq-item').forEach(function(item){
+      var q = item.querySelector('.faq-q');
+      q.addEventListener('click', function(){
+        var open = item.classList.toggle('open');
+        q.lastElementChild.textContent = open ? '−' : '+';
+      });
+    });
+
+    /* 打开站内聊天 */
+    var openChat = document.getElementById('open-chat');
+    if (openChat) openChat.addEventListener('click', function(e){
+      e.preventDefault();
+      var fab = document.getElementById('chat-fab');
+      if (fab) fab.click();
+      else location.href = 'mailto:' + ((emailEl && emailEl.textContent) || 'care@lumiere.store');
+    });
+
+    /* 留言提交 → 写入后台客服收件箱 */
+    if (form) form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var payload = {
+        type: 'contact',
+        name: (document.getElementById('c-name').value || '').trim(),
+        email: (document.getElementById('c-email').value || '').trim(),
+        subject: (document.getElementById('c-subject').value || '').trim(),
+        text: (document.getElementById('c-msg').value || '').trim(),
+        lang: (typeof state !== 'undefined' && state.lang) || 'zh',
+        country: (typeof state !== 'undefined' && state.country) || ''
+      };
+      if (!payload.text || !payload.email) return;
+      var btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      fetch('/api/chat/message', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) })
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if (!d || !d.sessionId) throw new Error('fail');
+          result.innerHTML = '<div class="contact-sent">' + ((typeof t === 'function' ? t('contact_sent') : '已收到，我们会尽快回复。')) + '</div>';
+          form.reset();
+        })
+        .catch(function(){
+          result.innerHTML = '<div class="contact-sent" style="background:#FDF0F4;border-color:#F2C6D5;color:#B3385C">' +
+            ((typeof t === 'function' ? t('contact_fail') : '发送失败，请改用邮件联系。')) + '</div>';
+        })
+        .then(function(){ btn.disabled = false; });
+    });
+  })();
+  </script>
+</body>
+</html>

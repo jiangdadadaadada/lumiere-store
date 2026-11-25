@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request a Wholesale Quote | LUMIÈRE</title>
+<meta name="description" content="Send your SKU list, quantities and destination country to get a wholesale quote within one business day. No account, no online payment — orders close by proforma invoice.">
+<link rel="canonical" href="https://lumiere-store.lumiere-store.workers.dev/quote.html">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Request a Wholesale Quote | LUMIÈRE">
+<meta property="og:description" content="Send your SKU list and quantities. Reply within one business day with tiered pricing, carton plan and freight options.">
+<meta property="og:url" content="https://lumiere-store.lumiere-store.workers.dev/quote.html">
+<link rel="stylesheet" href="assets/wholesale.css">
+</head>
+<body>
+
+<header class="w-header">
+  <div class="w-container w-header-inner">
+    <a class="w-brand" href="wholesale.html">LUMIÈRE<span>.</span></a>
+    <nav class="w-nav">
+      <a href="wholesale.html">Wholesale</a>
+      <a href="oem.html">OEM &amp; Private Label</a>
+      <a href="blog.html">Resources</a>
+      <a href="category.html">Catalog</a>
+      <a href="quote.html" aria-current="page">Quote</a>
+    </nav>
+    <a class="w-cta" href="quote.html">Request a quote</a>
+  </div>
+</header>
+
+<main>
+  <section class="w-hero" style="padding-bottom:44px">
+    <div class="w-container">
+      <div class="w-eyebrow">Wholesale enquiry</div>
+      <h1>Tell us what you need. We will send a number.</h1>
+      <p>Four fields are enough: what you want, how many, where it ships, and who you are. If you have a target price, include it — it saves a round trip.</p>
+    </div>
+  </section>
+
+  <section class="w-section" style="padding-top:36px">
+    <div class="w-container">
+      <form class="w-form" id="quote-form" novalidate>
+        <div class="w-form-row">
+          <div class="w-field">
+            <label for="q-company">Company / brand</label>
+            <input id="q-company" name="company" maxlength="80" placeholder="e.g. Nordlys ApS">
+          </div>
+          <div class="w-field">
+            <label for="q-name">Contact name *</label>
+            <input id="q-name" name="name" maxlength="60" required placeholder="Your name">
+          </div>
+        </div>
+        <div class="w-form-row">
+          <div class="w-field">
+            <label for="q-email">Email *</label>
+            <input id="q-email" name="email" type="email" maxlength="120" required placeholder="you@company.com">
+          </div>
+          <div class="w-field">
+            <label for="q-wa">WhatsApp / phone</label>
+            <input id="q-wa" name="whatsapp" maxlength="60" placeholder="+45 …">
+          </div>
+        </div>
+        <div class="w-form-row">
+          <div class="w-field">
+            <label for="q-country">Destination country *</label>
+            <input id="q-country" name="country" maxlength="60" required placeholder="Denmark">
+          </div>
+          <div class="w-field">
+            <label for="q-qty">Estimated quantity</label>
+            <input id="q-qty" name="qty" maxlength="40" placeholder="e.g. 200 pcs mixed">
+          </div>
+        </div>
+        <div class="w-field">
+          <label for="q-items">Products / SKUs *</label>
+          <textarea id="q-items" name="items" required maxlength="1200" placeholder="LUM-W07 10 pcs, LUM-M01 50 pcs — or describe the product you are looking for"></textarea>
+        </div>
+        <div class="w-field">
+          <label for="q-target">Target price (optional)</label>
+          <input id="q-target" name="target" maxlength="60" placeholder="USD 18 / pc, FOB Shenzhen">
+        </div>
+        <div class="w-field">
+          <label for="q-note">Anything else (optional)</label>
+          <textarea id="q-note" name="note" maxlength="800" placeholder="Private label, certification, delivery deadline, marketplace…"></textarea>
+        </div>
+        <button class="w-cta" type="submit" id="q-submit">Send quote request</button>
+        <div class="w-form-msg" id="q-msg" role="status"></div>
+        <div class="w-hero-note">We reply within one business day. Your details are used only to prepare this quote.</div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="w-footer">
+  <div class="w-container">
+    <div class="w-footer-grid">
+      <div>
+        <div class="w-brand">LUMIÈRE<span>.</span></div>
+        <p>Wholesale and OEM supply of body-safe intimate wellness products. Sourced in China, consolidated and shipped worldwide.</p>
+      </div>
+      <div>
+        <h4>Business</h4>
+        <a href="wholesale.html">Wholesale</a>
+        <a href="oem.html">OEM &amp; Private Label</a>
+        <a href="category.html">Catalog</a>
+        <a href="quote.html">Request a quote</a>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <a href="blog.html">Buying guides</a>
+        <a href="blog/moq-tiered-pricing-guide.html">Landed cost guide</a>
+        <a href="blog/ce-rohs-fda-certification.html">Certification guide</a>
+      </div>
+    </div>
+    <div class="w-footer-bottom">
+      <span>© 2026 LUMIÈRE. Wholesale enquiries only · Adults 18+.</span>
+      <span><a href="privacy.html">Privacy</a> · <a href="contact.html">Contact</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var form = document.getElementById('quote-form');
+  var msg = document.getElementById('q-msg');
+  var btn = document.getElementById('q-submit');
+  function val(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = val('q-name'), email = val('q-email'), country = val('q-country'), items = val('q-items');
+    if (!name || !email || !country || !items) {
+      msg.className = 'w-form-msg err';
+      msg.textContent = 'Name, email, destination country and products are required.';
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      msg.className = 'w-form-msg err';
+      msg.textContent = 'Please check the email address.';
+      return;
+    }
+    var lines = [
+      'WHOLESALE QUOTE REQUEST',
+      'Company: ' + (val('q-company') || '-'),
+      'Contact: ' + name,
+      'Email: ' + email,
+      'WhatsApp: ' + (val('q-wa') || '-'),
+      'Country: ' + country,
+      'Quantity: ' + (val('q-qty') || '-'),
+      'Target price: ' + (val('q-target') || '-'),
+      '',
+      'Products / SKUs:',
+      items,
+      '',
+      'Notes:',
+      val('q-note') || '-'
+    ];
+    var payload = {
+      text: lines.join('\n'),
+      name: name,
+      email: email,
+      subject: 'Wholesale quote request' + (val('q-company') ? ' — ' + val('q-company') : ''),
+      country: country,
+      type: 'contact',
+      lang: 'en'
+    };
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    fetch('/api/chat/message', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function () {
+      msg.className = 'w-form-msg ok';
+      msg.textContent = 'Received. We will reply to ' + email + ' within one business day.';
+      form.reset();
+      btn.disabled = false;
+      btn.textContent = 'Send quote request';
+    }).catch(function (err) {
+      msg.className = 'w-form-msg err';
+      msg.textContent = 'Could not submit (' + err.message + '). Email us directly at care@lumiere.store.';
+      btn.disabled = false;
+      btn.textContent = 'Send quote request';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

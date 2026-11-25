@@ -1,0 +1,129 @@
+[
+  {
+    "at": "2026-11-21T10:25:59.042Z",
+    "stage": "sku-dump",
+    "build": "20261121e",
+    "url": "https://detail.1688.com/offer/1094000748915.html?_t=1795256751686&spm=a2615.7691456/2506.co_0_0_wangpu_score_0_0_0_0_0_0_0000_0.0",
+    "dump": {
+      "build": "20261121e",
+      "colorChain": null,
+      "colorHTML": "",
+      "dom": [
+        {
+          "bg": [],
+          "cls": "module-od-sku-selection cart-gap",
+          "imgCount": 6,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01X1oKCJ0UsVK1chua_!!2223125782003-0-cib.jpg_sum.jpg"
+            },
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01mCY8GE5tavC1chua_!!2223125782003-0-cib.jpg_sum.jpg"
+            },
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01Dvq3Etre8pE1chua_!!2223125782003-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "DIV",
+          "text": "规格 异形阳具（棕色） ¥45 库存32210个 异形阳具（黑红晕染色） ¥45 库存21312个 异形阳具（白蓝晕染色） ¥45 库存12321个 异形阳具（蓝绿晕染色） ¥45 库存12312个 异形阳具（白红晕染色） ¥45 库存12"
+        }
+      ],
+      "ok": true,
+      "skuPaths": [],
+      "url": "https://detail.1688.com/offer/1094000748915.html?_t=1795256751686&spm=a2615.7691456/2506.co_0_0_wangpu_score_0_0_0_0_0_0_0000_0.0",
+      "vars": {}
+    }
+  },
+  {
+    "at": "2026-11-21T10:25:57.791Z",
+    "stage": "start",
+    "build": "20261121e",
+    "url": "https://detail.1688.com/offer/1094000748915.html?_t=1795256751686&spm=a2615.7691456/2506.co_0_0_wangpu_score_0_0_0_0_0_0_0000_0.0",
+    "directDetail": true
+  },
+  {
+    "at": "2026-11-21T10:25:44.226Z",
+    "stage": "sku-dump",
+    "build": "20261121e",
+    "url": "https://detail.1688.com/offer/1086870059406.html?_t=1795256736531&spm=a2615.7691456/2506.co_0_0_wangpu_score_0_0_0_0_0_0_0000_0.0",
+    "dump": {
+      "build": "20261121e",
+      "colorChain": [
+        {
+          "bg": "none",
+          "cls": "",
+          "imgs": 0,
+          "tag": "SPAN"
+        },
+        {
+          "bg": "none",
+          "cls": "ant-table-cell",
+          "imgs": 0,
+          "tag": "TD"
+        },
+        {
+          "bg": "none",
+          "cls": "ant-table-row ant-table-row-level-0",
+          "imgs": 0,
+          "tag": "TR"
+        },
+        {
+          "bg": "none",
+          "cls": "ant-table-tbody",
+          "imgs": 0,
+          "tag": "TBODY"
+        },
+        {
+          "bg": "none",
+          "cls": "",
+          "imgs": 0,
+          "tag": "TABLE"
+        },
+        {
+          "bg": "none",
+          "cls": "ant-table-content",
+          "imgs": 0,
+          "tag": "DIV"
+        }
+      ],
+      "colorHTML": "<td class=\"ant-table-cell\"><span>红色.粉色.紫色.黑色.淡蓝色</span></td>",
+      "dom": [
+        {
+          "bg": [],
+          "cls": "module-od-sku-selection cart-gap",
+          "imgCount": 8,
+          "imgs": [
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01YIQpagob1WK1chua_!!2223125782003-0-cib.jpg_sum.jpg"
+            },
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN013sYGWE2FxFL3thOC_!!2223125782003-0-cib.jpg_sum.jpg"
+            },
+            {
+              "dataSrc": "",
+              "src": "https://cbu01.alicdn.com/img/ibank/O1CN01QAYCtqmKPWD3thOC_!!2223125782003-0-cib.jpg_sum.jpg"
+            }
+          ],
+          "tag": "DIV",
+          "text": "规格 相见欢 红色（带包装） ¥10.5 库存21295个 相见欢 粉色（带包装） ¥10.5 库存21307个 相见欢 紫色（带包装） ¥10.5 库存12311个 相见欢 黑色（带包装） ¥10.5 库存21310个 相见欢 淡蓝色（带"
+        }
+      ],
+      "ok": true,
+      "skuPaths": [],
+      "url": "https://detail.1688.com/offer/1086870059406.html?_t=1795256736531&spm=a2615.7691456/2506.co_0_0_wangpu_score_0_0_0_0_0_0_0000_0.0",
+      "vars": {}
+    }
+  },
+  {
+    "at": "2026-11-21T10:25:44.105Z",
+    "stage": "start",
+    "build": "20261121e",
+    "url": "https://detail.1688.com/offer/1086870059406.html?_t=1795256736531&spm=a2615.7691456/2506.co_0_0_wangpu_score_0_0_0_0_0_0_0000_0.0",
+    "directDetail": true
+  }
+]

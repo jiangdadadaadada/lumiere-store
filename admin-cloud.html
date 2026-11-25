@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMIÈRE · 订单台</title>
+<style>
+:root{--ink:#17161c;--muted:#6d6a78;--line:#e8e5f0;--bg:#f6f4fb;--card:#fff;--accent:#7f77dd;--ok:#0f9d58;--warn:#d9822b;--bad:#c8464b}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+.wrap{max-width:960px;margin:0 auto;padding:18px 14px 60px}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.brand{font-weight:700;letter-spacing:.14em;font-size:15px}
+.brand span{color:var(--accent)}
+.spacer{flex:1}
+.key-box{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input[type=password],input[type=text]{padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-size:13px;background:#fff;min-width:210px;outline:none}
+input:focus{border-color:var(--accent)}
+button{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 13px;font-size:13px;color:var(--ink);transition:.15s}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{filter:brightness(.95);color:#fff}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
+.tab{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 13px;font-size:13px;color:var(--muted)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab b{font-weight:600;margin-left:4px}
+.msg{border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:12px;background:#fff2f2;color:var(--bad);border:1px solid #f5d8d8}
+.msg.ok{background:#f1fbf4;color:var(--ok);border-color:#d5ecdd}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.row1{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.oid{font-weight:700;letter-spacing:.04em}
+.pill{font-size:12px;padding:2px 10px;border-radius:999px;border:1px solid transparent}
+.pending{background:#fff4e6;color:#a9671c;border-color:#f7e0c2}
+.approved{background:#eef0ff;color:#4a44a8;border-color:#dcdefb}
+.awaiting_payment{background:#fff0f0;color:#b03a3f;border-color:#f6d3d4}
+.paid{background:#eafaf0;color:#0d7a44;border-color:#cfeddb}
+.shipped{background:#e8f4ff;color:#1c5f9e;border-color:#cfe6f8}
+.completed{background:#f1f1f4;color:#4d4a58;border-color:#e2e1ea}
+.cancelled{background:#f6f0f2;color:#8a6b74;border-color:#eadfe3}
+.amt{font-weight:700;margin-left:auto}
+.time{color:var(--muted);font-size:12px;margin-top:2px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+.sec-title{font-size:12px;color:var(--muted);letter-spacing:.08em;margin-bottom:6px}
+.items li{list-style:none;display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.items ul{margin:0;padding:0}
+.thumb{width:38px;height:38px;border-radius:8px;object-fit:cover;background:#f0eef7;flex:none}
+.item-name{flex:1;min-width:0}
+.item-name small{color:var(--muted)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.acts .note{flex:1;min-width:150px}
+.empty{text-align:center;color:var(--muted);padding:48px 10px}
+.hint{color:var(--muted);font-size:12px;margin-top:8px}
+@media(max-width:640px){.amt{margin-left:0;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">LUMIÈRE <span>·</span> 订单台</div>
+    <a href="admin-shop.html" style="font-size:13px;margin-left:6px">商品台 →</a>
+    <div class="spacer"></div>
+    <div class="key-box">
+      <input type="password" id="key" autocomplete="off">
+      <button id="save">保存</button>
+      <button class="primary" id="reload">刷新</button>
+    </div>
+  </div>
+  <div id="msg"></div>
+  <div class="card" id="inq-card" style="padding:13px 16px">
+    <div class="row1" style="gap:10px">
+      <div class="sec-title" style="margin:0">批发询盘 / 站内留言</div>
+      <span id="inq-count" class="pill" style="background:#eef0ff;color:#4a44a8;border-color:#dcdefb">0</span>
+      <div class="spacer"></div>
+      <button id="inq-refresh">刷新询盘</button>
+    </div>
+    <div id="inq-list" style="margin-top:10px;font-size:13px;color:var(--muted)">填密钥后点「刷新询盘」加载。</div>
+  </div>
+  <div class="card" style="padding:13px 16px">
+    <div class="row1" style="gap:10px">
+      <div class="sec-title" style="margin:0">站上客服联系方式</div>
+      <div class="spacer"></div>
+      <button id="set-save">保存联系方式</button>
+    </div>
+    <div class="grid" style="margin-top:10px">
+      <div>
+        <label class="sec-title" for="set-wa">WhatsApp（带国家区号，客户点它直接起对话）</label>
+        <input type="text" id="set-wa" style="width:100%">
+      </div>
+      <div>
+        <label class="sec-title" for="set-mail">客服邮箱</label>
+        <input type="text" id="set-mail" style="width:100%">
+      </div>
+      <div>
+        <label class="sec-title" for="set-hours">在线时间</label>
+        <input type="text" id="set-hours" style="width:100%">
+      </div>
+      <div>
+        <label class="sec-title" for="set-resp">承诺回复时长（小时）</label>
+        <input type="text" id="set-resp" style="width:100%">
+      </div>
+    </div>
+  </div>
+  <div class="card" style="padding:13px 16px">
+    <div class="row1" style="gap:10px">
+      <div class="sec-title" style="margin:0">发货时效（商品页「配送与隐私」里那张卡）</div>
+      <div class="spacer"></div>
+      <button id="ship-save">保存发货时效</button>
+    </div>
+    <div class="grid" style="margin-top:10px">
+      <div>
+        <label class="sec-title" for="ship-cutoff">当日截单时间</label>
+        <input type="text" id="ship-cutoff" style="width:100%">
+      </div>
+      <div>
+        <label class="sec-title" for="ship-days">承诺时效（工作日，最快–最慢）</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" id="ship-min" style="flex:1">
+          <span style="color:var(--muted)">–</span>
+          <input type="text" id="ship-max" style="flex:1">
+        </div>
+      </div>
+      <div>
+        <label class="sec-title" for="ship-zh">自定义中文文案（选填，留空按上面数字自动生成）</label>
+        <input type="text" id="ship-zh" style="width:100%">
+      </div>
+      <div>
+        <label class="sec-title" for="ship-en">自定义英文文案（选填）</label>
+        <input type="text" id="ship-en" style="width:100%">
+      </div>
+    </div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div id="list"><div class="empty">输入管理密钥后点「刷新」加载订单</div></div>
+  <div class="hint">所有新订单会实时落到云端数据库；状态流转：待审核 → 已审核 → 待付款 → 已付款 → 已发货 → 已完成。密钥只存在这台设备的浏览器里。</div>
+</div>
+<script>
+const STATUS = {
+  pending:{label:'待审核',next:['approved','cancelled']},
+  approved:{label:'已审核',next:['awaiting_payment','cancelled']},
+  awaiting_payment:{label:'待付款',next:['paid','cancelled']},
+  paid:{label:'已付款',next:['shipped','cancelled']},
+  shipped:{label:'已发货',next:['completed']},
+  completed:{label:'已完成',next:[]},
+  cancelled:{label:'已取消',next:[]}
+};
+const KEY_STORE = 'lumiere_admin_key';
+let apiKey = localStorage.getItem(KEY_STORE) || '';
+let curStatus = 'all';
+let cache = { orders: [], counts: {}, total: 0 };
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = (n, cur) => (cur === 'USD' ? '$' : '') + Number(n || 0).toFixed(2) + (cur && cur !== 'USD' ? ' ' + cur : '');
+const when = t => t ? new Date(t).toLocaleString('zh-CN', { hour12: false }) : '';
+
+function msg(text, ok) {
+  $('#msg').innerHTML = text ? `<div class="msg ${ok ? 'ok' : ''}">${esc(text)}</div>` : '';
+}
+function api(path, opts = {}) {
+  return fetch(path, Object.assign({}, opts, {
+    headers: Object.assign({ 'X-Admin-Key': apiKey }, opts.body ? { 'Content-Type': 'application/json' } : {}, opts.headers || {})
+  }));
+}
+function tabs() {
+  const c = cache.counts || {};
+  const all = cache.total || 0;
+  const items = [['all', '全部', all]].concat(Object.keys(STATUS).map(k => [k, STATUS[k].label, c[k] || 0]));
+  $('#tabs').innerHTML = items.map(([k, label, n]) =>
+    `<button class="tab ${curStatus === k ? 'on' : ''}" data-s="${k}">${esc(label)}<b>${n}</b></button>`).join('');
+  $('#tabs').querySelectorAll('.tab').forEach(b => b.onclick = () => { curStatus = b.dataset.s; load(); });
+}
+function render() {
+  const orders = cache.orders || [];
+  if (!orders.length) { $('#list').innerHTML = `<div class="empty">还没有${curStatus === 'all' ? '' : (STATUS[curStatus] || {}).label || ''}订单</div>`; return; }
+  $('#list').innerHTML = orders.map(o => {
+    const st = o.status || 'pending';
+    const meta = STATUS[st] || { label: st, next: [] };
+    const c = o.customer || {};
+    const wa = String(c.phone || '').replace(/[^\d]/g, '');
+    const items = (o.items || []).map(it => `
+      <li>
+        ${it.image ? `<img class="thumb" src="${esc(it.image)}" alt="">` : '<span class="thumb"></span>'}
+        <span class="item-name">${esc(it.name || it.sku)} <small>× ${esc(it.qty || 1)}</small></span>
+        <span>${money(it.price, o.currency)}</span>
+      </li>`).join('');
+    const acts = meta.next.map(n => `<button data-act="${n}" data-id="${esc(o.id)}">${esc(n === 'cancelled' ? '取消订单' : STATUS[n].label)}</button>`).join('');
+    return `<div class="card">
+      <div class="row1">
+        <span class="oid">${esc(o.id)}</span>
+        <span class="pill ${esc(st)}">${esc(meta.label)}</span>
+        <span class="amt">${money(o.total, o.currency)}</span>
+      </div>
+      <div class="time">${esc(when(o.createdAt))}${o.payment ? ' · 付款方式 ' + esc({cod:'货到付款',card:'银行卡',crypto:'加密货币',paypal:'PayPal',alipay:'支付宝',wechat:'微信'}[o.payment] || o.payment) : ''}${o.site ? ' · 站点 ' + esc(o.site) : ''}</div>
+      <div class="grid">
+        <div>
+          <div class="sec-title">商品</div>
+          <ul class="items">${items}</ul>
+        </div>
+        <div>
+          <div class="sec-title">客户与收货</div>
+          <div><b>${esc(c.name)}</b></div>
+          <div>${c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : ''}</div>
+          <div>${c.phone ? (wa ? `<a href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp ${esc(c.phone)}</a>` : esc(c.phone)) : ''}</div>
+          <div style="color:var(--muted)">${esc([c.addr, c.addr2, c.city, c.state, c.district, c.zip, c.country].filter(Boolean).join(', '))}</div>
+        </div>
+      </div>
+      ${acts ? `<div class="acts"><input class="note" type="text">${acts}</div>` : ''}
+    </div>`;
+  }).join('');
+  $('#list').querySelectorAll('.acts button').forEach(b => b.onclick = () => act(b.dataset.id, b.dataset.act, b.parentElement.querySelector('.note').value));
+}
+async function load() {
+  if (!apiKey) { msg('请先填管理密钥'); return; }
+  try {
+    const r = await api('/api/orders?status=' + curStatus + '&limit=200');
+    if (r.status === 401) { msg('密钥不对，或者云端没有配置 ADMIN_KEY'); return; }
+    if (!r.ok) { msg('读取失败：HTTP ' + r.status); return; }
+    const j = await r.json();
+    cache = j; msg('');
+    tabs(); render();
+    loadInquiries();
+  } catch (e) { msg('网络错误：' + e.message); }
+}
+async function act(id, status, note) {
+  if (status === 'cancelled' && !confirm('确认取消订单 ' + id + '？')) return;
+  const r = await api('/api/order/' + encodeURIComponent(id), { method: 'PATCH', body: JSON.stringify({ status, note: note || undefined }) });
+  const j = await r.json().catch(() => ({}));
+  if (r.ok) { msg(id + ' → ' + ((STATUS[status] || {}).label || status), true); load(); }
+  else msg('操作失败：' + (j.error || r.status) + (j.allowed ? '（允许：' + j.allowed.join('/') + '）' : ''));
+}
+$('#key').value = apiKey;
+$('#save').onclick = () => { apiKey = $('#key').value.trim(); localStorage.setItem(KEY_STORE, apiKey); msg('密钥已保存到本机浏览器', true); load(); };
+$('#reload').onclick = () => { load(); loadInquiries(); };
+$('#key').addEventListener('keydown', e => { if (e.key === 'Enter') $('#save').click(); });
+
+/* 联系方式：读 /api/settings（公开），写需要密钥 */
+async function loadContact() {
+  try {
+    const r = await fetch('/api/settings');
+    if (!r.ok) return;
+    const s = await r.json();
+    const c = s.contact || {};
+    $('#set-wa').value = c.whatsapp || '';
+    $('#set-mail').value = c.email || '';
+    $('#set-hours').value = c.hours || '';
+    $('#set-resp').value = c.responseHours == null ? '' : c.responseHours;
+    const sh = s.shipping || {};
+    $('#ship-cutoff').value = sh.cutoff || '';
+    $('#ship-min').value = sh.minDays == null ? '' : sh.minDays;
+    $('#ship-max').value = sh.maxDays == null ? '' : sh.maxDays;
+    $('#ship-zh').value = sh.zh || '';
+    $('#ship-en').value = sh.en || '';
+  } catch (e) {}
+}
+$('#ship-save').onclick = async () => {
+  if (!apiKey) { msg('先填管理密钥再保存发货时效'); return; }
+  const shipping = {
+    cutoff: $('#ship-cutoff').value.trim() || '14:00',
+    minDays: Number($('#ship-min').value.trim() || 1),
+    maxDays: Number($('#ship-max').value.trim() || 3),
+    zh: $('#ship-zh').value.trim(),
+    en: $('#ship-en').value.trim()
+  };
+  if (shipping.minDays > shipping.maxDays) { msg('最快天数不能大于最慢天数'); return; }
+  const r = await api('/api/settings', { method: 'PATCH', body: JSON.stringify({ shipping }) });
+  if (r.ok) { msg('发货时效已保存，商品页立即生效', true); loadContact(); }
+  else { const j = await r.json().catch(() => ({})); msg('保存失败：' + (j.error || r.status)); }
+};
+$('#set-save').onclick = async () => {
+  if (!apiKey) { msg('先填管理密钥再保存联系方式'); return; }
+  const contact = {
+    whatsapp: $('#set-wa').value.trim(),
+    email: $('#set-mail').value.trim(),
+    hours: $('#set-hours').value.trim(),
+    responseHours: Number($('#set-resp').value.trim() || 8)
+  };
+  const r = await api('/api/settings', { method: 'PATCH', body: JSON.stringify({ contact }) });
+  if (r.ok) { msg('联系方式已保存到云端，前台立即生效', true); loadContact(); }
+  else { const j = await r.json().catch(() => ({})); msg('保存失败：' + (j.error || r.status)); }
+};
+loadContact();
+
+
+/* 批发询盘：复用站内留言工单（type=contact），只读展示 */
+async function loadInquiries() {
+  const box = $('#inq-list');
+  if (!apiKey) { box.textContent = '填密钥后点「刷新询盘」加载。'; return; }
+  try {
+    const r = await api('/api/chat/sessions?limit=100');
+    if (!r.ok) { box.innerHTML = '<div class="msg">读取询盘失败：HTTP ' + r.status + '</div>'; return; }
+    const j = await r.json();
+    const list = (j.sessions || []).filter(s => s.type === 'contact');
+    $('#inq-count').textContent = list.length;
+    if (!list.length) { box.textContent = '暂无询盘。'; return; }
+    const details = [];
+    for (const s of list.slice(0, 20)) {
+      try {
+        const dr = await api('/api/chat/session?id=' + encodeURIComponent(s.id));
+        const dj = dr.ok ? await dr.json() : null;
+        details.push(Object.assign({}, s, { messages: (dj && dj.messages) || [] }));
+      } catch (e) { details.push(Object.assign({}, s, { messages: [] })); }
+    }
+    box.innerHTML = details.map(s => {
+      const msgs = (s.messages || []).map(m =>
+        '<div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);white-space:pre-wrap">'
+        + '<span style="color:var(--muted)">' + esc(m.from === 'user' ? '客户' : '你') + ' · ' + esc(when(m.ts)) + '</span><br>' + esc(m.text) + '</div>'
+      ).join('');
+      const mail = s.email ? '<a href="mailto:' + esc(s.email) + '" style="color:#4a44a8">' + esc(s.email) + '</a>' : '';
+      return '<div class="card" style="margin:10px 0 0;background:#fbfaff">'
+        + '<div class="row1"><b>' + esc(s.subject || '询盘') + '</b>' + (s.unread ? '<span class="pill pending">' + s.unread + ' 条未读</span>' : '') + '<span class="amt" style="font-weight:400;font-size:12px;color:var(--muted)">' + esc(when(s.lastAt || s.createdAt)) + '</span></div>'
+        + '<div class="time">' + esc(s.name || '-') + (mail ? ' · ' + mail : '') + (s.country ? ' · ' + esc(s.country) : '') + '</div>'
+        + msgs
+        + '</div>';
+    }).join('');
+  } catch (e) {
+    box.innerHTML = '<div class="msg">网络错误：' + esc(e.message) + '</div>';
+  }
+}
+$('#inq-refresh').onclick = loadInquiries;
+if (apiKey) { load(); loadInquiries(); }
+</script>
+</body>
+</html>

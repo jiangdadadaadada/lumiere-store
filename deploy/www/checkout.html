@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUMIÈRE · Checkout</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/theme-card-layout.css">
+  <link rel="stylesheet" href="assets/rtl.css">
+</head>
+<body>
+
+  <div class="agegate" id="agegate" hidden>
+    <div class="agegate-card">
+      <div class="agegate-mark">18+</div>
+      <h2 data-i18n="age_title">你已年满 18 周岁了吗？</h2>
+      <p data-i18n="age_body">本站商品仅供成年人购买与使用。</p>
+      <p class="fine" data-i18n="age_fine">点击进入即代表你确认已符合所在地区的法定购买年龄。</p>
+      <div class="agegate-actions">
+        <button class="btn btn-ghost" id="age-no" data-i18n="age_no">未满 18 岁</button>
+        <button class="btn btn-primary" id="age-yes" data-i18n="age_yes">我已满 18 岁，进入</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">LUMIÈRE<span class="brand-dot">.</span></a>
+      <nav class="nav">
+        <a href="index.html" data-i18n="nav_home">首页</a>
+        <a href="category.html?cat=women" data-i18n="nav_women">女性用品</a>
+        <a href="category.html?cat=men" data-i18n="nav_men">男性用品</a>
+        <a href="category.html?cat=couples" data-i18n="nav_couples">情侣共悦</a>
+        <a href="category.html?cat=health" data-i18n="nav_health">健康护理</a>
+        <a href="wholesale.html" class="nav-b2b">Wholesale</a>
+      </nav>
+      <div class="nav-tools">
+        <div class="pk" id="pk-lang">
+          <button type="button" class="pk-trigger" id="lang-trigger" aria-label="Language"></button>
+          <div class="pk-pop">
+            <div class="pk-search-wrap"><input id="pk-search" type="text" placeholder="搜索语言 / Search…"></div>
+            <div class="pk-menu" data-type="lang"></div>
+          </div>
+        </div>
+        <div class="pk" id="pk-cur">
+          <button type="button" class="pk-trigger" id="cur-trigger" aria-label="Currency"></button>
+          <div class="pk-pop">
+            <div class="pk-search-wrap"><input class="pk-search-cur" type="text" placeholder="搜索货币 / Search…"></div>
+            <div class="pk-menu" data-type="cur"></div>
+          </div>
+        </div>
+        <button class="cart-btn" onclick="location.href='cart.html'"><span data-i18n="nav_cart">购物袋</span> <span class="cart-count" id="cart-count">0</span></button>
+      </div>
+    </div>
+  </header>
+
+  <section class="page-head">
+    <div class="container">
+      <div class="crumb"><a href="index.html" data-i18n="crumb_home">首页</a> / <a href="cart.html" data-i18n="crumb_cart">购物袋</a> / <span data-i18n="crumb_checkout">结账</span></div>
+      <h1 data-i18n="checkout_title">结账</h1>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" id="checkout-box">
+      <div class="order-note" data-i18n="checkout_demo">每笔订单先经审核再进入付款环节；审核通过后我们会邮件联系你完成付款。</div>
+      <div class="checkout-layout">
+        <div>
+          <div class="checkout-card">
+            <h3><span class="step-num">1</span><span data-i18n="checkout_shipinfo">收货信息</span></h3>
+            <div class="form-grid">
+              <div class="form-field"><label data-i18n="f_name">收件人姓名 *</label><input id="f-name" data-i18n-ph="f_name" placeholder="姓名"></div>
+              <div class="form-field"><label data-i18n="f_email">电子邮箱 *</label><input id="f-email" type="email" data-i18n-ph="f_email_ph" placeholder="用于接收订单通知"></div>
+              <div class="form-field full"><label data-i18n="f_addr">详细地址 *</label><input id="f-addr" data-i18n-ph="f_addr_ph" placeholder="街道、门牌号（必填，请写到门牌号）"></div>
+              <div class="form-field full"><label data-i18n="f_addr2">公寓 / 楼层 / 房间号</label><input id="f-addr2" data-i18n-ph="f_addr2" placeholder="公寓 / 楼层 / 房间号"></div>
+              <div class="form-field"><label data-i18n="f_country">国家/地区 *</label><select id="country-select"></select></div>
+              <div class="form-field"><label data-i18n="f_state">州 / 省 *</label><input id="f-state" data-i18n-ph="f_state" placeholder="州 / 省"></div>
+              <div class="form-field"><label data-i18n="f_city">城市 *</label><input id="f-city" data-i18n-ph="f_city" placeholder="城市"></div>
+              <div class="form-field" id="district-field" style="display:none"><label id="f-district-label">区 / 县 *</label><input id="f-district" placeholder="区 / 县"></div>
+              <div class="form-field"><label data-i18n="f_zip">邮编</label><input id="f-zip" data-i18n-ph="f_zip" placeholder="邮政编码"></div>
+              <div class="form-field full"><label data-i18n="f_phone">联系电话 *</label><input id="f-phone" type="tel" data-i18n-ph="f_phone" placeholder="含区号"></div>
+            </div>
+          </div>
+          <div class="checkout-card" id="pay-card">
+            <h3><span class="step-num">2</span><span data-i18n="checkout_payment">支付方式</span></h3>
+            <p style="font-size:12px;color:var(--ink-3);margin-bottom:14px">
+              <span data-i18n="checkout_shipto">配送至</span> <strong id="ship-flag">🇦🇪 阿联酋</strong> · <span data-i18n="checkout_payhint">系统按地区自动显示可用渠道</span>
+            </p>
+            <div class="pay-methods" id="pay-methods"></div>
+            <p style="font-size:12px;color:var(--ink-3);margin-top:14px" data-i18n="checkout_review_note">我们会在 1 个工作日内通过邮件与你确认付款方式与发货安排</p>
+          </div>
+        </div>
+        <aside class="checkout-card" style="position:sticky;top:90px">
+          <h3 data-i18n="checkout_order">订单摘要</h3>
+          <div id="order-items"></div>
+          <button class="btn btn-primary btn-block" id="place-order" style="margin-top:20px" data-i18n="checkout_place">提交订单</button>
+          <p style="font-size:11px;color:var(--ink-3);text-align:center;margin-top:12px" data-i18n="checkout_secure">🔒 全程加密 · 隐私配送</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border:none;padding-top:0">
+        <span>© 2026 LUMIÈRE. <span data-i18n="footer_rights">保留所有权利。</span></span>
+        <span><a href="privacy.html" data-i18n="foot_privacy">隐私政策</a> · <span data-i18n="footer_adult">本站仅供成年人访问</span></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/i18n/zh.js"></script>
+  <script src="assets/i18n/en.js"></script>
+  <script src="assets/i18n/de.js"></script>
+  <script src="assets/i18n/fr.js"></script>
+  <script src="assets/i18n/es.js"></script>
+  <script src="assets/i18n/ja.js"></script>
+  <script src="assets/i18n/ko.js"></script>
+  <script src="assets/i18n/th.js"></script>
+  <script src="assets/i18n/vi.js"></script>
+  <script src="assets/i18n/ar.js"></script>
+  <script src="assets/i18n/pt.js"></script>
+  <script src="assets/i18n/ru.js"></script>
+  <script src="assets/i18n/id.js"></script>
+  <script src="assets/i18n/it.js"></script>
+  <script src="assets/i18n/nl.js"></script>
+  <script src="assets/i18n/pl.js"></script>
+  <script src="assets/i18n/sv.js"></script>
+  <script src="assets/i18n/da.js"></script>
+  <script src="assets/i18n/no.js"></script>
+  <script src="assets/i18n/fi.js"></script>
+  <script src="assets/i18n/cs.js"></script>
+  <script src="assets/i18n/el.js"></script>
+  <script src="assets/i18n/hu.js"></script>
+  <script src="assets/i18n/ro.js"></script>
+  <script src="assets/i18n/uk.js"></script>
+  <script src="assets/i18n/he.js"></script>
+  <script src="assets/i18n/fa.js"></script>
+  <script src="assets/i18n/ur.js"></script>
+  <script src="assets/i18n/tr.js"></script>
+  <script src="assets/i18n/hi.js"></script>
+  <script src="assets/i18n/bn.js"></script>
+  <script src="assets/i18n/mr.js"></script>
+  <script src="assets/i18n/ta.js"></script>
+  <script src="assets/i18n/ms.js"></script>
+  <script src="assets/i18n/tl.js"></script>
+  <script src="assets/i18n/km.js"></script>
+  <script src="assets/i18n/my.js"></script>
+  <script src="assets/i18n/sr.js"></script>
+  <script src="assets/i18n/sw.js"></script>
+  <script src="assets/i18n/af.js"></script>
+  <script src="assets/i18n/kk.js"></script>
+  <script src="assets/i18n-shell.js"></script>
+  <script src="assets/i18n-order.js"></script>
+  <script src="assets/i18n-extra.js"></script>
+  <script src="assets/geo.js"></script>
+  <script src="assets/address-data.js"></script>
+  <script src="assets/products.js"></script>
+  <script src="assets/zh-hant.js"></script>
+  <script src="assets/lo.js"></script>
+  <script src="assets/i18n-eu.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/chat.js"></script>
+</body>
+</html>

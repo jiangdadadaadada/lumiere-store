@@ -1,0 +1,28 @@
+name = "lumiere-store"
+main = "worker.js"
+compatibility_date = "2026-11-18"
+
+# 一个 Worker 同时提供站点静态页和 /api/* 接口：
+# 静态页在 deploy/www（由 _tmp/build-deploy.js 生成），通过 [assets] 绑定挂上去。
+# 部署命令：npx wrangler deploy
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lumiere-db"
+database_id = "c8d4ada5-ddeb-45e7-a78c-92e439510d42"
+
+[[r2_buckets]]
+binding = "IMG"
+bucket_name = "lumiere-img"
+
+[vars]
+R2_PUBLIC_BASE = "https://pub-70a352fa1a7d4db9b093906989cc565f.r2.dev"
+
+# 支付回调验签密钥（用 `wrangler secret put PAYMENT_SECRET` 设置，勿明文写入）
+# [vars]
+# PAYMENT_SECRET = "your-hmac-secret"
+
+# 站点静态资源（前台页面 + 图片），Worker 内用 env.ASSETS.fetch 处理非 /api 请求
+[assets]
+directory = "./deploy/www"
+binding = "ASSETS"

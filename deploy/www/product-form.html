@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>商品编辑 · LUMIÈRE 后台</title>
+<style>
+:root{
+  --purple-50:#EEEDFE;--purple-100:#CECBF6;--purple-300:#AFA9EC;--purple-500:#7F77DD;
+  --purple-700:#534AB7;--purple-900:#26215C;--ink:#1d1b2e;--ink-2:#55526b;--ink-3:#8a879c;
+  --line:#e9e7f0;--line-2:#dedbe9;--paper:#fff;--paper-2:#faf9fe;--page:#f6f5fb;
+  --green:#0F6E56;--rose:#D4537E;--radius:14px;
+  --font:"PingFang SC","Microsoft YaHei",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);color:var(--ink);background:var(--page);line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:80px}
+button,input,select,textarea{font-family:inherit;font-size:inherit}
+button{cursor:pointer}
+.wrap{max-width:1020px;margin:0 auto;padding:26px 20px 0}
+/* 顶部标题 */
+.pg-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.pg-head h1{font-size:22px;color:var(--purple-900);display:flex;align-items:center;gap:11px}
+.pg-head h1:before{content:'✦';display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#7F77DD,#534AB7);color:#fff;font-size:16px;box-shadow:0 4px 12px rgba(83,74,183,.3)}
+.pg-head .sub{font-size:12px;color:var(--ink-3);margin-top:3px}
+.pg-head .back{font-size:13px;color:var(--purple-700);text-decoration:none;border:1px solid var(--line-2);background:#fff;border-radius:9px;padding:8px 14px;transition:.15s}
+.pg-head .back:hover{border-color:var(--purple-300);background:var(--purple-50)}
+/* 顶部彩虹渐变线 */
+.tabs-rainbow{height:3px;background:linear-gradient(90deg,#7F77DD,#3B82C4,#159A8C,#C77D1B,#D4537E);margin:0 1px}
+/* 表单主体 */
+.form-body{padding:22px 20px 24px;display:flex;flex-direction:column;gap:18px}
+.pf-sec{display:block;position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 24px 22px 26px;box-shadow:0 3px 14px rgba(38,33,92,.05);overflow:hidden}
+.pf-sec[data-tone="1"]{--tc:#7F77DD;--tbg:#EEEDFE;--tdeep:#534AB7}
+.pf-sec[data-tone="2"]{--tc:#3B82C4;--tbg:#EAF2FC;--tdeep:#265D96}
+.pf-sec[data-tone="3"]{--tc:#159A8C;--tbg:#E5F5F1;--tdeep:#0E6E63}
+.pf-sec[data-tone="4"]{--tc:#C77D1B;--tbg:#FBF1E3;--tdeep:#8E5710}
+.pf-sec[data-tone="5"]{--tc:#D4537E;--tbg:#FCEAF1;--tdeep:#A33A5E}
+.pf-sec:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--tc)}
+.pf-sec-h{display:flex;align-items:center;gap:11px;margin-bottom:18px;padding-bottom:13px;border-bottom:1px solid var(--tbg)}
+.pf-sec-n{width:27px;height:27px;flex:none;border-radius:9px;background:var(--tc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.pf-sec-t{font-size:14px;font-weight:700;color:var(--tdeep)}
+.pf-sec-t:before{content:'';display:inline-block;width:7px;height:7px;border-radius:2px;background:var(--tc);margin-right:9px;vertical-align:2px;transform:rotate(45deg)}
+.pf-sec-d{font-size:11px;color:var(--ink-3);margin-left:auto;background:var(--tbg);padding:3px 10px;border-radius:20px}
+.field{margin-bottom:15px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:12px;color:var(--ink-2);font-weight:600;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.field label:before{content:'';width:5px;height:5px;border-radius:50%;background:var(--tc);flex:none}
+.field label .req{color:var(--rose)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+input:not([type=color]):not([type=file]),select,textarea{
+  width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 13px;font-size:13px;
+  background:var(--paper-2);color:var(--ink);transition:border-color .16s,background .16s,box-shadow .16s;
+}
+input:not([type=color]):not([type=file]):hover,select:hover,textarea:hover{border-color:var(--tc)}
+input:not([type=color]):not([type=file]):focus,select:focus,textarea:focus{outline:none;background:#fff;border-color:var(--tc);box-shadow:0 0 0 3px var(--tbg)}
+textarea{resize:vertical;line-height:1.6}
+input::placeholder,textarea::placeholder{color:#b7b4c6}
+.pf-price-wrap{position:relative}
+.pf-price-wrap input{padding-left:34px!important;font-weight:700;font-size:15px!important;color:var(--tdeep)!important}
+.pf-price-wrap input.is-missing{border-color:#e5484d!important;background:#fff5f5}
+.pf-price-miss{margin-top:6px;font-size:11px;font-weight:600;color:#c62a2a;line-height:1.5}
+.pf-price-miss[hidden]{display:none}
+.pf-lbl-note{font-size:11px;font-weight:600;color:var(--purple-700);background:#F1EFFC;border-radius:6px;padding:1px 6px;margin-left:6px}
+.pf-desc-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
+.pf-desc-state{font-size:11.5px;line-height:1.6;color:#8a86a0}
+.pf-desc-state.is-err{color:#c62a2a}
+.pf-field-hint{margin-top:6px;font-size:11.5px;line-height:1.6;color:#8a86a0}
+#pf-stock[readonly]{background:#F7F6FC;color:var(--purple-900);cursor:default;font-weight:600}
+#pf-money-fields[hidden]{display:none}
+.pf-price-wrap:before{content:'$';position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:16px;font-weight:700;color:var(--tc);z-index:1}
+.pf-upload{display:flex;gap:16px;align-items:flex-start}
+.pf-upload-preview{width:88px;height:88px;flex:none;border-radius:12px;border:2px dashed var(--line-2);background:var(--page);object-fit:cover;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:11px;text-align:center;overflow:hidden}
+.pf-upload-preview img{width:100%;height:100%;object-fit:cover}
+.pf-file-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:9px;background:var(--tbg);color:var(--tdeep);font-size:12px;font-weight:600;cursor:pointer;border:1px dashed var(--tc)}
+.pf-file-btn:hover{filter:brightness(.97)}
+.pf-file-btn input{display:none}
+.pf-file-btn[data-busy]{opacity:.6;pointer-events:none}
+.pf-spec-rows{display:flex;flex-direction:column;gap:6px}
+.pf-spec-row{display:flex;gap:8px;align-items:center}
+.pf-spec-row select,.pf-spec-row .pf-spec-k{flex:0 0 122px;padding:9px 10px}
+.pf-spec-row input[data-f="v"]{flex:1 1 auto;min-width:0}
+.pf-spec-row input[data-f="vEn"]{flex:0 0 170px;min-width:0}
+.pf-spec-del{flex:0 0 30px;height:36px;padding:0;border:1px solid var(--line);background:var(--paper-2);border-radius:9px;color:#9a93b5;font-size:15px;line-height:1;cursor:pointer}
+.pf-spec-del:hover{color:#c62a2a;border-color:#c62a2a;background:#fff5f5}
+/* SKU 颜色图编辑 */
+.pf-sku-box{border:1.5px dashed var(--line-2);border-radius:12px;padding:10px 12px;background:var(--paper-2)}
+.pf-sku-group+.pf-sku-group{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.pf-sku-gt{font-size:11px;font-weight:700;color:var(--tdeep);margin-bottom:4px;background:var(--tbg);display:inline-block;padding:3px 10px;border-radius:20px}
+.pf-sku-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.pf-sku-card{width:106px;display:flex;flex-direction:column;gap:6px}
+.pf-sku-pic{width:106px;height:106px;border-radius:10px;object-fit:cover;background:#fff;border:1px solid var(--line-2);display:block}
+.pf-sku-pic.is-empty{display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:11px;border-style:dashed;background:var(--paper-2)}
+.pf-sku-name{font-size:11.5px;line-height:1.35;color:var(--ink);font-weight:600;word-break:break-all;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;min-height:2.7em}
+.pf-sku-up{display:block;text-align:center;font-size:11px;color:var(--tdeep);background:#fff;border:1px dashed var(--tc);border-radius:8px;padding:6px 4px;cursor:pointer;white-space:nowrap;transition:.15s}
+.pf-sku-up:hover{background:var(--tbg);border-style:solid}
+.pf-sku-up input{display:none}
+/* 商品图片：统一方格，第一格即主图，末尾 ＋ 格上传 */
+.pf-gal-head{display:flex;align-items:center;justify-content:space-between;margin:2px 0 10px}
+.pf-gal-count{font-size:11px;color:var(--ink-3)}
+.btn-white{background:#F1EEFE;color:#5B52C4;border:1px solid #DED8FB;border-radius:8px;padding:3px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;white-space:nowrap}
+.btn-white:hover{background:#E6E1FD;border-color:var(--purple-700);color:#4A41B0}
+.btn-white.on{background:var(--purple-700);color:#fff;border-color:var(--purple-700);box-shadow:0 2px 10px rgba(127,119,221,.42)}
+.pf-white-tip{display:flex;align-items:center;gap:8px;margin:0 0 10px;background:#F5F2FF;border:1px solid #E3DDFB;color:#5B52C4;font-size:11.5px;font-weight:600;padding:8px 12px;border-radius:9px}
+.pf-white-tip[hidden]{display:none}
+.pf-white-tip i{font-style:normal;color:#8C86B8;font-weight:600}
+.pf-white-dot{width:7px;height:7px;border-radius:50%;background:var(--purple-700);flex:none;box-shadow:0 0 0 3px rgba(127,119,221,.18)}
+.pf-gal.is-white .pf-pic-imgbox{outline:2px dashed rgba(127,119,221,.8);outline-offset:2px;cursor:crosshair}
+.pf-gal.is-white .pf-pic-imgbox:hover{outline-style:solid;transform:none;box-shadow:none}
+.pf-pic-busy{position:absolute;inset:0;background:rgba(255,255,255,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;font-size:11px;font-weight:700;color:var(--purple-700);z-index:2}
+.pf-spin{width:17px;height:17px;border-radius:50%;border:2px solid #DED8FB;border-top-color:var(--purple-700);animation:pfsp .85s linear infinite}
+@keyframes pfsp{to{transform:rotate(360deg)}}
+.pf-pic-link{display:flex;gap:8px;margin-bottom:10px}
+.pf-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:14px}
+.pf-pic{display:flex;flex-direction:column}
+.pf-pic-imgbox{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--page);border:1.5px solid var(--line-2);cursor:zoom-in;transition:transform .16s,box-shadow .16s,border-color .16s}
+.pf-pic-imgbox:hover{border-color:var(--purple-700);transform:translateY(-2px);box-shadow:0 10px 22px rgba(24,20,40,.18)}
+.pf-pic:hover .pf-pic-imgbox{border-color:var(--purple-700)}
+.pf-pic img{width:100%;height:100%;object-fit:cover;display:block;background:#fff}
+.pf-pic-main{position:absolute;top:6px;left:6px;background:var(--purple-700);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.3px;pointer-events:none;box-shadow:0 2px 6px rgba(127,119,221,.35)}
+.pf-pic-acts{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 0 0}
+.pf-act{border:1px solid transparent;border-radius:999px;padding:3px 8px;font-size:11px;font-weight:600;line-height:1.45;cursor:pointer;white-space:nowrap;transition:.15s;font-family:inherit}
+.pf-act.main{background:#F3F1FE;color:#5B52C4;border-color:#DED8FB}
+.pf-act.main:hover{background:#E7E1FD;border-color:var(--purple-700);color:#4A41B0}
+.pf-act.del{background:#FFF0EF;color:#E5484D;border-color:#FAD7D5}
+.pf-act.del:hover{background:#E5484D;color:#fff;border-color:#E5484D}
+.pf-act.tr{background:#EEF6FF;color:#1C6FB8;border-color:#D3E6FA}
+.pf-act.tr:hover{background:#1C6FB8;color:#fff;border-color:#1C6FB8}
+.pf-pic-add{aspect-ratio:1;border:1.5px dashed var(--line-2);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--ink-2);font-size:11.5px;background:var(--paper-2);transition:.15s}
+.pf-pic-add:hover{border-color:var(--tc);color:var(--tdeep);background:var(--tbg)}
+/* 图片放大预览 */
+.pf-zoom{position:fixed;inset:0;z-index:120;background:rgba(14,12,24,.86);display:flex;align-items:center;justify-content:center}
+.pf-zoom[hidden]{display:none}
+body.pf-zoom-on{overflow:hidden}
+.pf-zoom img{max-width:92vw;max-height:84vh;object-fit:contain;background:#fff;border-radius:10px;
+  box-shadow:0 30px 80px rgba(0,0,0,.5);cursor:zoom-in;transition:transform .12s ease;touch-action:none}
+.pf-zoom img.is-zoomed{cursor:grab}
+.pf-zoom-x{position:absolute;top:18px;right:20px;width:38px;height:38px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.16);color:#fff;font-size:20px;line-height:1;cursor:pointer}
+.pf-zoom-x:hover{background:rgba(255,255,255,.28)}
+.pf-zoom-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.16);color:#fff;font-size:24px;line-height:1;cursor:pointer}
+.pf-zoom-nav:hover{background:rgba(255,255,255,.28)}
+.pf-zoom-nav.prev{left:22px}
+.pf-zoom-nav.next{right:22px}
+.pf-zoom-bar{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;
+  background:rgba(255,255,255,.14);padding:7px 16px;border-radius:20px;color:#fff;font-size:12px}
+.pf-zoom-bar a{color:#fff;text-decoration:underline;font-size:12px}
+.pf-pic-add .plus{font-size:22px;line-height:1;font-weight:300}
+.pf-gal-sub{grid-column:1/-1;margin:8px 0 2px;font-size:11px;font-weight:700;color:var(--tdeep);display:flex;align-items:baseline;gap:8px}
+.pf-gal-sub span{font-weight:400;color:var(--ink-3);font-size:10.5px}
+.pf-gal-empty{grid-column:1/-1;font-size:11px;color:var(--ink-3);padding:6px 2px}
+/* 底部操作栏 */
+.pg-foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:14px 20px;display:flex;justify-content:center;gap:12px;z-index:10;box-shadow:0 -4px 20px rgba(38,33,92,.05)}
+.pg-foot .btn{border:none;border-radius:9px;padding:11px 26px;font-size:13px;font-weight:600;transition:.15s}
+.btn-primary{background:var(--purple-700);color:#fff}
+.btn-primary:hover{background:var(--purple-900)}
+.btn-ghost{background:#fff;border:1px solid var(--line-2)!important;color:var(--ink-2)}
+.btn-ghost:hover{border-color:var(--purple-300)!important;color:var(--purple-700)}
+/* toast */
+#toast{position:fixed;top:22px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--purple-900);color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:600px){.grid-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="pg-head">
+    <div><h1 id="pgTitle">新增商品</h1><div class="sub" id="pgSub">填写商品信息，快速上架 · 带 * 为必填</div></div>
+    <a class="back" href="admin.html">← 返回后台</a>
+  </div>
+
+  <div class="tabs-rainbow"></div>
+
+  <form id="pfForm" onsubmit="return false">
+  <div class="form-body">
+    <input type="hidden" id="pf-id">
+
+    <div class="pf-sec active" data-tone="1">
+      <div class="pf-sec-h"><span class="pf-sec-n">1</span><span class="pf-sec-t">基本信息</span><span class="pf-sec-d">名称 · SKU · 分类</span></div>
+      <div class="grid-2">
+        <div class="field"><label>商品名称（中文）<span class="req">*</span></label><input id="pf-name"></div>
+        <div class="field"><label>商品名称（英文）</label><input id="pf-nameEn"></div>
+      </div>
+      <div class="grid-2">
+        <div class="field"><label>SKU 编号</label><input id="pf-sku"></div>
+        <div class="field"><label>商品分类 <span class="req">*</span></label><select id="pf-category">
+          <option value="women">女性用品</option><option value="men">男性用品</option>
+          <option value="couples">情侣共悦</option><option value="health">健康护理</option>
+        </select></div>
+      </div>
+    </div>
+
+    <div class="pf-sec" data-tone="2">
+      <div class="pf-sec-h"><span class="pf-sec-n">2</span><span class="pf-sec-t">商品描述</span><span class="pf-sec-d">中英双语</span></div>
+      <div class="pf-desc-bar">
+        <span class="pf-desc-state" id="pf-desc-state">英文描述会自动跟随中文翻译</span>
+        <button type="button" class="btn btn-ghost" id="pf-desc-retrans" style="padding:4px 11px;font-size:11.5px">重新翻译</button>
+      </div>
+      <div class="grid-2">
+        <div class="field"><label>描述（中文）</label><textarea id="pf-desc" rows="5"></textarea></div>
+        <div class="field"><label>描述（英文）<span class="pf-lbl-note" id="pf-descEn-note">自动翻译</span></label><textarea id="pf-descEn" rows="5"></textarea></div>
+      </div>
+    </div>
+
+    <div class="pf-sec" data-tone="3">
+      <div class="pf-sec-h"><span class="pf-sec-n">3</span><span class="pf-sec-t">规格参数</span><span class="pf-sec-d">尺寸 · 明细 · 特性</span></div>
+      <div class="grid-2">
+        <div class="field"><label>商品标签</label><select id="pf-badge"><option value="">无</option><option value="热销">热销</option><option value="新品">新品</option><option value="限时">限时</option></select></div>
+        <div class="field"><label>材质</label><input id="pf-material"></div>
+      </div>
+      <div class="field"><label>核心规格</label>
+        <div class="grid-2">
+          <input id="pf-size">
+          <input id="pf-noise">
+          <input id="pf-waterproof">
+          <input id="pf-battery">
+        </div>
+      </div>
+      <div class="field"><label>尺寸明细</label>
+        <div class="pf-spec-rows" id="pf-specs-box"></div>
+        <button type="button" class="btn btn-ghost" id="pf-spec-add" style="padding:5px 12px;margin-top:4px">+ 添加一项</button>
+      </div>
+      <div class="field"><label>功能特性</label><input id="pf-features"></div>
+      <div class="field" id="pf-sku-matrix-wrap" style="display:none"><label>SKU 组合</label>
+        <div class="pf-sku-bar" id="pf-sku-bar" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:2px 0 10px">
+          <button type="button" class="btn btn-ghost" id="pf-sku-add" style="padding:5px 12px">+ 添加规格</button>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#6d6a80">批量价格
+            <span>$</span><input type="number" step="0.01" id="pf-sku-batch-price" style="width:84px">
+            <button type="button" class="btn btn-ghost" id="pf-sku-batch-price-go" style="padding:4px 10px">应用全部</button>
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#6d6a80">批量库存
+            <input type="number" step="1" id="pf-sku-batch-stock" style="width:84px">
+            <button type="button" class="btn btn-ghost" id="pf-sku-batch-stock-go" style="padding:4px 10px">应用全部</button>
+          </span>
+          <button type="button" class="btn btn-ghost" id="pf-sku-sync-price" style="padding:5px 12px" title="商品列表卡片价取「售价」，点这里让它等于最低组合价">最低价同步售价</button>
+          <button type="button" class="btn btn-ghost" id="pf-sku-to-legacy" style="padding:5px 12px;margin-left:auto">改用颜色/款式</button>
+        </div>
+        <div class="pf-sku-box" id="pf-sku-matrix"></div>
+      </div>
+      <div class="field" id="pf-legacy-sku">
+        <div class="pf-gal-head">
+          <label style="margin:0">SKU 颜色图片</label>
+          <button type="button" class="btn btn-ghost" id="pf-sku-to-combo" style="padding:3px 10px;font-size:11px">改为组合规格</button>
+        </div>
+        <div class="pf-sku-box" id="pf-sku-images"></div>
+      </div>
+      <div class="grid-2" id="pf-money-fields" hidden>
+        <div class="field"><label>售价（美元）<span class="req">*</span></label>
+          <div class="pf-price-wrap"><input id="pf-price" type="number" min="0" step="0.01"></div>
+          <div class="pf-price-miss" id="pf-price-miss" hidden>采集时没抓到价格，请手动填写后再保存</div>
+          <div class="pf-field-hint">没有 SKU 组合行时才需要手填</div>
+        </div>
+        <div class="field"><label>库存</label>
+          <input id="pf-stock" type="number" min="0" value="0">
+        </div>
+      </div>
+    </div>
+
+    <div class="pf-sec" data-tone="4">
+      <div class="pf-sec-h"><span class="pf-sec-n">4</span><span class="pf-sec-t">商品图片</span><span class="pf-sec-d">上传 · 主图</span></div>
+      <div class="field">
+        <div class="pf-gal-head">
+          <label style="margin:0">商品图片</label>
+          <span style="display:inline-flex;align-items:center;gap:8px">
+            <button type="button" class="btn-white" id="pf-gal-white" title="点一下图片即可转成白底">白底图</button>
+            <button type="button" class="btn btn-ghost" id="pf-pic-link-toggle" style="padding:3px 10px;font-size:11px">粘贴图片链接</button>
+            <button type="button" class="btn btn-ghost" id="pf-gal-dedupe" style="padding:3px 10px;font-size:11px">去重</button>
+            <span class="pf-gal-count" id="pf-gal-count">0 张</span>
+          </span>
+        </div>
+        <div class="pf-pic-link" id="pf-pic-link" style="display:none">
+          <input type="text" id="pf-image">
+          <button type="button" class="btn btn-ghost" id="pf-pic-link-add" style="padding:8px 16px;white-space:nowrap">添加</button>
+        </div>
+        <div class="pf-white-tip" id="pf-white-tip" hidden><span class="pf-white-dot"></span>点一下要转白底的图片，自动抠图换成纯白底 <i>Esc 取消</i></div>
+        <div class="pf-gal" id="pf-gallery"></div>
+        <input type="file" id="pf-file" accept="image/*" onchange="handleImageFile(this)" style="display:none">
+
+      </div>
+    </div>
+  </div>
+  </form>
+</div>
+
+<div class="pg-foot">
+  <button class="btn btn-ghost" onclick="window.close();if(!window.closed)location.href='admin.html'">取消</button>
+  <button class="btn btn-primary" id="pf-publishBtn" style="display:none;background:var(--green)" onclick="saveThenPublish()">保存并发布上架</button>
+  <button class="btn btn-primary" onclick="saveProduct()" id="pf-saveBtn">保存商品</button>
+</div>
+<!-- 图片放大预览 -->
+<div class="pf-zoom" id="pf-zoom" hidden>
+  <button type="button" class="pf-zoom-x" id="pf-zoom-x" aria-label="关闭">×</button>
+  <button type="button" class="pf-zoom-nav prev" id="pf-zoom-prev" aria-label="上一张">‹</button>
+  <img id="pf-zoom-img" alt="预览图" referrerpolicy="no-referrer">
+  <button type="button" class="pf-zoom-nav next" id="pf-zoom-next" aria-label="下一张">›</button>
+  <div class="pf-zoom-bar">
+    <span id="pf-zoom-idx">1 / 1</span>
+    <span style="opacity:.7">滚轮缩放 · 放大后拖动</span>
+    <a id="pf-zoom-open" href="#" target="_blank" rel="noopener">查看原图</a>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API='';
+/* 站点：从后台跳转时带 ?site=，否则沿用后台当前站点；保证商品/草稿落在同一个站 */
+const SITE=(new URLSearchParams(location.search).get('site'))||localStorage.getItem('lumiere_admin_site')||'lumiere';
+async function api(path,opt){
+  let p=path;
+  if(p.indexOf('/api/')===0&&!/[?&]site=/.test(p))p+=(p.indexOf('?')>=0?'&':'?')+'site='+encodeURIComponent(SITE);
+  const r=await fetch(API+p,opt);return r.json();
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200)}
+let usdRateVal=0.139;
+function cny2usd(cny){return cny*usdRateVal}
+function usd2cny(usd){return usd/usdRateVal}
+
+/* 兼容老调用：主图就是 galleryDraft[0]，不再有单独预览框 */
+function setPreview(){renderGallery()}
+
+/* ===== 商品图片：一个统一方格网格，第一格即主图，末尾 ＋ 格上传 ===== */
+let galleryDraft=[];
+let whiteMode=false, whiteBusy=-1, busyLabel='转换中…';   /* whiteMode：已进入「选图转白底」；whiteBusy：正在处理的那张序号 */
+/* 1688 采集会把「主图 5 张 + 详情长图 + 各颜色实拍」全部塞进同一个数组，
+   直接平铺就是二三十张。主图只留 5 张，多的不采集也不展示。 */
+const MAIN_MAX=5;
+
+/* 主图超过 5 张就只保留前 5 张（新加的图会 unshift 到首位，所以丢的永远是最旧的） */
+function trimGallery(){if(galleryDraft.length>MAIN_MAX){galleryDraft.length=MAIN_MAX;return true}return false}
+function picTile(u,i,badgeMain){
+  const isMain=(i===0);
+  return `<div class="pf-pic" data-i="${i}">
+      <div class="pf-pic-imgbox" title="点击放大">
+        <img src="${escAttr(u)}" alt="商品图${i+1}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.opacity='.25'">
+        ${isMain?'<span class="pf-pic-main">主图</span>':''}
+        ${whiteBusy===i?`<div class="pf-pic-busy"><span class="pf-spin"></span>${busyLabel}</div>`:''}
+      </div>
+      <div class="pf-pic-acts">
+        <button type="button" class="pf-act tr" data-tr="${i}" title="把图上中文译成英文并回贴">译图</button>
+        ${isMain?'':`<button type="button" class="pf-act main" data-main="${i}">设主图</button>`}
+        <button type="button" class="pf-act del" data-del="${i}">删除</button>
+      </div>
+    </div>`;
+}
+function setWhiteMode(on){
+  whiteMode=!!on;
+  const box=document.getElementById('pf-gallery');
+  const btn=document.getElementById('pf-gal-white');
+  const tip=document.getElementById('pf-white-tip');
+  if(box)box.classList.toggle('is-white',whiteMode);
+  if(btn){btn.classList.toggle('on',whiteMode);btn.textContent=whiteMode?'选择中…':'白底图'}
+  if(tip)tip.hidden=!whiteMode;
+}
+async function convertWhite(i){
+  const src=galleryDraft[i];
+  if(!src||whiteBusy>=0)return;
+  whiteBusy=i;busyLabel='转换中…';renderGallery();
+  try{
+    const r=await api('/api/whitebg',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:src,force:true})});
+    if(!r||!r.ok){toast('白底转换失败：'+((r&&r.error)||'未知错误'));return}
+    if(r.path&&r.path!==src){
+      const at=galleryDraft.indexOf(src);
+      if(at>=0){
+        if(galleryDraft.length>=MAIN_MAX){
+          /* 已经满 5 张：白底图直接顶替原图，不再追加第六张 */
+          galleryDraft.splice(at,1,r.path);toast('已用白底图替换原图（主图最多 '+MAIN_MAX+' 张）');
+        }else{
+          galleryDraft.splice(at+1,0,r.path);toast('已生成白底图，紧跟在原图后面');
+        }
+        trimGallery();
+      }
+    }else if(r.skipped) toast('接口判定这张已是白底，已跳过');
+    else toast('转换完成，但没有生成新图');
+  }catch(e){toast('白底转换失败：'+e.message)}
+  finally{whiteBusy=-1;setWhiteMode(false);renderGallery()}
+}
+/* 图片中文翻译：OCR 认出图上的中文 → 译成英文 → 刷平原字重排，产出新图替换本格 */
+async function translateImg(i){
+  const src=galleryDraft[i];
+  if(!src||whiteBusy>=0)return;
+  if(/^data:/.test(src)){toast('这张图还没落盘，先保存一次再译图');return}
+  whiteBusy=i;busyLabel='译图中…';renderGallery();
+  try{
+    const r=await api('/api/img/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:src})});
+    if(!r||!r.ok){toast('译图失败：'+((r&&r.error)||'未知错误'));return}
+    if(!r.image){toast(r.msg||'这张图里没检测到中文');return}
+    const at=galleryDraft.indexOf(src);
+    if(at>=0)galleryDraft.splice(at,1,r.image);
+    const n=(r.items||[]).length;
+    const miss=r.untranslated||0;
+    if(miss)toast('已译 '+n+' 处，还有 '+miss+' 处没翻出来（在线翻译今日额度用尽，未翻部分保留原样）');
+    else toast('已译 '+n+' 处文字，原图已替换（主图顺序不变）');
+  }catch(e){toast('译图失败：'+e.message)}
+  finally{whiteBusy=-1;busyLabel='转换中…';renderGallery()}
+}
+function renderGallery(){
+  const box=document.getElementById('pf-gallery');if(!box)return;
+  const cnt=document.getElementById('pf-gal-count');if(cnt)cnt.textContent=galleryDraft.length+' / '+MAIN_MAX+' 张';
+  const mains=galleryDraft.slice(0,MAIN_MAX);
+  let html=mains.map((u,i)=>picTile(u,i,true)).join('')
+    + `<div class="pf-pic-add" id="pf-pic-add" title="上传新图片"><span class="plus">＋</span><span>上传图片</span></div>`;
+  box.innerHTML=html;
+}
+/* ===== 图片放大预览：点图放大，左右切换，滚轮缩放，放大后可拖动 ===== */
+let zoomList=[], zoomAt=0, zoomScale=1, zoomX=0, zoomY=0, zoomDrag=null;
+function zoomPaint(){
+  const box=document.getElementById('pf-zoom'); if(!box||box.hidden)return;
+  const img=document.getElementById('pf-zoom-img'); if(!img)return;
+  const src=zoomList[zoomAt]||'';
+  if(img.getAttribute('src')!==src)img.src=src;
+  img.style.transform='translate('+zoomX+'px,'+zoomY+'px) scale('+zoomScale+')';
+  img.classList.toggle('is-zoomed',zoomScale>1.02);
+  const idx=document.getElementById('pf-zoom-idx'); if(idx)idx.textContent=(zoomAt+1)+' / '+zoomList.length;
+  const open=document.getElementById('pf-zoom-open'); if(open)open.href=src;
+  const prev=document.getElementById('pf-zoom-prev'), next=document.getElementById('pf-zoom-next');
+  if(prev)prev.hidden=zoomList.length<2; if(next)next.hidden=zoomList.length<2;
+}
+function openZoom(list,at){
+  zoomList=(list||[]).filter(Boolean).slice();
+  if(!zoomList.length)return;
+  zoomAt=Math.max(0,Math.min(Number(at)||0,zoomList.length-1));
+  zoomScale=1;zoomX=0;zoomY=0;
+  const box=document.getElementById('pf-zoom'); if(!box)return;
+  box.hidden=false; document.body.classList.add('pf-zoom-on');
+  zoomPaint();
+}
+function closeZoom(){
+  const box=document.getElementById('pf-zoom'); if(!box)return;
+  box.hidden=true; document.body.classList.remove('pf-zoom-on');
+  zoomScale=1;zoomX=0;zoomY=0;
+}
+function zoomStep(d){
+  if(!zoomList.length)return;
+  zoomAt=(zoomAt+d+zoomList.length)%zoomList.length;
+  zoomScale=1;zoomX=0;zoomY=0;zoomPaint();
+}
+function bindZoom(){
+  const box=document.getElementById('pf-zoom'); if(!box)return;
+  const img=document.getElementById('pf-zoom-img');
+  document.getElementById('pf-zoom-x').addEventListener('click',closeZoom);
+  document.getElementById('pf-zoom-prev').addEventListener('click',e=>{e.stopPropagation();zoomStep(-1)});
+  document.getElementById('pf-zoom-next').addEventListener('click',e=>{e.stopPropagation();zoomStep(1)});
+  box.addEventListener('click',e=>{ if(e.target===box)closeZoom(); });
+  document.addEventListener('keydown',e=>{
+    if(box.hidden)return;
+    if(e.key==='Escape'){e.stopPropagation();closeZoom();}
+    else if(e.key==='ArrowLeft')zoomStep(-1);
+    else if(e.key==='ArrowRight')zoomStep(1);
+  });
+  img.addEventListener('click',()=>{
+    if(zoomDrag)return;
+    zoomScale=zoomScale>1.02?1:1.9;
+    if(zoomScale<=1.02){zoomX=0;zoomY=0;}
+    zoomPaint();
+  });
+  box.addEventListener('wheel',e=>{
+    e.preventDefault();
+    zoomScale=Math.min(4,Math.max(1,zoomScale+(e.deltaY<0?0.2:-0.2)));
+    if(zoomScale<=1.02){zoomScale=1;zoomX=0;zoomY=0;}
+    zoomPaint();
+  },{passive:false});
+  img.addEventListener('pointerdown',e=>{
+    if(zoomScale<=1.02)return;
+    zoomDrag={x:e.clientX,y:e.clientY,ox:zoomX,oy:zoomY,moved:false};
+    img.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  img.addEventListener('pointermove',e=>{
+    if(!zoomDrag)return;
+    zoomDrag.moved=true;
+    zoomX=zoomDrag.ox+(e.clientX-zoomDrag.x);
+    zoomY=zoomDrag.oy+(e.clientY-zoomDrag.y);
+    zoomPaint();
+  });
+  const endDrag=()=>{ setTimeout(()=>{zoomDrag=null},0); };
+  img.addEventListener('pointerup',endDrag);
+  img.addEventListener('pointercancel',endDrag);
+}
+function bindGallery(){
+  const box=document.getElementById('pf-gallery');if(!box)return;
+  const pickFile=()=>{const f=document.getElementById('pf-file');if(f)f.click()};
+  const wbtn=document.getElementById('pf-gal-white');
+  if(wbtn)wbtn.addEventListener('click',()=>setWhiteMode(!whiteMode));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&whiteMode)setWhiteMode(false)});
+  box.addEventListener('click',e=>{
+    /* 点整格或「放大」按钮都开预览；遮罩按钮不再挡点击 */
+    /* 单击图片本体即放大 */
+    const zimg=e.target.closest('.pf-pic-imgbox');
+    if(zimg){
+      const gi=Number(zimg.closest('.pf-pic').dataset.i);
+      if(whiteMode){convertWhite(gi);return}
+      openZoom(galleryDraft,gi);return
+    }
+    if(e.target.closest('#pf-pic-add')){pickFile();return}
+    const tr=e.target.closest('[data-tr]');
+    if(tr){e.stopPropagation();translateImg(Number(tr.dataset.tr));return}
+    const del=e.target.closest('[data-del]');
+    if(del){
+      e.stopPropagation();
+      galleryDraft.splice(Number(del.dataset.del),1);
+      renderGallery();return;
+    }
+    /* 设为主图：把它挪到第一位 */
+    const mk=e.target.closest('[data-main]');
+    const item=e.target.closest('[data-i]');
+    const idx=mk?Number(mk.dataset.main):(item?Number(item.dataset.i):-1);
+    if(idx>0){
+      const u=galleryDraft.splice(idx,1)[0];
+      galleryDraft.unshift(u);
+      renderGallery();toast('已设为主图');
+    }
+  });
+  /* 粘贴链接：不占常驻空间，点按钮才展开 */
+  const lt=document.getElementById('pf-pic-link-toggle');
+  if(lt)lt.addEventListener('click',()=>{
+    const row=document.getElementById('pf-pic-link');
+    const on=row.style.display!=='none';
+    row.style.display=on?'none':'flex';
+    if(!on)document.getElementById('pf-image').focus();
+  });
+  const addLink=()=>{
+    const inp=document.getElementById('pf-image');
+    const v=inp.value.trim();if(!v)return;
+    if(galleryDraft.includes(v)){toast('这张图已经在列表里了');inp.value='';return}
+    if(galleryDraft.length>=MAIN_MAX){toast('主图最多 '+MAIN_MAX+' 张，请先删掉一张再添加');return}
+    galleryDraft.unshift(v);inp.value='';
+    trimGallery();
+    renderGallery();toast('已添加为主图');
+  };
+  const la=document.getElementById('pf-pic-link-add');
+  if(la)la.addEventListener('click',addLink);
+  const pi=document.getElementById('pf-image');
+  if(pi)pi.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addLink()}});
+  /* 去重：1688 同款图常以 _sum / _400x400 两种尺寸重复入库，按文件名归并，保留大图 */
+  const dd=document.getElementById('pf-gal-dedupe');
+  if(dd)dd.addEventListener('click',()=>{
+    const key=u=>String(u||'').split('?')[0]
+      .replace(/_\d+x\d+(q\d+)?\.(jpg|webp)$/i,'')
+      .replace(/_sum\.jpg$/i,'')
+      .replace(/_\.webp$/i,'').toLowerCase();
+    const seen=new Map(),out=[];
+    galleryDraft.forEach(u=>{
+      const k=key(u);
+      if(seen.has(k)){
+        const at=seen.get(k),prev=out[at];
+        if(/_sum\.jpg$/i.test(prev)&&!/_sum\.jpg$/i.test(u))out[at]=u;
+        return;
+      }
+      seen.set(k,out.length);out.push(u);
+    });
+    const removed=galleryDraft.length-out.length;
+    galleryDraft=out;
+    renderGallery();
+    toast(removed?('去重完成，去掉 '+removed+' 张重复图'):'没有发现重复图');
+  });
+  renderGallery();   /* 先画出末尾的 ＋ 上传格，避免加载前这一块是空的 */
+}
+/* 兼容老调用 */
+function syncMainToGallery(){renderGallery()}
+
+/* 上传图片 → 后端转白底 → 回填本地路径（所有入库图统一白底） */
+async function uploadWhite(file, onOk){
+  if(!file)return;
+  if(file.size>4*1024*1024){toast('图片请小于 4MB');return}
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    const btn=document.querySelector('.pf-file-btn');
+    try{
+      if(btn)btn.dataset.busy='1';
+      const r=await api('/api/whitebg',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:e.target.result})});
+      if(r&&r.ok&&r.path){onOk(r.path,r);toast('已转白底图并就绪');}
+      else toast('白底转换失败：'+((r&&r.error)||'未知错误'));
+    }catch(err){toast('白底转换失败：'+err.message)}
+    finally{if(btn)delete btn.dataset.busy}
+  };
+  reader.readAsDataURL(file);
+}
+function handleImageFile(input){
+  const file=input.files&&input.files[0];if(!file)return;
+  input.value='';
+  uploadWhite(file,(path)=>{
+    if(galleryDraft.indexOf(path)>=0)galleryDraft.splice(galleryDraft.indexOf(path),1);
+    galleryDraft.unshift(path);
+    trimGallery();
+    renderGallery();toast('已上传并设为主图');
+  });
+}
+
+/* ===== SKU 选项图编辑：与前端 skuOptions() 读取同一份 skuImages ===== */
+const PF_SKU_KEYS=['spec_color','spec_version'];
+let skuImgDraft={};
+function escAttr(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+/* ===== 尺寸明细：行式编辑器（规格名 + 数值 + 英文值），不再用 textarea ===== */
+const SPEC_KEYS=[['spec_length','长度'],['spec_diameter','直径'],['spec_maxdiameter','最大直径'],
+  ['spec_height','高度'],['spec_width','宽度'],['spec_volume','容量'],['spec_color','颜色'],
+  ['spec_cablelength','线长'],['spec_count','件数'],['spec_opening','开口尺寸'],['spec_version','款式'],
+  ['spec_packsize','包装尺寸'],['spec_netweight','净重'],['spec_origin','产地'],['spec_material','材质'],
+  ['spec_weight','重量'],['spec_power','功率'],['spec_voltage','电压'],['spec_noise','噪音']];
+let specDraft=[];   /* [{k,v,vEn,custom?}] */
+function specLines(){
+  return specDraft.filter(s=>s.k&&s.v).map(s=>({k:s.k,v:s.v,vEn:s.vEn||''}));
+}
+function specKeyCell(s,i){
+  if(s.custom||(!s.k&&s.free))return `<input class="pf-spec-k" data-f="k" data-i="${i}" value="${escAttr(s.k||'')}">`;
+  const opts=SPEC_KEYS.map(([k,l])=>`<option value="${k}"${s.k===k?' selected':''}>${l}</option>`).join('');
+  const extra=(s.k&&!SPEC_KEYS.some(([k])=>k===s.k))?`<option value="${escAttr(s.k)}" selected>${escAttr(s.k)}</option>`:'';
+  return `<select data-f="k" data-i="${i}">${opts}${extra}<option value="__custom">自定义…</option></select>`;
+}
+function renderSpecs(){
+  const box=document.getElementById('pf-specs-box');if(!box)return;
+  box.innerHTML=specDraft.map((s,i)=>`
+    <div class="pf-spec-row" data-i="${i}">
+      ${specKeyCell(s,i)}
+      <input data-f="v" data-i="${i}" value="${escAttr(s.v||'')}">
+      <input data-f="vEn" data-i="${i}" value="${escAttr(s.vEn||'')}">
+      <button type="button" class="pf-spec-del" data-del="${i}" title="删除">×</button>
+    </div>`).join('');
+}
+function bindSpecEvents(){
+  const box=document.getElementById('pf-specs-box');
+  const add=document.getElementById('pf-spec-add');
+  if(box){
+    box.addEventListener('input',e=>{
+      const f=e.target.dataset.f,i=+e.target.dataset.i;
+      if(f===undefined||isNaN(i)||!specDraft[i])return;
+      if(f==='k'&&specDraft[i].custom){specDraft[i].k=e.target.value.trim();return}
+      specDraft[i][f]=e.target.value;
+      if(f==='k'||f==='v')renderSkuImages();
+    });
+    box.addEventListener('change',e=>{
+      if(e.target.tagName!=='SELECT')return;
+      const i=+e.target.dataset.i;if(isNaN(i)||!specDraft[i])return;
+      if(e.target.value==='__custom'){specDraft[i].custom=true;specDraft[i].k='';renderSpecs();
+        const el=box.querySelector(`.pf-spec-row[data-i="${i}"] .pf-spec-k`);if(el)el.focus();return}
+      specDraft[i].k=e.target.value;renderSkuImages();
+    });
+    box.addEventListener('click',e=>{
+      const d=e.target.closest('[data-del]');if(!d)return;
+      specDraft.splice(+d.dataset.del,1);renderSpecs();renderSkuImages();
+    });
+  }
+  if(add)add.addEventListener('click',()=>{
+    specDraft.push({k:'',v:'',vEn:''});renderSpecs();
+    const rows=document.querySelectorAll('#pf-specs-box .pf-spec-row');
+    const last=rows[rows.length-1];if(last){const inp=last.querySelector('input');if(inp)inp.focus()}
+  });
+}
+/* SKU 选项图查找：先精确键，再按「去掉括号/空格后的包含关系」模糊匹配。
+   采集时规格名可能带商品名（斜纹震动棒(粉色)），而历史图片键是短名（粉色），
+   不做模糊匹配就会整列显示「无图」。 */
+function skuImgOf(k,v){
+  const bag=(skuImgDraft[k]||{});
+  if(bag[v])return bag[v];
+  const cur=(CUR&&CUR.skuImages&&CUR.skuImages[k])||{};
+  if(cur[v])return cur[v];
+  const norm=s=>String(s||'').replace(/[（(][^）)]*[）)]/g,'').replace(/\s+/g,'').trim();
+  const nv=norm(v);
+  if(!nv)return '';
+  for(const key of Object.keys(cur).concat(Object.keys(bag))){
+    const nk=norm(key);
+    if(!nk)continue;
+    if(nk===nv||nk.indexOf(nv)>=0||nv.indexOf(nk)>=0)return bag[key]||cur[key]||'';
+  }
+  return '';
+}
+function renderSkuImages(){
+  const box=document.getElementById('pf-sku-images');if(!box)return;
+  const specs=specLines();
+  const groups=PF_SKU_KEYS.map(k=>{
+    const s=specs.find(x=>x.k===k);if(!s)return null;
+    const vals=s.v.split(/\s*\/\s*/).map(x=>x.trim()).filter(Boolean);
+    return vals.length>1?{k,vals,label:k==='spec_color'?'颜色':'款式'}:null;
+  }).filter(Boolean);
+  if(!groups.length){
+    box.innerHTML='';
+    return;
+  }
+  box.innerHTML=groups.map(g=>`
+    <div class="pf-sku-group">
+      <div class="pf-sku-gt">${g.label} · ${g.k}</div>
+      <div class="pf-sku-grid">
+      ${g.vals.map(v=>{
+        const src=skuImgOf(g.k,v);
+        const big=skuBig(src);
+        return `<div class="pf-sku-card">
+          ${src
+            ? `<img class="pf-sku-pic" src="${escAttr(big)}" alt="" data-orig="${escAttr(src)}" referrerpolicy="no-referrer" onerror="skuImgErr(this)">`
+            : `<div class="pf-sku-pic is-empty">无图</div>`}
+          <div class="pf-sku-name" title="${escAttr(v)}">${escAttr(v)}</div>
+          <label class="pf-sku-up">↑ 上传图片<input type="file" accept="image/*" data-sku-upload="1" data-k="${g.k}" data-v="${escAttr(v)}"></label>
+        </div>`;
+      }).join('')}
+      </div>
+    </div>`).join('');
+}
+/* 1688 图床只认来源页：带 127.0.0.1 的 Referer 直接 403（就是破图的原因）。
+   img 上加 referrerpolicy="no-referrer" 即可，主图集一直是这么做的。 */
+/* _sum.jpg 是 60×60 小图，卡片里放大会糊；先试 400×400，不存在再退回原图。 */
+function skuBig(src){
+  const s=String(src||'');
+  if(!/^https?:\/\//i.test(s))return s;
+  return s.replace(/_sum\.jpg$/i,'_400x400.jpg');
+}
+function skuImgErr(im){
+  if(!im.dataset.fb){im.dataset.fb='1';const o=im.dataset.orig;if(o&&im.getAttribute('src')!==o){im.src=o;return;}}
+  const d=document.createElement('div');d.className='pf-sku-pic is-empty';d.textContent='无图';im.replaceWith(d);
+}
+function collectSkuImages(){return skuImgDraft}
+function bindSkuEvents(){
+  const box=document.getElementById('pf-sku-images');
+  box.addEventListener('change',e=>{
+    const inp=e.target;if(inp.dataset.skuUpload!=='1')return;
+    const f=inp.files&&inp.files[0];if(!f)return;
+    inp.value='';
+    const k=inp.dataset.k,v=inp.dataset.v;
+    uploadWhite(f,(path)=>{
+      if(!skuImgDraft[k])skuImgDraft[k]={};
+      skuImgDraft[k][v]=path;
+      const card=inp.closest('.pf-sku-card'),old=card&&card.querySelector('.pf-sku-pic');
+      const im=document.createElement('img');im.className='pf-sku-pic';im.alt='';im.src=path;
+      im.setAttribute('referrerpolicy','no-referrer');im.dataset.orig=path;
+      if(old)old.replaceWith(im);else if(card)card.insertBefore(im,card.firstChild);
+    });
+  });
+}
+
+/* ===== SKU 组合矩阵：组合名 / 价格 / 库存 / 图 =====
+   1688 的真实售卖单元就是这一行一行（「小蝌蚪跳蛋（紫色）袋装 ¥13 库存12284」）。
+   采集自动带入；价格按当前汇率显示，保存时换算回人民币。
+   组合模式下旧的「颜色图片」区自动隐藏，避免同一件事有两处入口。
+   两种模式：combo（组合，每行独立价/库存）· legacy（颜色/款式 + 选项图） */
+let skuRowDraft=[];
+let skuMode='legacy';
+function renderSkuMatrix(){
+  const wrap=document.getElementById('pf-sku-matrix-wrap');
+  const box=document.getElementById('pf-sku-matrix');
+  const legacy=document.getElementById('pf-legacy-sku');
+  if(!box||!wrap)return;
+  const on=skuMode==='combo';
+  wrap.style.display=on?'':'none';
+  if(legacy)legacy.style.display=on?'none':'';
+  if(!on){box.innerHTML='';syncStock();return}
+  if(!skuRowDraft.length){
+    box.innerHTML='';
+    syncStock();
+    return;
+  }
+  box.innerHTML=skuRowDraft.map((r,i)=>{
+    const src=r.image||'';
+    return `<div class="pf-sku-row" data-row="${i}" style="display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line,#e5e3ef)">
+      ${src
+        ? `<img class="pf-sku-pic" src="${escAttr(skuBig(src))}" data-orig="${escAttr(src)}" referrerpolicy="no-referrer" onerror="skuImgErr(this)" style="width:56px;height:56px;object-fit:cover;border-radius:8px;flex:none">`
+        : `<div class="pf-sku-pic is-empty" style="width:56px;height:56px;display:flex;align-items:center;justify-content:center;border-radius:8px;flex:none;font-size:11px">无图</div>`}
+      <input class="pf-sku-in" data-f="name" value="${escAttr(r.name)}" style="flex:2;min-width:180px">
+      <span style="font-size:11px;color:#8a86a0">$</span>
+      <input class="pf-sku-in" data-f="price" type="number" step="0.01" value="${r.price!=null&&r.price!==''?escAttr(cny2usd(Number(r.price)||0).toFixed(2)):''}" style="width:88px">
+      <span style="font-size:11px;color:#8a86a0">库存</span>
+      <input class="pf-sku-in" data-f="stock" type="number" step="1" value="${r.stock!=null?escAttr(r.stock):''}" style="width:88px">
+      <label class="pf-sku-up" style="flex:none">↑ 换图<input type="file" accept="image/*" data-sku-row-upload="${i}"></label>
+      <button type="button" class="btn btn-ghost" data-sku-row-del="${i}" title="删除这一条" style="flex:none;padding:4px 10px">×</button>
+    </div>`;
+  }).join('') + ``;
+  syncStock();
+}
+/* SKU 组合库存合计：有组合行时商品库存由组合自动汇总，避免两处各填一份 */
+function comboStockTotal(){
+  if(skuMode!=='combo')return null;
+  const rows=skuRowDraft.filter(r=>String(r.name||'').trim());
+  if(!rows.length)return null;
+  return rows.reduce((s,r)=>s+Math.max(0,Math.floor(Number(r.stock)||0)),0);
+}
+function syncStock(){
+  const el=document.getElementById('pf-stock');
+  const priceEl=document.getElementById('pf-price');
+  const fields=document.getElementById('pf-money-fields');
+  if(!el)return;
+  const total=comboStockTotal();
+  const auto=total!=null;
+  /* 有 SKU 组合行：价格和库存都在组合里，这一组输入整个隐藏，只把值算好供保存 */
+  if(fields)fields.hidden=auto;
+  if(!auto){el.readOnly=false;return}
+  el.readOnly=true;
+  el.value=total;
+  const rows=skuRowDraft.filter(r=>String(r.name||'').trim());
+  const prices=rows.map(r=>Number(r.price)||0).filter(v=>v>0);
+  const min=prices.length?Math.min.apply(null,prices):0;
+  if(priceEl){
+    priceEl.value=min>0?cny2usd(min).toFixed(2):'';
+    priceEl.classList.toggle('is-missing',!(min>0));
+  }
+}
+function collectSkus(){
+  if(skuMode!=='combo')return [];
+  return skuRowDraft.map(r=>({
+    name:String(r.name||'').trim(),
+    price:Math.round(Number(r.price)||0),
+    stock:Math.max(0,Math.floor(Number(r.stock)||0)),
+    image:String(r.image||'')
+  })).filter(x=>x.name);
+}
+/* 编辑行内价格时只写回草稿，不整段重渲染 —— 否则光标会被打断在输入中途 */
+function bindSkuMatrixEvents(){
+  const box=document.getElementById('pf-sku-matrix');
+  if(!box)return;
+  box.addEventListener('input',e=>{
+    const inp=e.target.closest('[data-f]');if(!inp)return;
+    const row=inp.closest('[data-row]');if(!row)return;
+    const i=Number(row.getAttribute('data-row')),f=inp.getAttribute('data-f');
+    if(!skuRowDraft[i])return;
+    if(f==='price'){skuRowDraft[i].price=usd2cny(Number(inp.value)||0);syncStock()}
+    else if(f==='stock'){skuRowDraft[i].stock=Math.max(0,Math.floor(Number(inp.value)||0));syncStock()}
+    else skuRowDraft[i].name=inp.value;
+  });
+  box.addEventListener('click',e=>{
+    const pic=e.target.closest('.pf-sku-pic');
+    if(pic&&pic.tagName==='IMG'&&pic.getAttribute('src')){openZoom([pic.getAttribute('src')],0);return}
+    const del=e.target.closest('[data-sku-row-del]');if(!del)return;
+    const i=Number(del.getAttribute('data-sku-row-del'));
+    skuRowDraft.splice(i,1);renderSkuMatrix();syncStock();
+  });
+  box.addEventListener('change',e=>{
+    const inp=e.target.closest('[data-sku-row-upload]');if(!inp)return;
+    const f=inp.files&&inp.files[0];if(!f)return;
+    const i=Number(inp.getAttribute('data-sku-row-upload'));
+    inp.value='';
+    uploadWhite(f,(path)=>{ if(!skuRowDraft[i])return; skuRowDraft[i].image=path; renderSkuMatrix(); });
+  });
+  /* 工具条：添加规格 / 批量价格 / 批量库存 / 切换模式 */
+  const add=document.getElementById('pf-sku-add');
+  if(add)add.addEventListener('click',()=>{
+    const last=skuRowDraft[skuRowDraft.length-1];
+    const priceField=Number(document.getElementById('pf-price')&&document.getElementById('pf-price').value)||0;
+    skuRowDraft.push({name:'',price:last?last.price:usd2cny(priceField),stock:0,image:''});
+    renderSkuMatrix();
+    const rows=box.querySelectorAll('[data-f="name"]');
+    if(rows.length)rows[rows.length-1].focus();
+  });
+  const bp=document.getElementById('pf-sku-batch-price-go');
+  if(bp)bp.addEventListener('click',()=>{
+    const inp=document.getElementById('pf-sku-batch-price');
+    const v=Number(inp&&inp.value);
+    if(!(v>0)){toast('先填批量价格（美元，如 1.46）');return}
+    if(!skuRowDraft.length){toast('还没有组合行，先点「+ 添加规格」');return}
+    skuRowDraft.forEach(r=>r.price=usd2cny(v));
+    inp.value='';
+    renderSkuMatrix();
+    toast('已把 '+skuRowDraft.length+' 条组合的价格都设为 $'+v+'（约 ¥'+(usd2cny(v)).toFixed(1)+'）');
+  });
+  const bs=document.getElementById('pf-sku-batch-stock-go');
+  if(bs)bs.addEventListener('click',()=>{
+    const inp=document.getElementById('pf-sku-batch-stock');
+    const v=Math.floor(Number(inp&&inp.value));
+    if(!(v>=0)||inp.value===''){toast('先填批量库存件数');return}
+    if(!skuRowDraft.length){toast('还没有组合行，先点「+ 添加规格」');return}
+    skuRowDraft.forEach(r=>r.stock=v);
+    syncStock();
+    inp.value='';
+    renderSkuMatrix();
+    toast('已把 '+skuRowDraft.length+' 条组合的库存都设为 '+v);
+  });
+  const sp=document.getElementById('pf-sku-sync-price');
+  if(sp)sp.addEventListener('click',()=>{
+    const ps=skuRowDraft.map(r=>Number(r.price)||0).filter(v=>v>0);
+    if(!ps.length){toast('组合行还没有价格');return}
+    const min=Math.min.apply(null,ps);
+    const pf=document.getElementById('pf-price');
+    pf.value=cny2usd(min).toFixed(2);
+    toast('商品售价已设为最低组合价 $'+pf.value);
+  });
+  const tl=document.getElementById('pf-sku-to-legacy');
+  if(tl)tl.addEventListener('click',()=>{
+    if(!confirm('改为「颜色/款式」模式会清掉这些组合行，继续？'))return;
+    skuMode='legacy'; skuRowDraft=[];
+    renderSkuMatrix(); renderSkuImages();
+  });
+  /* 颜色/款式 → 组合：按颜色×款式 交叉生成，价格/库存沿用当前商品价 */
+  const tc=document.getElementById('pf-sku-to-combo');
+  if(tc)tc.addEventListener('click',()=>{
+    const colors=specLines().filter(s=>s.k==='spec_color').flatMap(s=>String(s.v).split(/[\/／、,，]/).map(x=>x.trim()).filter(Boolean));
+    const vers=specLines().filter(s=>s.k==='spec_version').flatMap(s=>String(s.v).split(/[\/／、,，]/).map(x=>x.trim()).filter(Boolean));
+    const price=usd2cny(Number(document.getElementById('pf-price').value)||0);
+    const stock=Math.floor(Number(document.getElementById('pf-stock').value)||0);
+    const rows=[];
+    if(colors.length&&vers.length){ colors.forEach(c=>vers.forEach(v=>rows.push({name:c+' '+v,price,stock,image:''}))); }
+    else if(colors.length){ colors.forEach(c=>rows.push({name:c,price,stock,image:''})); }
+    else if(vers.length){ vers.forEach(v=>rows.push({name:v,price,stock,image:''})); }
+    if(!rows.length){ rows.push({name:'',price,stock,image:''},{name:'',price,stock,image:''}); toast('没读到颜色/款式，先加了 2 行空白组合，请填名称'); }
+    else toast('已按颜色/款式生成 '+rows.length+' 条组合，可逐条改价或批量定价');
+    skuMode='combo'; skuRowDraft=rows;
+    renderSkuMatrix(); syncStock();
+  });
+}
+
+/* ===== 英文描述自动跟随中文翻译 =====
+中文一改就自动翻译成英文；一旦手动改过英文，就不再自动覆盖（可用「重新翻译」强制重来） */
+let descAuto=true, descTimer=null, descBusy=false, descLastEn='';
+function descState(msg,tone){
+  const el=document.getElementById('pf-desc-state');
+  if(!el)return;
+  el.textContent=msg;
+  el.classList.toggle('is-err',tone==='err');
+}
+async function translateDesc(){
+  const zh=document.getElementById('pf-desc'), en=document.getElementById('pf-descEn');
+  if(!zh||!en||descBusy)return;
+  const src=zh.value.trim();
+  if(!src){descState('填了中文描述后，这里会自动出英文');return}
+  descBusy=true;
+  const btn=document.getElementById('pf-desc-retrans');
+  if(btn)btn.disabled=true;
+  descState('正在翻译…');
+  try{
+    const r=await api('/api/translate?q='+encodeURIComponent(src));
+    if(r&&r.text){
+      en.value=r.text;
+      descLastEn=r.text;
+      descAuto=true;
+      const note=document.getElementById('pf-descEn-note');
+      if(note)note.textContent='自动翻译';
+      descState('已按中文自动生成英文，可直接修改；改了就不再自动覆盖');
+    }else{
+      descState((r&&r.error)||'翻译没成功，英文可以自己填','err');
+    }
+  }catch(e){
+    descState('翻译失败：'+(e.message||e),'err');
+  }finally{
+    descBusy=false;
+    if(btn)btn.disabled=false;
+  }
+}
+function bindDescAuto(){
+  const zh=document.getElementById('pf-desc'), en=document.getElementById('pf-descEn');
+  const btn=document.getElementById('pf-desc-retrans');
+  if(!zh||!en)return;
+  zh.addEventListener('input',()=>{
+    descState('中文有改动，稍后自动翻译…');
+    clearTimeout(descTimer);
+    descTimer=setTimeout(()=>{
+      if(!en.value.trim()||descAuto)translateDesc();
+      else descState('英文是你手动写的，没自动覆盖；点「重新翻译」可按中文重生成');
+    },900);
+  });
+  zh.addEventListener('blur',()=>{
+    if(!en.value.trim()&&zh.value.trim()){clearTimeout(descTimer);translateDesc()}
+  });
+  en.addEventListener('input',()=>{
+    if(en.value.trim()===descLastEn)return;
+    descAuto=false;
+    const note=document.getElementById('pf-descEn-note');
+    if(note)note.textContent='手动编辑';
+    descState('英文已手动修改，不再自动覆盖中文');
+  });
+  if(btn)btn.addEventListener('click',()=>{descAuto=true;translateDesc()});
+}
+let CUR=null;
+let DRAFT_MODE=false, DRAFT_ID='';
+async function init(){
+  try{const c=await api('/api/currencies');usdRateVal=(c.currencies&&c.currencies.USD&&c.currencies.USD.rate)||0.139}catch(e){}
+  const params=new URLSearchParams(location.search);
+  DRAFT_ID=params.get('draft')||'';
+  DRAFT_MODE=!!DRAFT_ID;
+  const id=params.get('id');
+  if(DRAFT_MODE){
+    document.getElementById('pgTitle').textContent='编辑草稿';
+    document.getElementById('pgSub').textContent='采集草稿 · 编辑后保存，回后台发布上架';
+    const pb=document.getElementById('pf-publishBtn');if(pb)pb.style.display='';
+    try{
+      const r=await api('/api/drafts');
+      CUR=(r.drafts||[]).find(x=>x.id===DRAFT_ID)||null;
+      if(!CUR){toast('未找到草稿 '+DRAFT_ID);return}
+      fillForm(CUR);
+    }catch(e){toast('加载草稿失败：'+e.message)}
+  } else if(id){
+    document.getElementById('pgTitle').textContent='编辑商品';
+    document.getElementById('pgSub').textContent='SKU '+id+' · 修改后保存';
+    try{
+      const [r,st]=await Promise.all([api('/api/products'),api('/api/stock')]);
+      const list=(r.products||r.data?.products||[]);
+      CUR=list.find(x=>x.id===id)||null;
+      if(!CUR){toast('未找到商品 '+id);return}
+      const stockMap=st.data||st||{};
+      if(CUR.stock===undefined&&stockMap[id]!==undefined)CUR.stock=stockMap[id];
+      fillForm(CUR);
+    }catch(e){toast('加载商品失败：'+e.message)}
+  }
+  renderSkuImages();
+}
+/* 把一条商品/草稿数据填进表单（编辑商品与编辑草稿共用） */
+function fillForm(CUR){
+  const set=(k,v)=>{const el=document.getElementById('pf-'+k);if(el)el.value=v==null?'':v};
+  set('id',CUR.id);set('name',CUR.name);set('nameEn',CUR.nameEn);
+  set('sku',DRAFT_MODE?(CUR.sku||''):CUR.id);
+  set('category',CUR.category);
+  set('price',CUR.price!=null?cny2usd(CUR.price).toFixed(2):'');set('stock',CUR.stock||0);set('badge',CUR.badge);
+  syncStock();
+  set('material',CUR.material);set('desc',CUR.desc);set('descEn',CUR.descEn);
+  {
+    const en=document.getElementById('pf-descEn');
+    const hadEn=!!(CUR.descEn||'').trim();
+    descLastEn=(en&&en.value.trim())||'';
+    descAuto=!hadEn;
+    const note=document.getElementById('pf-descEn-note');
+    if(note)note.textContent=hadEn?'手动编辑':'自动翻译';
+    if(hadEn&&CUR.desc&&(CUR.descEn||'').trim())descState('英文是已有内容，改动中文不会自动覆盖；点「重新翻译」可重新生成');
+  }set('size',CUR.size);
+  set('noise',CUR.noise);set('waterproof',CUR.waterproof);set('battery',CUR.battery);
+  specDraft=Array.isArray(CUR.specs)?CUR.specs.map(s=>({k:String(s.k||''),v:String(s.v||''),vEn:String(s.vEn||'')})):[];
+  renderSpecs();
+  /* 已有图片先载入草稿，只上传部分颜色时其余颜色不会被保存覆盖掉 */
+  skuImgDraft=CUR.skuImages&&typeof CUR.skuImages==='object'?JSON.parse(JSON.stringify(CUR.skuImages)):{};
+  /* SKU 组合矩阵：采集带过来的真实可售单元，逐条可编辑（少于 2 条的旧数据仍走颜色/款式模式） */
+  skuRowDraft=Array.isArray(CUR.skus)?JSON.parse(JSON.stringify(CUR.skus)):[];
+  skuMode=skuRowDraft.length>=2?'combo':'legacy';
+  skuRowDraft=skuRowDraft.filter(r=>r&&r.name);
+  renderSkuMatrix();
+  set('features',CUR.features?CUR.features.join(','):'');
+  /* 商品图片：一个网格搞定主图+图集，galleryDraft[0] 即主图 */
+  /* 价格没抓到就明确提示，不让 0.00 冒充真实售价 */
+  const miss=!!CUR.priceMissing||(CUR.price!=null&&Number(CUR.price)<=0);
+  const pm=document.getElementById('pf-price-miss');if(pm)pm.hidden=!miss;
+  const pi=document.getElementById('pf-price');if(pi)pi.classList.toggle('is-missing',miss);
+  /* 图集：优先 gallery，兼容旧数据；主图不在列表里则补到首位 */
+  galleryDraft=Array.isArray(CUR.gallery)?CUR.gallery.filter(Boolean).slice():
+    (CUR.images&&CUR.images.length?CUR.images.slice():[]);
+  if(CUR.image&&!galleryDraft.includes(CUR.image))galleryDraft.unshift(CUR.image);
+  if(trimGallery())toast('主图超过 '+MAIN_MAX+' 张，已只保留前 '+MAIN_MAX+' 张');
+  renderGallery();
+  renderSkuImages();   /* ★ specs 填入后必须重渲染：否则 SKU 颜色图片区永远是空的 */
+  if(CUR.imageError) toast('图片异常：'+CUR.imageError);
+}
+async function saveProduct(){
+  const g=k=>document.getElementById('pf-'+k).value.trim();
+  const name=g('name'),category=g('category'),price=g('price');
+  const missEl=document.getElementById('pf-price-miss');
+  const wasMissing=!!(missEl&&!missEl.hidden);
+  if(!name||!price||(wasMissing&&Number(price)<=0)){
+    const comboNoPrice=!price&&skuMode==='combo'&&skuRowDraft.filter(r=>String(r.name||'').trim()).length>0;
+    if(comboNoPrice){
+      toast('下方 SKU 组合还没填价格，请先给组合定价再保存');
+      const box=document.getElementById('pf-sku-matrix');
+      if(box&&box.scrollIntoView)box.scrollIntoView({behavior:'smooth',block:'center'});
+      return;
+    }
+    toast(wasMissing&&Number(price)<=0?'采集时没抓到价格，请手动填写真实售价':'请填写商品名称和价格');
+    const pi=document.getElementById('pf-price');if(pi)pi.focus();
+    return;
+  }
+  const specs=specLines();
+  const payload={
+    name,nameEn:g('nameEn'),descEn:g('descEn'),category,price:Math.round(usd2cny(Number(price))),
+    priceMissing:wasMissing&&!(Number(price)>0),
+    stock:Number(g('stock'))||0,badge:g('badge'),
+    material:g('material')||'—',size:g('size')||'—',noise:g('noise')||'—',waterproof:g('waterproof')||'—',battery:g('battery')||'—',
+    specs,skuImages:collectSkuImages(),skus:collectSkus(),features:g('features')?g('features').split(/[,，]/).map(s=>s.trim()).filter(Boolean):[],
+    desc:g('desc'),image:(galleryDraft[0]||''),gallery:galleryDraft.slice(0,MAIN_MAX)
+  };
+  const id=g('id'),opt={method:'',headers:{'Content-Type':'application/json'},body:''};
+  /* 组合模式下只剩 0～1 条组合：会让商品丢掉 SKU 矩阵，先确认再用 */
+  const skuRowsNow=collectSkus();
+  if(skuMode==='combo'&&skuRowsNow.length<2&&Array.isArray(CUR&&CUR.skus)&&CUR.skus.length>=2
+     && !confirm('组合行只剩 '+skuRowsNow.length+' 条，保存后该商品的组合规格会被清空，继续？')) return;
+  let url, method;
+  if(DRAFT_MODE){
+    /* 草稿模式：保存回草稿接口，把用户填的目标 SKU 一并存下供发布用 */
+    url='/api/drafts/'+encodeURIComponent(DRAFT_ID);method='PUT';
+    payload.sku=g('sku');
+  }else{
+    url=id?'/api/products/'+encodeURIComponent(id):'/api/products';
+    method=id?'PUT':'POST';
+    if(!id&&g('sku'))payload.id=g('sku');
+  }
+  try{
+    const r=await api(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(r.error){toast('保存失败：'+r.error);return}
+    try{localStorage.setItem(DRAFT_MODE?'lumiere_draft_changed':'lumiere_product_changed',Date.now().toString())}catch(e){}
+    toast(DRAFT_MODE?'草稿已保存':(id?'商品已更新':'商品已创建 · 即将返回后台'));
+    if(!DRAFT_MODE)setTimeout(()=>{if(window.opener)window.opener.focus();window.close();if(!window.closed)location.href='admin.html'},1100);
+  }catch(e){toast('保存失败：'+e.message)}
+}
+/* 草稿模式：先保存修改，再立即发布到商品库 */
+async function saveThenPublish(){
+  if(!DRAFT_MODE){saveProduct();return}
+  const g=k=>document.getElementById('pf-'+k).value.trim();
+  if(!g('name')||!g('price')){toast('请填写商品名称和价格');return}
+  try{
+    /* 先保存当前编辑内容到草稿 */
+    await saveProduct();
+    /* 再发布 */
+    const r=await api('/api/drafts/'+encodeURIComponent(DRAFT_ID)+'/publish',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sku:g('sku')})
+    });
+    if(r.error){toast('发布失败：'+r.error);return}
+    toast('已发布上架');
+    try{localStorage.setItem('lumiere_draft_changed',Date.now().toString())}catch(e){}
+    setTimeout(()=>{if(window.opener)window.opener.focus();window.close();if(!window.closed)location.href='admin.html'},1100);
+  }catch(e){toast('发布失败：'+e.message)}
+}
+/* 商品图片区的粘贴链接与上传事件都在 bindGallery() 里绑定 */
+bindSpecEvents();
+bindSkuEvents();
+bindSkuMatrixEvents();
+bindDescAuto();
+bindZoom();
+bindGallery();
+init();</script>
+</body>
+</html>

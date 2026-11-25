@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUMIÈRE · Product</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/theme-card-layout.css">
+  <link rel="stylesheet" href="assets/rtl.css">
+</head>
+<body>
+
+  <div class="agegate" id="agegate" hidden>
+    <div class="agegate-card">
+      <div class="agegate-mark">18+</div>
+      <h2 data-i18n="age_title">你已年满 18 周岁了吗？</h2>
+      <p data-i18n="age_body">本站商品仅供成年人购买与使用。</p>
+      <p class="fine" data-i18n="age_fine">点击进入即代表你确认已符合所在地区的法定购买年龄。</p>
+      <div class="agegate-actions">
+        <button class="btn btn-ghost" id="age-no" data-i18n="age_no">未满 18 岁</button>
+        <button class="btn btn-primary" id="age-yes" data-i18n="age_yes">我已满 18 岁，进入</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">LUMIÈRE<span class="brand-dot">.</span></a>
+      <nav class="nav">
+        <a href="index.html" data-i18n="nav_home">首页</a>
+        <a href="category.html?cat=women" data-i18n="nav_women">女性用品</a>
+        <a href="category.html?cat=men" data-i18n="nav_men">男性用品</a>
+        <a href="category.html?cat=couples" data-i18n="nav_couples">情侣共悦</a>
+        <a href="category.html?cat=health" data-i18n="nav_health">健康护理</a>
+        <a href="wholesale.html" class="nav-b2b">Wholesale</a>
+      </nav>
+      <div class="nav-tools">
+        <div class="pk" id="pk-lang">
+          <button type="button" class="pk-trigger" id="lang-trigger" aria-label="Language"></button>
+          <div class="pk-pop">
+            <div class="pk-search-wrap"><input id="pk-search" type="text" placeholder="搜索语言 / Search…"></div>
+            <div class="pk-menu" data-type="lang"></div>
+          </div>
+        </div>
+        <div class="pk" id="pk-cur">
+          <button type="button" class="pk-trigger" id="cur-trigger" aria-label="Currency"></button>
+          <div class="pk-pop">
+            <div class="pk-search-wrap"><input class="pk-search-cur" type="text" placeholder="搜索货币 / Search…"></div>
+            <div class="pk-menu" data-type="cur"></div>
+          </div>
+        </div>
+        <button class="cart-btn" onclick="location.href='cart.html'"><span data-i18n="nav_cart">购物袋</span> <span class="cart-count" id="cart-count">0</span></button>
+      </div>
+    </div>
+  </header>
+
+  <section class="page-head">
+    <div class="container">
+      <div class="crumb"><a href="index.html" data-i18n="crumb_home">首页</a> / <a href="category.html" data-i18n="crumb_all">全部商品</a> / <span id="crumb-name">商品详情</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="detail-wrap" id="detail-wrap"></div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border:none;padding-top:0">
+        <span>© 2026 LUMIÈRE. <span data-i18n="footer_rights">保留所有权利。</span></span>
+        <span><a href="privacy.html" data-i18n="foot_privacy">隐私政策</a> · <span data-i18n="footer_adult">本站仅供成年人访问</span></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/i18n/zh.js"></script>
+  <script src="assets/i18n/en.js"></script>
+  <script src="assets/i18n/de.js"></script>
+  <script src="assets/i18n/fr.js"></script>
+  <script src="assets/i18n/es.js"></script>
+  <script src="assets/i18n/ja.js"></script>
+  <script src="assets/i18n/ko.js"></script>
+  <script src="assets/i18n/th.js"></script>
+  <script src="assets/i18n/vi.js"></script>
+  <script src="assets/i18n/ar.js"></script>
+  <script src="assets/i18n/pt.js"></script>
+  <script src="assets/i18n/ru.js"></script>
+  <script src="assets/i18n/id.js"></script>
+  <script src="assets/i18n/it.js"></script>
+  <script src="assets/i18n/nl.js"></script>
+  <script src="assets/i18n/pl.js"></script>
+  <script src="assets/i18n/sv.js"></script>
+  <script src="assets/i18n/da.js"></script>
+  <script src="assets/i18n/no.js"></script>
+  <script src="assets/i18n/fi.js"></script>
+  <script src="assets/i18n/cs.js"></script>
+  <script src="assets/i18n/el.js"></script>
+  <script src="assets/i18n/hu.js"></script>
+  <script src="assets/i18n/ro.js"></script>
+  <script src="assets/i18n/uk.js"></script>
+  <script src="assets/i18n/he.js"></script>
+  <script src="assets/i18n/fa.js"></script>
+  <script src="assets/i18n/ur.js"></script>
+  <script src="assets/i18n/tr.js"></script>
+  <script src="assets/i18n/hi.js"></script>
+  <script src="assets/i18n/bn.js"></script>
+  <script src="assets/i18n/mr.js"></script>
+  <script src="assets/i18n/ta.js"></script>
+  <script src="assets/i18n/ms.js"></script>
+  <script src="assets/i18n/tl.js"></script>
+  <script src="assets/i18n/km.js"></script>
+  <script src="assets/i18n/my.js"></script>
+  <script src="assets/i18n/sr.js"></script>
+  <script src="assets/i18n/sw.js"></script>
+  <script src="assets/i18n/af.js"></script>
+  <script src="assets/i18n/kk.js"></script>
+  <script src="assets/i18n-shell.js"></script>
+  <script src="assets/i18n-extra.js"></script>
+  <script src="assets/i18n-detail.js"></script>
+  <script src="assets/i18n-order.js"></script>
+  <script src="assets/geo.js"></script>
+  <script src="assets/products.js"></script>
+  <script src="assets/zh-hant.js"></script>
+  <script src="assets/lo.js"></script>
+  <script src="assets/i18n-eu.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/chat.js"></script>
+</body>
+</html>

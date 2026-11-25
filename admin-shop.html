@@ -1,0 +1,349 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMIÈRE · 商品台</title>
+<style>
+:root{--ink:#17161c;--muted:#6d6a78;--line:#e8e5f0;--bg:#f6f4fb;--card:#fff;--accent:#7f77dd;--ok:#0f9d58;--warn:#d9822b;--bad:#c8464b}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+.wrap{max-width:1040px;margin:0 auto;padding:18px 14px 60px}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.brand{font-weight:700;letter-spacing:.14em;font-size:15px}
+.brand span{color:var(--accent)}
+.spacer{flex:1}
+.key-box{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input,textarea,select{padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-size:13px;background:#fff;outline:none;font-family:inherit;width:100%;color:var(--ink)}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+input[type=password]{min-width:210px}
+button{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 13px;font-size:13px;color:var(--ink);transition:.15s;white-space:nowrap}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{filter:brightness(.95);color:#fff}
+button.ghost{background:#faf9fe}
+button:disabled{opacity:.5;cursor:default}
+.msg{border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:12px;background:#fff2f2;color:var(--bad);border:1px solid #f5d8d8}
+.msg.ok{background:#f1fbf4;color:var(--ok);border-color:#d5ecdd}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.bar .search{flex:1;min-width:200px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.row1{display:flex;align-items:flex-start;gap:12px}
+.thumb-wrap{flex:none;width:76px}
+.thumb{width:76px;height:76px;border-radius:11px;object-fit:cover;background:#f0eef7;display:block;cursor:pointer}
+.thumb-empty{width:76px;height:76px;border-radius:11px;background:#f0eef7;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);cursor:pointer;text-align:center;line-height:1.3}
+.thumb-tip{font-size:11px;color:var(--muted);text-align:center;margin-top:4px}
+.mid{flex:1;min-width:0}
+.nm{font-weight:700;overflow-wrap:anywhere}
+.nm .en{font-weight:400;color:var(--muted);margin-left:6px;font-size:13px}
+.meta{color:var(--muted);font-size:12px;margin-top:2px}
+.pill{font-size:12px;padding:2px 10px;border-radius:999px;border:1px solid transparent;white-space:nowrap;flex:none}
+.st-on{background:#eafaf0;color:#0d7a44;border-color:#cfeddb}
+.st-off{background:#f1f1f4;color:#4d4a58;border-color:#e2e1ea}
+.fields{display:grid;grid-template-columns:1.3fr 1.3fr .7fr .7fr;gap:10px;margin-top:12px}
+.f-desc{grid-column:1/-1}
+@media(max-width:760px){.fields{grid-template-columns:1fr 1fr}}
+label{font-size:12px;color:var(--muted);letter-spacing:.04em;display:block;margin-bottom:4px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);align-items:center}
+.acts .spacer{flex:1}
+.empty{text-align:center;color:var(--muted);padding:48px 10px}
+.hint{color:var(--muted);font-size:12px;margin-top:8px;line-height:1.7}
+.new-box{border:1px dashed #cfc9e6;border-radius:14px;padding:14px 16px;margin-bottom:14px;background:#fbfaff;display:none}
+.new-box.open{display:block}
+.new-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.new-grid .span2{grid-column:1/-1}
+@media(max-width:760px){.new-grid{grid-template-columns:1fr}}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#17161c;color:#fff;padding:9px 16px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:60;max-width:88vw}
+.toast.on{opacity:1}
+.busy{position:fixed;inset:0;background:rgba(246,244,251,.72);display:none;align-items:center;justify-content:center;z-index:70;font-size:13px;color:var(--muted)}
+.busy.on{display:flex}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">LUMIÈRE <span>·</span> 商品台</div>
+    <div class="spacer"></div>
+    <div class="key-box">
+      <input type="password" id="key" placeholder="管理密钥" autocomplete="off">
+      <button id="save">保存</button>
+      <button class="primary" id="reload">刷新</button>
+    </div>
+  </div>
+  <div id="msg"></div>
+
+  <div class="bar">
+    <input class="search" type="text" id="q" placeholder="搜编号 / 名称 / 分类">
+    <button class="ghost" id="new-toggle">＋ 新建商品</button>
+    <a href="admin-cloud.html" style="font-size:13px">订单台 →</a>
+  </div>
+
+  <div class="new-box" id="new-box">
+    <div style="display:flex;align-items:center;gap:10px">
+      <b style="font-size:13px">新建商品</b>
+      <span class="spacer"></span>
+      <button id="new-cancel">收起</button>
+    </div>
+    <div class="new-grid">
+      <div><label for="n-name">名称（中文）</label><input id="n-name" type="text"></div>
+      <div><label for="n-nameen">名称（英文）</label><input id="n-nameen" type="text"></div>
+      <div><label for="n-cat">分类</label>
+        <select id="n-cat">
+          <option value="women">女用</option>
+          <option value="men">男用</option>
+          <option value="couples">双人</option>
+          <option value="health">护理</option>
+        </select>
+      </div>
+      <div><label for="n-price">价格（站点基准 USD）</label><input id="n-price" type="number" step="0.01" min="0"></div>
+      <div><label for="n-stock">库存</label><input id="n-stock" type="number" step="1" min="0" value="0"></div>
+      <div><label for="n-badge">角标（选填，如 新品 / 热销）</label><input id="n-badge" type="text"></div>
+      <div class="span2"><label for="n-desc">描述（中文）</label><textarea id="n-desc" rows="2"></textarea></div>
+      <div class="span2">
+        <label>主图（会上传到 R2，也可稍后在列表里换）</label>
+        <button id="n-pick">选择图片…</button>
+        <span id="n-pick-name" style="font-size:12px;color:var(--muted);margin-left:8px"></span>
+      </div>
+    </div>
+    <div class="acts">
+      <span class="spacer"></span>
+      <button class="primary" id="n-create">创建并上架</button>
+    </div>
+  </div>
+
+  <div id="list"><div class="empty">填密钥后点「刷新」加载商品</div></div>
+
+  <div class="hint">
+    这里改的是<b>线上</b>数据：价格、库存、名称、描述、上架状态保存后前台立即生效。<br>
+    点缩略图可换主图（自动压到 1200px 的 webp，传到 R2 桶，写回商品图字段）。<br>
+    下架的商品顾客看不到，但仍留在列表里，随时可以重新上架。
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="busy" id="busy">正在处理…</div>
+<input type="file" id="file" accept="image/*" style="display:none">
+
+<script>
+const KEY_STORE = 'lumiere_admin_key';
+let apiKey = localStorage.getItem(KEY_STORE) || '';
+let products = [];
+let stock = {};
+let pickFor = '';            /* 换图目标商品 id；'__new__' 表示新建表单 */
+let newImage = '';
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CAT = { women:'女用', men:'男用', couples:'双人', health:'护理' };
+
+function msg(text, ok) { $('#msg').innerHTML = text ? '<div class="msg ' + (ok ? 'ok' : '') + '">' + esc(text) + '</div>' : ''; }
+function toast(text) {
+  const t = $('#toast'); t.textContent = text; t.classList.add('on');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2000);
+}
+function busy(on) { $('#busy').classList.toggle('on', !!on); }
+function api(path, opts = {}) {
+  return fetch(path, Object.assign({}, opts, {
+    headers: Object.assign({ 'X-Admin-Key': apiKey }, opts.body ? { 'Content-Type': 'application/json' } : {}, opts.headers || {})
+  }));
+}
+
+/* ---------- 读取 ---------- */
+async function load() {
+  if (!apiKey) { msg('请先填管理密钥'); return; }
+  msg('');
+  busy(true);
+  try {
+    const [rp, rs] = await Promise.all([api('/api/products'), fetch('/api/stock')]);
+    if (rp.status === 401) { busy(false); msg('密钥不对（或云端没有配置 ADMIN_KEY）'); return; }
+    if (!rp.ok) { busy(false); msg('读取商品失败：HTTP ' + rp.status); return; }
+    const j = await rp.json();
+    products = j.products || [];
+    stock = rs.ok ? await rs.json() : {};
+    render();
+  } catch (e) { msg('网络错误：' + e.message); }
+  busy(false);
+}
+
+/* ---------- 渲染 ---------- */
+function render() {
+  const q = $('#q').value.trim().toLowerCase();
+  const list = products.filter(p => !q
+    || String(p.id).toLowerCase().includes(q)
+    || String(p.name || '').toLowerCase().includes(q)
+    || String(p.nameEn || '').toLowerCase().includes(q)
+    || String(CAT[p.category] || p.category || '').includes(q));
+  if (!list.length) { $('#list').innerHTML = '<div class="empty">没有匹配的商品</div>'; return; }
+  $('#list').innerHTML = list.map(p => {
+    const qty = stock[p.id];
+    const active = p.active !== false;
+    const img = p.image ? '<img class="thumb" src="' + esc(p.image) + '" alt="" data-img="' + esc(p.id) + '">'
+                         : '<div class="thumb-empty" data-img="' + esc(p.id) + '">点击<br>上传主图</div>';
+    return '<div class="card" data-id="' + esc(p.id) + '">'
+      + '<div class="row1">'
+      +   '<div class="thumb-wrap">' + img + '<div class="thumb-tip">换图</div></div>'
+      +   '<div class="mid">'
+      +     '<div class="nm">' + esc(p.name) + (p.nameEn ? '<span class="en">' + esc(p.nameEn) + '</span>' : '') + '</div>'
+      +     '<div class="meta">' + esc(p.id) + ' · ' + esc(CAT[p.category] || p.category || '未分类')
+      +       (p.badge ? ' · ' + esc(p.badge) : '') + (p.sourceUrl ? ' · 来自采集' : '') + '</div>'
+      +   '</div>'
+      +   '<span class="pill ' + (active ? 'st-on' : 'st-off') + '">' + (active ? '在架' : '已下架') + '</span>'
+      + '</div>'
+      + '<div class="fields">'
+      +   '<div><label>名称（中）</label><input type="text" data-f="name" value="' + esc(p.name) + '"></div>'
+      +   '<div><label>名称（英）</label><input type="text" data-f="nameEn" value="' + esc(p.nameEn) + '"></div>'
+      +   '<div><label>价格 USD</label><input type="number" step="0.01" min="0" data-f="price" value="' + esc(p.price) + '"></div>'
+      +   '<div><label>库存</label><input type="number" step="1" min="0" data-f="stock" value="' + (qty == null ? '' : esc(qty)) + '"></div>'
+      +   '<div class="f-desc"><label>描述（中）</label><input type="text" data-f="desc" value="' + esc(p.desc) + '"></div>'
+      + '</div>'
+      + '<div class="acts">'
+      +   '<span class="spacer"></span>'
+      +   '<a href="product.html?id=' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener" style="font-size:13px">看前台页</a>'
+      +   '<button data-act="toggle">' + (active ? '下架' : '上架') + '</button>'
+      +   '<button class="primary" data-act="save">保存</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+  $('#list').querySelectorAll('[data-img]').forEach(el => el.onclick = () => {
+    pickFor = el.dataset.img; $('#file').click();
+  });
+  $('#list').querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
+    const card = b.closest('.card');
+    const p = products.find(x => x.id === card.dataset.id);
+    if (!p) return;
+    if (b.dataset.act === 'save') saveProduct(card, p);
+    else toggleProduct(p);
+  });
+}
+
+/* ---------- 保存 ---------- */
+function readFields(card) {
+  const out = {};
+  card.querySelectorAll('[data-f]').forEach(i => {
+    const k = i.dataset.f;
+    let v = i.value.trim();
+    if (k === 'price') v = Math.max(0, Number(v || 0));
+    if (k === 'stock') v = Math.max(0, parseInt(v || '0', 10));
+    if (v !== '') out[k] = v;
+  });
+  return out;
+}
+async function saveProduct(card, p) {
+  const body = readFields(card);
+  busy(true);
+  try {
+    const r = await api('/api/products/' + encodeURIComponent(p.id), { method: 'PUT', body: JSON.stringify(body) });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok && j.ok) { toast(p.id + ' 已保存'); await load(); }
+    else msg('保存失败：' + (j.error || ('HTTP ' + r.status)));
+  } catch (e) { msg('保存失败：' + e.message); }
+  busy(false);
+}
+async function toggleProduct(p) {
+  const next = p.active === false;
+  if (!next && !confirm('确定下架 ' + p.id + '？下架后前台立刻看不到它。')) return;
+  busy(true);
+  try {
+    const r = await api('/api/products/' + encodeURIComponent(p.id), { method: 'PUT', body: JSON.stringify({ active: next }) });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok && j.ok) { toast(p.id + (next ? ' 已上架' : ' 已下架')); await load(); }
+    else msg('操作失败：' + (j.error || ('HTTP ' + r.status)));
+  } catch (e) { msg('操作失败：' + e.message); }
+  busy(false);
+}
+
+/* ---------- 图片：压缩 → 传 R2 → 写回商品 ---------- */
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const max = 1200;
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      c.toBlob(b => b ? resolve(b) : reject(new Error('压缩失败')), 'image/webp', 0.9);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('读不出这张图')); };
+    img.src = url;
+  });
+}
+async function uploadImage(file) {
+  const blob = await compressImage(file);
+  const stem = 'online-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
+  const key = 'assets/img/' + stem + '.webp';
+  const r = await api('/api/r2/upload?key=' + encodeURIComponent(key), { method: 'POST', headers: { 'Content-Type': 'image/webp' }, body: blob });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.ok) throw new Error(j.error || ('上传失败 HTTP ' + r.status));
+  return j.url || ('assets/img/' + stem + '.webp');
+}
+$('#file').onchange = async e => {
+  const f = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  busy(true);
+  try {
+    const url = await uploadImage(f);
+    if (pickFor === '__new__') { newImage = url; $('#n-pick-name').textContent = '已上传'; toast('主图已上传'); }
+    else {
+      const p = products.find(x => x.id === pickFor);
+      if (!p) throw new Error('商品不存在');
+      const r = await api('/api/products/' + encodeURIComponent(p.id), { method: 'PUT', body: JSON.stringify({ image: url }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.ok) throw new Error(j.error || ('HTTP ' + r.status));
+      toast('主图已更新'); await load();
+    }
+  } catch (err) { msg('换图失败：' + err.message); }
+  pickFor = ''; busy(false);
+};
+
+/* ---------- 新建 ---------- */
+$('#new-toggle').onclick = () => $('#new-box').classList.toggle('open');
+$('#new-cancel').onclick = () => $('#new-box').classList.remove('open');
+$('#n-pick').onclick = () => { pickFor = '__new__'; $('#file').click(); };
+$('#n-create').onclick = async () => {
+  if (!apiKey) { msg('先填管理密钥'); return; }
+  const name = $('#n-name').value.trim();
+  if (!name) { msg('名称必填'); return; }
+  const body = {
+    name,
+    nameEn: $('#n-nameen').value.trim(),
+    category: $('#n-cat').value,
+    price: Math.max(0, Number($('#n-price').value || 0)),
+    stock: Math.max(0, parseInt($('#n-stock').value || '0', 10)),
+    badge: $('#n-badge').value.trim(),
+    desc: $('#n-desc').value.trim(),
+    image: newImage
+  };
+  busy(true);
+  try {
+    const r = await api('/api/products', { method: 'POST', body: JSON.stringify(body) });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok && j.product) {
+      toast(j.product.id + ' 已创建');
+      ['#n-name','#n-nameen','#n-price','#n-stock','#n-badge','#n-desc'].forEach(s => $(s).value = '');
+      newImage = ''; $('#n-pick-name').textContent = '';
+      $('#new-box').classList.remove('open');
+      await load();
+    } else msg('创建失败：' + (j.error || ('HTTP ' + r.status)));
+  } catch (e) { msg('创建失败：' + e.message); }
+  busy(false);
+};
+
+/* ---------- 头部 ---------- */
+$('#key').value = apiKey;
+$('#save').onclick = () => { apiKey = $('#key').value.trim(); localStorage.setItem(KEY_STORE, apiKey); msg('密钥已保存到本机浏览器', true); load(); };
+$('#reload').onclick = load;
+$('#q').oninput = render;
+$('#key').addEventListener('keydown', e => { if (e.key === 'Enter') $('#save').click(); });
+if (apiKey) load();
+</script>
+</body>
+</html>
