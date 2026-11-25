@@ -204,14 +204,13 @@ async function callParser(tabId, method, opts, pageUrl) {
               if (skuMatrix.length) {
                 /* 1. 推导 skuOptions：所有 row.axes 的轴名 → 值集合 + 选项图 */
                 const axisMap = {};
-                const axisColorMap = {}; // 轴值 → 匹配到的颜色图
+                const axisColorMap = {};
                 for (const row of skuMatrix) {
                   if (!row.axes || typeof row.axes !== 'object') continue;
                   for (const [axis, val] of Object.entries(row.axes)) {
                     if (!axis || !val) continue;
                     if (!axisMap[axis]) axisMap[axis] = new Set();
                     axisMap[axis].add(val);
-                    /* 尝试给这个轴值找一张颜色图 */
                     if (!axisColorMap[val]) axisColorMap[val] = findColorImg(val);
                   }
                 }
@@ -223,13 +222,18 @@ async function callParser(tabId, method, opts, pageUrl) {
                   if (items.length >= 1) skuOptions.push({ group: axis, items });
                 }
 
-                /* 2. 生成 skus：每个 row 一个组合，补 image */
+                /* 2. ★ SKU 图兜底：颜色关键词都匹配不到时，把 images[1..] 按顺序分给 skus
+                   （1688 详情页 images 数组通常是：主图 + 颜色选项1 + 颜色选项2 + ... + 详情图） */
+                const fallbackImgs = cleanImages.slice(1); // 跳过主图
+                /* 3. 生成 skus：每个 row 一个组合，补 image */
+                let skuIdx = 0;
                 for (const row of skuMatrix) {
                   if (!row.axes) continue;
                   const comboName = Object.values(row.axes).filter(Boolean).join(' / ') || String(row.specAttrs || '');
-                  /* 从 axes 里第一个值找颜色图（通常就是颜色/规格） */
                   const firstVal = Object.values(row.axes)[0] || '';
-                  const skuImg = findColorImg(firstVal);
+                  let skuImg = findColorImg(firstVal);
+                  /* 颜色匹配失败 → 兜底：按顺序分图 */
+                  if (!skuImg && fallbackImgs[skuIdx]) skuImg = fallbackImgs[skuIdx];
                   skus.push({
                     name: comboName,
                     price: Number(row.price || row.discountPrice || 0),
@@ -238,15 +242,17 @@ async function callParser(tabId, method, opts, pageUrl) {
                     image: skuImg,
                     images: skuImg ? [skuImg] : []
                   });
+                  skuIdx++;
                 }
               } else if (Array.isArray(raw.skus) && raw.skus.length) {
-                /* 没有 sku_matrix 时，把 ERP 的扁平字符串 skus 当单一规格选项 */
-                skuOptions = [{ group: '规格', items: raw.skus.map(s => ({ name: String(s), image: findColorImg(s) })) }];
-                skus = raw.skus.map(s => ({
+                /* 没有 sku_matrix 时的兜底 */
+                const fallbackImgs = cleanImages.slice(1);
+                skuOptions = [{ group: '规格', items: raw.skus.map((s, i) => ({ name: String(s), image: findColorImg(s) || fallbackImgs[i] || '' })) }];
+                skus = raw.skus.map((s, i) => ({
                   name: String(s),
                   price: Number(raw.price || raw.priceMax || 0),
                   stock: 0,
-                  image: findColorImg(s)
+                  image: findColorImg(s) || fallbackImgs[i] || ''
                 }));
               }
 
