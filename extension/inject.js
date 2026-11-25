@@ -13,7 +13,7 @@
   /* ★ 版本化覆盖：OLD 解析器若版本不同就允许新版覆盖它。
      之前这里直接 return，导致同一页面反复采集永远用第一次注入的旧解析器 ——
      扩展版本升到 z、页面里却还是几小时前的代码，改了等于没改。 */
-  const INJECT_BUILD = '20261125d';
+  const INJECT_BUILD = '20261125f';
   if (window.__LUM_COLLECT__ && window.__LUM_COLLECT__.__build === INJECT_BUILD) return;
 
   /* ---------------- 通用工具 ---------------- */
@@ -611,6 +611,12 @@
     if (!href) return false;
     const h = decodeEnt(href);
     if (/(^|\/)cart(\/|\?|$)/i.test(h)) return false;
+
+    /* ★ 1688 店铺页专用绕过：只要链接里有 offer + 6 位以上数字就是商品 */
+    if (IS_1688_SHOP && /offer[\/=_\-](\d{6,})/i.test(h)) return true;
+    if (IS_1688_SHOP && /detail\.1688\.com\/offer\//i.test(h)) return true;
+    if (IS_1688_SHOP && /1688\.com\/offer\//i.test(h)) return true;
+
     if (/(^|\/)(login|register|search|list|category|shop|home)(\/|\?|$)/i.test(h) &&
         !PRODUCT_QUERY.test(h)) return false;
     return PRODUCT_PATH.test(h) || PRODUCT_QUERY.test(h) || PRODUCT_HASH.test(h);
@@ -632,7 +638,25 @@
     for (const a of as) {
       const href = a.getAttribute('href') || '';
       if (!href || href.charAt(0) === '#' || href.indexOf('javascript:') === 0) continue;
-      if (!isProductLink(href)) continue;
+
+      /* ★ 1688 店铺页：直接识别，绕过 isProductLink 的 shop/list/category 过滤 */
+      let isOffer = false;
+      if (IS_1688_SHOP) {
+        const hLower = href.toLowerCase();
+        if (/detail\.1688\.com\/offer\//.test(href)) isOffer = true;
+        else if (/1688\.com\/offer\/\d/.test(href)) isOffer = true;
+        else if (/offer[\/=_\-](\d{6,})/i.test(href)) isOffer = true;
+        else if (/offerid[=\/](\d{6,})/i.test(href)) isOffer = true;
+        else if (/detail[?&]offerid=/.test(hLower)) isOffer = true;
+        else if (hLower.includes('/offer/')) isOffer = true;
+        else if (hLower.includes('/detail/') && /\d{6,}/.test(href)) isOffer = true;
+        /* 店铺内部路由，带 offer + 数字的 */
+        else if (hLower.includes('offer') && /\d{6,}/.test(href)) isOffer = true;
+      } else {
+        isOffer = isProductLink(href);
+      }
+      if (!isOffer) continue;
+
       const url = norm(decodeEnt(href));
       const id = offerIdOf(href);
       const key = id || url;
@@ -1714,9 +1738,13 @@
     try {
       const totalA = document.querySelectorAll('a[href]').length;
       let offerA = 0;
+      const sampleHrefs = [];
       document.querySelectorAll('a[href]').forEach(a => {
         const h = a.getAttribute('href') || '';
-        if (/offer|product|item|goods/i.test(h)) offerA++;
+        if (/offer|product|item|goods/i.test(h)) {
+          offerA++;
+          if (sampleHrefs.length < 15) sampleHrefs.push(h.substring(0, 150));
+        }
       });
       const dataOfferIds = document.querySelectorAll('[data-offer-id],[data-offerId]').length;
       const dataHrefs = document.querySelectorAll('[data-href]').length;
@@ -1733,6 +1761,7 @@
         title: document.title?.substring(0, 50),
         totalALinks: totalA,
         offerRelatedLinks: offerA,
+        sampleHrefs,
         dataOfferIds,
         dataHrefs,
         offerClasses: Array.from(offerClassSet).slice(0, 25),

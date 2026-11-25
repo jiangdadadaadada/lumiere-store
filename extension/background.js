@@ -12,7 +12,7 @@ const STORAGE_KEY = 'lum_collect_state';
    所以不需要分批了 —— 一次全发，省掉 7 次往返。 */
 const BATCH_SIZE = 200;
 /* 与 content.js 保持一致的构建号：变了就重载扩展并把页面按钮重新挂上 */
-const BUILD = '20261125d';
+const BUILD = '20261125f';
 
 let state = {
   running: false, phase: '', url: '', total: 0, done: 0, failed: 0,
@@ -363,7 +363,7 @@ function isProductDetailUrl(url) {
    旧逻辑只要 tabId+url 没变就永不重注，页面里一旦注入了旧版解析器，
    扩展升到新版也进不去 —— 这正是「版本号升了、采集行为还是旧的」的根因。
    改成每次采集先探测页面里 __LUM_COLLECT__.__build，不符就强制重注。 */
-const PARSER_BUILD = '20261125d';
+const PARSER_BUILD = '20261125f';
 async function ensureInjected(tabId, url) {
   try {
     const probe = await chrome.scripting.executeScript({
