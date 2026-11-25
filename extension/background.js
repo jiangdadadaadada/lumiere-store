@@ -131,16 +131,20 @@ async function callParser(tabId, method, opts, pageUrl) {
     func: async (m, o) => {
       if (!window.__c1688 && !window.__LUM_COLLECT__) return { ok: false, error: '采集引擎未注入' };
       try {
-        /* ★ 1688 图片清洗：去掉 _数字x数字q*.jpg 缩略后缀，返回原图 URL */
+        /* ★ 1688 图片清洗：去掉 _数字x数字q*.jpg 缩略后缀，返回原图 URL
+           1688 缩略图 URL 结构：xxx.jpg_60x60q90.jpg / xxx.jpg_400x400.jpg / xxx.jpg_.webp
+           正确清洗：.jpg_数字x数字q*.jpg → .jpg */
         const clean1688 = (url) => {
           let s = String(url || '').trim();
           if (!s) return '';
-          // 去掉 1688 缩略规格后缀：_60x60q90.jpg / _400x400.jpg / _800x800.jpg
-          s = s.replace(/_\d+x\d+(?:q\d*)?\.jpg$/i, '.jpg');
-          s = s.replace(/_\d+x\d+(?:q\d*)?\.jpeg$/i, '.jpeg');
-          s = s.replace(/_\d+x\d+(?:q\d*)?\.png$/i, '.png');
-          s = s.replace(/_\d+x\d+(?:q\d*)?\.webp$/i, '.webp');
-          // .jpg_sum.jpg 也是中间尺寸，去掉
+          // .jpg_400x400.jpg / .jpg_60x60q90.jpg / .jpg_800x800.jpg → .jpg
+          s = s.replace(/\.jpg_\d+x\d+(?:q\d*)?\.jpg$/i, '.jpg');
+          s = s.replace(/\.jpeg_\d+x\d+(?:q\d*)?\.jpeg$/i, '.jpeg');
+          s = s.replace(/\.png_\d+x\d+(?:q\d*)?\.png$/i, '.png');
+          s = s.replace(/\.webp_\d+x\d+(?:q\d*)?\.webp$/i, '.webp');
+          // 跨格式缩略后缀：.jpg_.webp / .jpg_数字x数字q*.webp → .jpg
+          s = s.replace(/\.jpg_(?:\d+x\d+(?:q\d*)?)?\.webp$/i, '.jpg');
+          // .jpg_sum.jpg → .jpg
           s = s.replace(/\.jpg_sum\.jpg$/i, '.jpg');
           return s;
         };
