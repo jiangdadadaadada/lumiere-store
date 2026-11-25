@@ -129,12 +129,56 @@ async function callParser(tabId, method, opts, pageUrl) {
     target: { tabId },
     world: 'MAIN',
     func: async (m, o) => {
-      if (!window.__LUM_COLLECT__) return { ok: false, error: '解析器未注入' };
-      try { return await window.__LUM_COLLECT__[m](o || {}); }
-      catch (e) { return { ok: false, error: e.message }; }
+      if (!window.__c1688 && !window.__LUM_COLLECT__) return { ok: false, error: '采集引擎未注入' };
+      try {
+        /* ★ 优先 ERP __c1688 */
+        if (window.__c1688) {
+          let raw;
+          if (m === 'detail') {
+            window.scrollTo(0, Math.max(300, document.body.scrollHeight * 0.4));
+            await new Promise(r => setTimeout(r, 1000));
+            raw = window.__c1688.detail();
+            if (raw && raw.title) {
+              return { ok: true, items: [{
+                offerId: raw.offerId || '', url: raw.url || '',
+                name: raw.title || '', price: raw.price || raw.priceMax || 0,
+                image: (raw.images || [])[0] || '', images: raw.images || [],
+                desc: raw.description || '',
+                attrs: raw.attrs && typeof raw.attrs === 'object'
+                  ? Object.entries(raw.attrs).map(([k,v]) => ({ name: k, value: Array.isArray(v) ? v.join('/') : String(v) }))
+                  : [],
+                sku: '', skuOptions: [], skus: Array.isArray(raw.skus) ? raw.skus : []
+              }]};
+            }
+            return { ok: false, error: 'detail 未取到商品数据（可能被反爬或页面未渲染）' };
+          } else if (m === 'list') {
+            raw = typeof window.__c1688.listAcrossScroll === 'function'
+              ? await window.__c1688.listAcrossScroll(o && o.scrollTimes ? o.scrollTimes : 12)
+              : window.__c1688.list();
+            const rows = raw || [];
+            const items = rows.filter(r => r && r.offerId).map(r => {
+              let url = r.url || '';
+              if (!/detail\.1688\.com\/offer\/\d+\.html/i.test(url)) {
+                url = 'https://detail.1688.com/offer/' + r.offerId + '.html';
+              }
+              return {
+                offerId: r.offerId, url,
+                name: r.title || '', price: r.price || 0,
+                image: r.image || '', images: r.image ? [r.image] : []
+              };
+            });
+            return { ok: true, items, linkCount: items.length, totalLinks: items.length };
+          }
+        }
+        /* 旧引擎兜底 */
+        if (window.__LUM_COLLECT__) {
+          return await window.__LUM_COLLECT__[m](o || {});
+        }
+        return { ok: false, error: '引擎不可用' };
+      } catch (e) { return { ok: false, error: e.message }; }
     },
     args: [method, opts || {}]
-  }), method === 'list' ? 8000 : 6000, '页面解析');
+  }), method === 'list' ? 30000 : 20000, 'ERP 解析');
   return results && results[0] ? results[0].result : { ok: false, error: '无返回' };
 }
 
@@ -363,21 +407,19 @@ function isProductDetailUrl(url) {
    旧逻辑只要 tabId+url 没变就永不重注，页面里一旦注入了旧版解析器，
    扩展升到新版也进不去 —— 这正是「版本号升了、采集行为还是旧的」的根因。
    改成每次采集先探测页面里 __LUM_COLLECT__.__build，不符就强制重注。 */
-const PARSER_BUILD = '20261125f';
+/* ★ ERP 引擎版本检测：用 __c1688 函数存在性代替旧 __LUM_COLLECT__.__build */
 async function ensureInjected(tabId, url) {
   try {
     const probe = await chrome.scripting.executeScript({
-      target: { tabId },
-      world: 'MAIN',
-      func: (want) => !!(window.__LUM_COLLECT__ && window.__LUM_COLLECT__.__build === want),
-      args: [PARSER_BUILD]
+      target: { tabId }, world: 'MAIN',
+      func: () => !!(window.__c1688 && typeof window.__c1688.detail === 'function' && typeof window.__c1688.list === 'function')
     });
-    const ok = probe && probe[0] && probe[0].result;
-    if (ok) return true;   /* 已是当前版本，零开销 */
+    if (probe && probe[0] && probe[0].result) return true;
   } catch (e) {}
-  /* 版本不符 / 没注入过 / 探测失败 → 强制重新注入新版（inject.js 内部会覆盖旧对象） */
+  /* manifest 已配置 document_start 注入 inject-1688.js MAIN world，
+     这里只作兜底：如果引擎不存在，手动再注入一次 */
   try {
-    await chrome.scripting.executeScript({ target: { tabId }, world: 'MAIN', files: ['inject.js'] });
+    await chrome.scripting.executeScript({ target: { tabId }, world: 'MAIN', files: ['inject-1688.js'] });
     return true;
   } catch (e) { return false; }
 }

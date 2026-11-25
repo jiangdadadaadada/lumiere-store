@@ -1982,6 +1982,51 @@
    "collectedAt": "2026-11-25T10:34:46.330Z",
    "whiteStatus": "done",
    "whiteAt": "2026-11-25T10:36:27.799Z"
+  },
+  "DRAFT-MWVZT7YGNOFA": {
+   "id": "DRAFT-MWVZT7YGNOFA",
+   "status": "pending",
+   "sku": "",
+   "site": "",
+   "createdAt": "2026-11-25T10:40:46.216Z",
+   "name": "私语 · 甄选好物",
+   "nameEn": "Whisper · Intimate Essential",
+   "category": "women",
+   "desc": "这款单品选用亲肤材质。为私密时刻而设计，细节都藏在手感里。私密包装，中性面单发货。",
+   "descEn": "A intimate essential with a skin-safe finish. Discreet packaging, neutral billing.",
+   "price": 18,
+   "priceMissing": false,
+   "priceMissingAt": "",
+   "stock": 0,
+   "image": "https://cbu01.alicdn.com/img/ibank/O1CN01jh4IZWdebqC2vH2e_!!2206592147548-0-cib.jpg",
+   "mainSource": "https://cbu01.alicdn.com/img/ibank/O1CN01jh4IZWdebqC2vH2e_!!2206592147548-0-cib.jpg",
+   "gallerySources": [
+    "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg_60x60q90.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01Z7aiTl3URmB2hAtU_!!2206592147548-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01vUESw025y6r83Xo1G_!!6000000007594-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01PCAQMlVPlYI2hAtU_!!2206592147548-0-cib.jpg"
+   ],
+   "gallery": [
+    "/assets/img/collected/src-356a944514a033ee.jpg",
+    "/assets/img/collected/src-4b9fbdfbf458782a.jpg",
+    "/assets/img/collected/src-a3c48558a3000b81.jpg",
+    "/assets/img/collected/src-5119b4c46b3a3003.jpg"
+   ],
+   "specs": [],
+   "skuImages": {},
+   "skus": [],
+   "features": [],
+   "badge": "",
+   "material": "—",
+   "size": "—",
+   "noise": "",
+   "waterproof": "",
+   "battery": "",
+   "originalName": "柠檬物语情趣内衣纯欲女仆性感免脱制服诱惑套装可爱qqny女佣睡衣",
+   "originalDesc": "",
+   "sourceUrl": "https://detail.1688.com/offer/1025371832564.html",
+   "collectedAt": "2026-11-25T10:40:46.216Z",
+   "whiteStatus": "pending"
   }
  },
  "orders": {
