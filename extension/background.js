@@ -12,7 +12,7 @@ const STORAGE_KEY = 'lum_collect_state';
    所以不需要分批了 —— 一次全发，省掉 7 次往返。 */
 const BATCH_SIZE = 200;
 /* 与 content.js 保持一致的构建号：变了就重载扩展并把页面按钮重新挂上 */
-const BUILD = '20261125f';
+const BUILD = '20261125m';
 
 let state = {
   running: false, phase: '', url: '', total: 0, done: 0, failed: 0,
@@ -570,138 +570,167 @@ async function runShopScan(cfg) {
   state.phase = 'shop-scan';
   state.url = cfg.url || '';
   state.shopUrls = []; state.shopFound = 0; state.shopUnique = 0; state.shopSkippedExisting = 0;
-  state.message = '正在扫描店铺商品（第 1 页）…';
+  state.message = '正在加载 ERP 采集引擎…';
   state.startedAt = Date.now();
   state.timings = { inject: 0, scrollParse: 0, import: 0, total: 0, wakeup: 0 };
   state.tabId = cfg.tabId;
   saveState();
 
-  const allUrls = new Set();
+  const allOffers = new Map();  // offerId -> {offerId, url, title, image, price}
   const tabId = cfg.tabId;
-  const maxPages = cfg.pages || 30;
+  const maxPages = cfg.pages || 10;
 
   try {
-    pushProgress('準备解析店铺页…');
+    /* 等待 ERP inject-1688.js 注入完成 */
+    pushProgress('等待采集引擎就绪…');
+    let ready = false;
+    for (let i = 0; i < 20 && !ready; i++) {
+      try {
+        const r = await withTimeout(chrome.scripting.executeScript({
+          target: { tabId }, world: 'MAIN',
+          func: () => !!(window.__c1688 && typeof window.__c1688.list === 'function')
+        }), 2000, '检查引擎');
+        ready = !!(r && r[0] && r[0].result);
+      } catch (e) {}
+      if (!ready) await new Promise(r => setTimeout(r, 300));
+    }
+    if (!ready) throw new Error('ERP 采集引擎未就绪，请重载扩展后刷新页面');
+    pushProgress('引擎就绪');
 
     for (let page = 1; page <= maxPages; page++) {
-      pushProgress('正在扫描第 ' + page + '/' + maxPages + ' 页…');
+      pushProgress('扫描第 ' + page + '/' + maxPages + ' 页…');
 
-      /* 确保解析器已注入 */
-      await ensureInjected(tabId, state.url);
-
-      /* 调 shopLinks 解析当前页的商品鏈接 */
+      /* ★ 核心：调 ERP 的 listAcrossScroll，滚动 + 收集当前页所有商品 */
       const res = await withTimeout(chrome.scripting.executeScript({
-        target: { tabId },
-        world: 'MAIN',
-        func: async () => {
-          if (!window.__LUM_COLLECT__) return { ok: false, error: '解析器未注入' };
-          try { return await window.__LUM_COLLECT__.shopLinks({ scanLinks: true }); }
-          catch (e) { return { ok: false, error: e.message }; }
-        }
-      }), 8000, '店铺页解析');
+        target: { tabId }, world: 'MAIN',
+        func: async (steps) => {
+          try {
+            const rows = typeof window.__c1688.listAcrossScroll === 'function'
+              ? await window.__c1688.listAcrossScroll(steps)
+              : window.__c1688.list();
+            return { ok: true, rows: rows || [] };
+          } catch (e) {
+            return { ok: false, error: e.message };
+          }
+        },
+        args: [12]
+      }), 30000, 'ERP 扫描');
 
       const r = res && res[0] ? res[0].result : { ok: false, error: '无返回' };
-
-      /* ★ 存诊断信息，扫描失败时传给 content.js 显示给用户 */
-      if (r && r.diag) state.shopDiag = r.diag;
-
       if (!r || !r.ok) {
-        if (page === 1) {
-          const diagMsg = state.shopDiag ? '\n[诊断] ' + JSON.stringify(state.shopDiag).substring(0, 500) : '';
-          throw new Error((r && r.error) || '这个页面不像店铺页，请打开店铺首页再试' + diagMsg);
-        } else { pushProgress('第 ' + page + ' 页解析失败，停止翻页…'); break; }
+        if (page === 1) throw new Error('ERP 扫描失败: ' + ((r && r.error) || '未知错误'));
+        break;
       }
 
-      const urls = r.urls || [];
-      urls.forEach(u => allUrls.add(u));
-      pushProgress('第 ' + page + ' 页抓到 ' + urls.length + ' 款，累计 ' + allUrls.size + ' 款');
+      const rows = r.rows || [];
+      rows.forEach(row => {
+        if (row.offerId && !allOffers.has(row.offerId)) {
+          const url = row.url || ('https://detail.1688.com/offer/' + row.offerId + '.html');
+          allOffers.set(row.offerId, { offerId: row.offerId, url, title: row.title || '', image: row.image || '', price: row.price || '' });
+        }
+      });
 
-      /* 没有下一页就停 */
-      if (!r.hasNext) break;
+      pushProgress('第 ' + page + ' 页 ' + rows.length + ' 款，累计 ' + allOffers.size + ' 款');
 
-      /* 翻页：解析器返回 nextUrl 的話直接跳，否则讓解析器模拟点擊下一页 */
-      /* ★ 1688 SPA 模式：shopLinks 返回 isSpaMode=true 时，URL 可能不变，
-         翻页后必须用 MutationObserver 監聽商品鏈接数量变化，
-         而不是等 tabs.onUpdated 的 status=complete（SPA 不觸发）。 */
-
-      /* 先记录当前页商品鏈接数（用於翻页后对比） */
-      let oldLinkCount = 0;
+      /* 如果没有翻页按钮就停（1688 店铺页通常只有一页 offerlist）*/
+      let hasNext = false;
       try {
-        const cntRes = await withTimeout(chrome.scripting.executeScript({
-          target: { tabId }, world: 'MAIN', func: () => {
-            try { return window.__LUM_COLLECT__ && window.__LUM_COLLECT__.scanProductLinks ? window.__LUM_COLLECT__.scanProductLinks() : 0; } catch(e) { return 0; }
-          }
-        }), 3000, '计数');
-        oldLinkCount = (cntRes && cntRes[0] && cntRes[0].result) || 0;
-      } catch (e) {}
-
-      if (r.nextUrl && !r.isSpaMode) {
-        /* URL 跳轉模式（非 SPA） */
-        try {
-          await chrome.tabs.update(tabId, { url: r.nextUrl });
-          await new Promise(res => {
-            chrome.tabs.onUpdated.addListener(function listener(id, info) {
-              if (id === tabId && info.status === 'complete') {
-                chrome.tabs.onUpdated.removeListener(listener); res();
+        const nr = await withTimeout(chrome.scripting.executeScript({
+          target: { tabId }, world: 'MAIN',
+          func: () => {
+            /* 1688 offerlist 翻页检测 */
+            const sel = [
+              '[class*="pagination"] a[class*="next"]',
+              '[class*="Pagination"] a[class*="next"]',
+              '[class*="next"]',
+              'a.offer-pagination-next',
+              '.offer-pagination .next',
+              '.page-next', '.pager-next',
+              'a[aria-label="下一页"]',
+              'button[aria-label="下一页"]'
+            ];
+            for (const s of sel) {
+              const el = document.querySelector(s);
+              if (el) {
+                const disabled = el.disabled || el.getAttribute('aria-disabled') === 'true'
+                  || el.classList.contains('disabled')
+                  || el.classList.contains('page-disabled');
+                if (!disabled) return true;
               }
-            });
-            setTimeout(res, 8000);
-          });
-          state.url = (await chrome.tabs.get(tabId)).url || state.url;
-          await new Promise(r => setTimeout(r, 800));
-        } catch (e) { pushProgress('翻页失敗，停止…'); break; }
-      } else {
-        /* Click 模式（SPA 或無 nextUrl） */
+            }
+            /* 文本兜底：页面底部有没有「下一页/Next」可点 */
+            const textEls = document.querySelectorAll('a,button,span,div');
+            for (const el of textEls) {
+              const t = (el.textContent || '').trim();
+              if (/^(下一页|下页|Next|▶|›|»)$/.test(t) && el.offsetParent !== null) {
+                const disabled = el.disabled || el.getAttribute('aria-disabled') === 'true';
+                if (!disabled) return true;
+              }
+            }
+            return false;
+          }
+        }), 3000, '检测下一页');
+        hasNext = !!(nr && nr[0] && nr[0].result);
+      } catch (e) { break; }
+
+      if (!hasNext) break;
+
+      /* 点下一页 */
+      try {
         const clicked = await withTimeout(chrome.scripting.executeScript({
           target: { tabId }, world: 'MAIN',
-          func: async () => {
-            if (!window.__LUM_COLLECT__) return false;
-            try { return await window.__LUM_COLLECT__.shopClickNext(); }
-            catch (e) { return false; }
+          func: () => {
+            const sel = [
+              '[class*="pagination"] a[class*="next"]',
+              '[class*="next"]',
+              'a.offer-pagination-next',
+              '.offer-pagination .next',
+              'a[aria-label="下一页"]',
+              'button[aria-label="下一页"]'
+            ];
+            for (const s of sel) {
+              const el = document.querySelector(s);
+              if (el && !el.disabled && el.getAttribute('aria-disabled') !== 'true') {
+                el.click(); return true;
+              }
+            }
+            const textEls = document.querySelectorAll('a,button,span,div');
+            for (const el of textEls) {
+              const t = (el.textContent || '').trim();
+              if (/^(下一页|下页|Next|▶|›|»)$/.test(t) && el.offsetParent !== null) {
+                el.click(); return true;
+              }
+            }
+            return false;
           }
-        }), 5000, '点下一页');
-        const didClick = clicked && clicked[0] && clicked[0].result;
-        if (!didClick) { pushProgress('没有下一页按钮，停止翻页'); break; }
-
-        /* ★ SPA 翻页后等待：调 shopWaitPageChange 用 MutationObserver 監聽 */
-        try {
-          await withTimeout(chrome.scripting.executeScript({
-            target: { tabId }, world: 'MAIN',
-            func: async (oldCnt) => {
-              if (!window.__LUM_COLLECT__) return true;
-              try { return await window.__LUM_COLLECT__.shopWaitPageChange(oldCnt); }
-              catch (e) { await new Promise(r => setTimeout(r, 1500)); return true; }
-            },
-            args: [oldLinkCount]
-          }), 12000, '等待新页加載');
-        } catch (e) {}
-
-        try { state.url = (await chrome.tabs.get(tabId)).url || state.url; } catch (e) {}
-      }
+        }), 5000, '点击下一页');
+        const didClick = !!(clicked && clicked[0] && clicked[0].result);
+        if (!didClick) break;
+        await new Promise(r => setTimeout(r, 2500));
+      } catch (e) { break; }
     }
 
     /* 收集完成 */
-    state.shopUrls = Array.from(allUrls);
+    state.shopUrls = Array.from(allOffers.values());
     state.shopFound = state.shopUrls.length;
 
     if (!state.shopUrls.length) {
-      const diagMsg = state.shopDiag ? '\n[诊断] ' + JSON.stringify(state.shopDiag).substring(0, 800) : '';
-      throw new Error('这个页面没扫描到任何商品，请确保在店铺商品列表页' + diagMsg);
+      throw new Error('这个页面没扫描到任何商品，请确保在店铺商品列表页（offerlist.htm）');
     }
 
-    /* 問服务端哪些商品已存在（按 offerId 或 URL 匹配） */
+    /* 问服务端哪些商品已存在 */
     pushProgress('检查哪些商品已在库中…');
     let existingUrls = [];
     try {
-      const r = await withTimeout(apiPost('/api/collect/check-existing', { urls: state.shopUrls }), 10000, '重复检查');
+      const r = await withTimeout(apiPost('/api/collect/check-existing',
+        { urls: state.shopUrls.map(x => x.url) }), 10000, '重复检查');
       if (r && r.ok && r.existingUrls) existingUrls = r.existingUrls;
-    } catch (e) { /* 服务端没这个端点就跳过 */ }
-
+    } catch (e) {}
     const existingSet = new Set(existingUrls);
-    const uniqueUrls = state.shopUrls.filter(u => !existingSet.has(u));
-    state.shopSkippedExisting = state.shopUrls.length - uniqueUrls.length;
-    state.shopUrls = uniqueUrls;
-    state.shopUnique = uniqueUrls.length;
+    const uniqueOffers = state.shopUrls.filter(x => !existingSet.has(x.url));
+    state.shopSkippedExisting = state.shopUrls.length - uniqueOffers.length;
+    state.shopUrls = uniqueOffers;
+    state.shopUnique = uniqueOffers.length;
 
     state.phase = 'shop-scan-done';
     state.message = '扫描完成：发现 ' + state.shopFound + ' 款，待采 ' + state.shopUnique + ' 款';
@@ -709,14 +738,10 @@ async function runShopScan(cfg) {
     saveState();
     broadcast({ type: 'progress', state: publicState() });
 
-    /* ★ 自动路由：一键采集按钮进来的，扫描完直接进采集阶段 */
     if (cfg.autoCollect && state.shopUnique > 0) {
       pushProgress('扫描完成，立即开始采集 ' + state.shopUnique + ' 款…');
-      /* 给 SW 留一口气，让 progress 消息先发出去再进下一阶段 */
       await new Promise(r => setTimeout(r, 400));
-      /* 把 running 交给 runShopCollect，phase 切成 shop-collect */
-      state.running = false;  /* 先解锁，让 runShopCollect 的 state.running=true 生效 */
-      saveState();
+      state.running = false; saveState();
       return runShopCollect({
         concurrency: cfg.concurrency || 4,
         skipExisting: cfg.skipExisting !== false
@@ -724,7 +749,7 @@ async function runShopScan(cfg) {
     }
   } catch (e) {
     state.phase = 'error';
-    state.message = '扫描失敗：' + (e && e.message ? e.message : e);
+    state.message = '扫描失败：' + (e && e.message ? e.message : e);
     saveState();
     broadcast({ type: 'error', state: publicState() });
   } finally {
@@ -760,7 +785,8 @@ async function runShopCollect(cfg) {
   async function worker() {
     while (idx < urls.length) {
       const myIdx = idx++;
-      const url = urls[myIdx];
+      const urlEntry = urls[myIdx];
+      const url = typeof urlEntry === 'string' ? urlEntry : (urlEntry.url || '');
       let tab = null;
       try {
         /* 开新标签页在后台加載（active: false） */
@@ -775,71 +801,87 @@ async function runShopCollect(cfg) {
               res();
             }
           });
-          setTimeout(res, 12000);
+          setTimeout(res, 15000);
         });
 
-        /* 注入解析器 */
-        await ensureInjected(tabId, url);
+        /* 等 ERP 引擎就绪 */
+        let ready = false;
+        for (let i = 0; i < 15 && !ready; i++) {
+          try {
+            const r = await withTimeout(chrome.scripting.executeScript({
+              target: { tabId }, world: 'MAIN',
+              func: () => !!(window.__c1688 && typeof window.__c1688.detail === 'function')
+            }), 2000, '检查引擎');
+            ready = !!(r && r[0] && r[0].result);
+          } catch (e) {}
+          if (!ready) await new Promise(r => setTimeout(r, 300));
+        }
+        if (!ready) { failCount++; state.failed = failCount; continue; }
 
-        /* 调 detail 解析 */
+        /* ★ 核心：调 ERP 的 detail() 拿完整数据（含 SKU）*/
         const res = await withTimeout(chrome.scripting.executeScript({
-          target: { tabId },
-          world: 'MAIN',
+          target: { tabId }, world: 'MAIN',
           func: async () => {
-            if (!window.__LUM_COLLECT__) return { ok: false, error: '解析器未注入' };
-            try { return await window.__LUM_COLLECT__.detail({}); }
-            catch (e) { return { ok: false, error: e.message }; }
-          }
-        }), 12000, '商品详情解析');
-
-        const r = res && res[0] ? res[0].result : { ok: false, error: '無返回' };
-
-        if (!r || !r.ok || !r.items || !r.items.length) {
-          failCount++;
-          state.failed = failCount;
-        } else {
-          const d = r.items[0];
-          if (!d.name || !(d.images && d.images.length)) {
-            failCount++;
-            state.failed = failCount;
-          } else {
-            /* 单个商品入草稿箱 */
-            const draft = {
-              name: d.name,
-              price: Number(d.price) || 0,
-              stock: Number(d.stock) || 0,
-              category: d.category || 'women',
-              desc: d.desc || '',
-              images: d.images || [],
-              url: d.url || url,
-              offerId: d.offerId || '',
-              attrs: d.attrs || [],
-              skuOptions: d.skuOptions || [],
-              skus: d.skus || []
-            };
             try {
-              const imp = await apiPost('/api/collect/batch', { drafts: [draft] });
-              if (imp && imp.ok && (imp.succeeded || 0) > 0) {
-                okCount++;
-              } else {
-                failCount++;
-              }
+              /* 滚动一下让懒加载资源都出来 */
+              if (typeof window.scrollTo === 'function') window.scrollTo(0, Math.max(200, document.body.scrollHeight * 0.3));
+              await new Promise(r => setTimeout(r, 800));
+              const d = window.__c1688.detail();
+              return { ok: true, data: d };
             } catch (e) {
+              return { ok: false, error: e.message };
+            }
+          }
+        }), 20000, 'ERP 详情解析');
+
+        const r = res && res[0] ? res[0].result : { ok: false, error: '无返回' };
+
+        if (!r || !r.ok || !r.data || !r.data.title) {
+          failCount++; state.failed = failCount;
+        } else {
+          const d = r.data;
+          const draft = {
+            name: d.title || '',
+            price: Number(d.price) || Number(d.priceMax) || 0,
+            stock: 0,
+            category: (urlEntry && urlEntry.category) || 'women',
+            desc: d.description || '',
+            images: Array.isArray(d.images) ? d.images : [],
+            url: d.url || url,
+            offerId: d.offerId || '',
+            attrs: d.attrs && typeof d.attrs === 'object' ? Object.entries(d.attrs).map(([k,v]) => ({name: k, value: Array.isArray(v) ? v.join('/') : String(v)})) : [],
+            skuOptions: [],
+            skus: Array.isArray(d.skus) ? d.skus : []
+          };
+          /* 从 attrs 里抽 skuOptions（颜色/款式等选项组）*/
+          if (d.attrs && typeof d.attrs === 'object') {
+            for (const [k, v] of Object.entries(d.attrs)) {
+              if (Array.isArray(v) && v.length >= 2 && /颜色|color|款式|style|尺码|size|图案/i.test(k)) {
+                draft.skuOptions.push({ name: k, values: v });
+              }
+            }
+          }
+          try {
+            const imp = await apiPost('/api/collect/batch', { drafts: [draft] });
+            if (imp && imp.ok && (imp.succeeded || 0) > 0) {
+              okCount++;
+            } else {
               failCount++;
             }
+          } catch (e) {
+            failCount++;
           }
         }
       } catch (e) {
         failCount++;
       } finally {
-        /* 关闭标签页 */
         try { if (tab && tab.id) await chrome.tabs.remove(tab.id); } catch (e) {}
       }
 
       state.done = myIdx + 1;
       state.imported = okCount;
       state.importFailed = failCount;
-      state.message = '采集中 ' + state.done + '/' + state.total + ' · 成功 ' + okCount + ' · 失敗 ' + failCount;
+      state.message = '采集中 ' + state.done + '/' + state.total + ' · 成功 ' + okCount + ' · 失败 ' + failCount;
       saveState();
       broadcast({ type: 'progress', state: publicState() });
     }

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "LUMIÈRE 商品采集器",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "在 1688 / 淘宝天猫 / 拼多多 / 京东 / AliExpress / Amazon / Temu / 独立站等货源与电商页自动出现「一键采集」，自动转白底图并入库 LUMIÈRE；其他页面不显示。",
   "permissions": [
     "tabs",
@@ -30,16 +30,40 @@
         "*://127.0.0.1/*",
         "*://localhost/*"
       ]
+    },
+    {
+      "matches": [
+        "*://*.1688.com/*",
+        "*://*.taobao.com/*",
+        "*://*.tmall.com/*",
+        "*://*.jd.com/*",
+        "*://*.pinduoduo.com/*",
+        "*://*.amazon.com/*",
+        "*://*.aliexpress.com/*",
+        "*://*.noon.com/*",
+        "*://*.shein.com/*"
+      ],
+      "js": [
+        "inject-1688.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "inject-1688.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "LUMIÈRE 采集器",
-    "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
-    }
+    "default_title": "LUMIÈRE 采集器"
   },
   "icons": {
     "16": "icons/icon16.png",
