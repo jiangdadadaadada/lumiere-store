@@ -197,30 +197,8 @@ async function lookupCountry(req) {
   return 'US';
 }
 
-/* 商品入库前白底兜底：**只强制首图**转白底，图集 / SKU 图保持原样。
-   （需求：首图强制白底图，其他图按原有的就行） */
-async function enforceWhiteProduct(payload) {
-  if (!payload || typeof payload !== 'object') return payload;
-  const main = payload.image;
-  if (typeof main !== 'string' || !main) return payload;
-  if (main.startsWith('data:image/svg')) return payload;
-  /* 已是本地白底图就跳过，避免重复抠图 */
-  if (main.startsWith('/assets/img/')) {
-    const guard = path.join(ROOT, 'assets', 'whitebg-guard.json');
-    try {
-      const g = JSON.parse(fs.readFileSync(guard, 'utf8'));
-      if (g[main] === true) return payload;
-    } catch (e) { /* 守卫文件缺失则继续 */ }
-  }
-  let r = null;
-  try {
-    r = await collector.convertRemoteOne(main);
-  } catch (e) {
-    return payload;  /* 转换失败不阻断入库，原图照存 */
-  }
-  if (r && r.ok && r.path) payload.image = localToSitePath(r.path);
-  return payload;
-}
+/* ★ 全局禁用白底转换：此函数已 no-op 保留占位，任何来源的图都保持原样入库 */
+async function enforceWhiteProduct(payload) { return payload; }
 
 /* 本地绝对路径（如 E:/LUMIERE/assets/img/x.jpg）→ 站内相对路径 /assets/img/x.jpg
    仅处理位于项目根目录下的文件；根目录之外保持原样。 */
@@ -270,13 +248,11 @@ function removeCollectedFile(imgPath, skipId) {
 }
 
 /* ============================================================
-   采集 → 草稿箱：首图白底转换队列
+   ★ 全局禁用白底转换：wbQueue / wbEnqueue / wbEnqueueBatch / wbPump 全是 no-op
    ---------------------------------------------------------
-   采集链路要求「秒回」：商品先立刻落进草稿箱，首图白底转换
-   放到后台队列异步做，不占用采集响应时间。
-
-   队列串行执行（pymatting 内存峰值高，并发会 OOM），
-   每张约 2 秒，模型常驻不重复加载。
+   历史上采集 → 草稿箱时，首图会被排进白底队列异步抠图。
+   现在白底已彻底禁用，首图保持原图，图集/SKU 图走下面的 imgQueue/skuImgQueue
+   原样本地化缓存（不抠图）。
    ============================================================ */
 const wbQueue = [];
 let wbRunning = false;
@@ -385,21 +361,17 @@ async function skuImgPump() {
   }
 }
 
-/* 老草稿修复：白底文件丢了 / 图集还是外链时，重新排队补齐 */
+/* 老草稿修复：主图文件丢了就用图集第一张顶上，图集/SKU 外链图排队本地化缓存
+   ★ 全局禁用白底：不再做白底队列，只恢复原图 */
 function repairDraftImages() {
-  const wb = [], imgs = [], skus = [];
+  const imgs = [], skus = [];
   for (const d of mem.drafts.values()) {
-    let needWhite = false;
-    if (typeof d.image !== 'string' || !d.image) needWhite = true;
-    else if (d.image.startsWith('/assets/img/')) {
-      const f = path.resolve(ROOT, '.' + d.image);
-      if (!fs.existsSync(f) || fs.statSync(f).size < 1024) needWhite = true;
-    }
-    if (needWhite && d.gallery && d.gallery.length) {
-      d.image = d.gallery[0];
-      d.whiteStatus = 'pending';
-      mem.drafts.set(d.id, d);
-      wb.push({ id: d.id, url: d.image, candidates: d.gallery.slice() });
+    /* 主图丢了 → 从图集里挑一张顶上（原图，不抠白底） */
+    if (!d.image || (d.image.startsWith('/assets/img/') && !localFileOk(d.image))) {
+      if (d.gallery && d.gallery.length) {
+        d.image = d.gallery[0];
+        mem.drafts.set(d.id, d);
+      }
     }
     (d.gallery || []).forEach((u, i) => {
       if (typeof u === 'string' && /^https?:\/\//i.test(u)) imgs.push({ id: d.id, i });
@@ -411,10 +383,9 @@ function repairDraftImages() {
       if (typeof u === 'string' && /^https?:\/\//i.test(u)) skus.push({ id: d.id, k, v });
     }));
   }
-  if (wb.length) wbEnqueueBatch(wb);
   if (imgs.length) imgEnqueue(imgs);
   if (skus.length) skuImgEnqueue(skus);
-  return { white: wb.length, gallery: imgs.length, sku: skus.length };
+  return { gallery: imgs.length, sku: skus.length };
 }
 
 /* ============================================================
@@ -483,7 +454,7 @@ async function healImages() {
 
       let url = /^https?:\/\//i.test(t.value) ? t.value : '';
       const rec = sources[path.basename(String(t.value || ''))];
-      let type = t.field === 'main' ? 'white' : 'gallery';
+      let type = 'gallery'; /* ★ 全局禁用白底：主图也不抠图 */
       const dbSource = t.field === 'main' ? d.mainSource : (d.gallerySources || [])[t.index];
       /* 优先用 db 里永久留档的原始链接，其次是来源账本 */
       if (!url && /^https?:\/\//i.test(dbSource || '')) url = dbSource;
@@ -508,25 +479,16 @@ async function healImages() {
 
       try {
         let finalPath;
-        if (type === 'white') {
-          const pre = await collector.prefetchRemote([url]);
-          if (!pre[0] || pre[0].error) throw new Error((pre[0] && pre[0].error) || '下载失败');
-          const conv = await collector.convertRemoteOne(pre[0].file);
-          if (!conv.ok) throw new Error(conv.error || '白底转换失败');
-          finalPath = localToSitePath(conv.path);
-          collector.recordSource(finalPath, url, 'white');
-        } else {
-          const c = await collector.cacheRemote(url);
-          if (!c.ok) throw new Error(c.error || '图片缓存失败');
-          finalPath = c.path;
-        }
+        /* ★ 全局禁用白底：统一走 cacheRemote，不抠图 */
+        const c = await collector.cacheRemote(url);
+        if (!c.ok) throw new Error(c.error || '图片缓存失败');
+        finalPath = c.path;
         if (t.field === 'main') {
           /* 文件名变了，所有还指向旧路径的草稿/商品一起改 */
           for (const [sid, item] of store) {
             if (item.image === t.value) { item.image = finalPath; store.set(sid, item); }
           }
-          d.whiteStatus = 'done';
-          d.whiteAt = new Date().toISOString();
+          /* ★ 不再设置 whiteStatus，白底已全局禁用 */
         } else {
           d.gallery[t.index] = finalPath;
         }
@@ -832,7 +794,7 @@ function buildDupIndex(targetSite) {
   return { urls, names };
 }
 
-/* 采集入口：商品立刻落草稿箱，首图白底后台异步转换 */
+/* 采集入口：商品立刻落草稿箱，首图/图集/SKU 图全走原样，不抠白底 */
     if (pathname === '/api/collect/batch' && req.method === 'POST') {
       let raw = ''; for await (const c of req) raw += c;
       let b; try { b = JSON.parse(raw || '{}'); } catch (e) { return send(res, 400, { error:'invalid json' }); }
@@ -936,7 +898,7 @@ function buildDupIndex(targetSite) {
           priceMissing: !(priceVal > 0),
           priceMissingAt: !(priceVal > 0) ? new Date().toISOString() : '',
           stock: stockVal,
-          /* 首图先存原地址，转好后由后台队列替换成白底本地路径 */
+          /* 首图保持 1688 原图外链，后面图集本地化时会原样缓存到本站（不抠白底） */
           image: main,
           /* ★ 原始链接永久留档：本地图丢了可以直接从 db 自己恢复，
              不依赖 sources.json 账本（账本文件也可能被清掉） */
@@ -1141,7 +1103,7 @@ function buildDupIndex(targetSite) {
       if (req.method === 'PUT') {
         let raw = ''; for await (const c of req) raw += c;
         let b; try { b = JSON.parse(raw || '{}'); } catch (e) { return send(res, 400, { error:'invalid json' }); }
-        /* 图片若被改动：首图白底走后台队列，不阻塞保存 */
+        /* 图片若被改动：不抠白底，直接存原样 */
         if (b.site !== undefined) {
           const target = String(b.site || '');
           /* 空串 = 解绑，回到「未绑定站点」；非空必须命中已有站点 */
@@ -1186,11 +1148,7 @@ function buildDupIndex(targetSite) {
     }
 
     const fakeRequest = { url: `http://localhost:${PORT}${req.url}`, headers: req.headers };
-    /* 商品写入前统一白底兜底：任何来源（后台上传/采集/外链）的图都保证白底 */
-    if (body && (pathname === '/api/products' && req.method === 'POST'
-      || (pathname.startsWith('/api/products/') && req.method === 'PUT'))) {
-      await enforceWhiteProduct(body);
-    }
+    /* ★ 全局禁用白底转换：任何来源的图都保持原样，入库时不抠图 */
     /* 商品列表的 site=all 要透传成 "all"，其余接口一律解析成真实站点 */
     const wantAllList = req.method === 'GET' && url.searchParams.get('site') === 'all'
       && (pathname === '/api/products' || pathname === '/api/stock');
@@ -1345,8 +1303,8 @@ server.listen(PORT, () => {
   console.log(`  地理定位: http://localhost:${PORT}/api/geo`);
   console.log(`  订单列表: http://localhost:${PORT}/api/orders\n`);
   setupAutoPublish();
-  /* 先自愈巡检（文件丢了自动重建），再恢复未转完的白底队列 */
-  setTimeout(() => { healImages().then(() => resumeWhiteQueue()); }, 800);
+  /* 自愈巡检（文件丢了自动重建，不抠白底） */
+  setTimeout(() => { healImages().catch(() => {}); }, 800);
   /* 历史草稿里仍是外链的图集 / SKU 选项图，启动时排进本地缓存，
      否则后台翻旧草稿会看到整片破图（图床对本站 Referer 返回 403） */
   setTimeout(() => { try { repairDraftImages(); } catch (e) {} }, 1500);
