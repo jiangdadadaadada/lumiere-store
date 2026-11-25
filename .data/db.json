@@ -1583,7 +1583,7 @@
    "priceMissing": false,
    "priceMissingAt": "",
    "stock": 0,
-   "image": "/assets/img/collected/CQ-02565797.webp",
+   "image": "/assets/img/collected/CQ-02600961.webp",
    "mainSource": "https://cbu01.alicdn.com/img/ibank/O1CN01p0ofZi25d2ejik2xE_!!2206592147548-0-cib.jpg",
    "gallerySources": [
     "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg_60x60q90.jpg",
@@ -1612,7 +1612,7 @@
    "sourceUrl": "https://detail.1688.com/offer/1063690838201.html",
    "collectedAt": "2026-11-25T10:27:20.375Z",
    "whiteStatus": "done",
-   "whiteAt": "2026-11-25T10:30:00.964Z"
+   "whiteAt": "2026-11-25T10:30:50.304Z"
   },
   "DRAFT-MWVZCWGGZRZL": {
    "id": "DRAFT-MWVZCWGGZRZL",
@@ -1629,7 +1629,7 @@
    "priceMissing": false,
    "priceMissingAt": "",
    "stock": 0,
-   "image": "https://cbu01.alicdn.com/img/ibank/O1CN011JWBDr25d2ZkVWEqV_!!2206592147548-0-cib.jpg",
+   "image": "/assets/img/collected/CQ-02650305.webp",
    "mainSource": "https://cbu01.alicdn.com/img/ibank/O1CN011JWBDr25d2ZkVWEqV_!!2206592147548-0-cib.jpg",
    "gallerySources": [
     "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg_60x60q90.jpg",
@@ -1657,7 +1657,8 @@
    "originalDesc": "",
    "sourceUrl": "https://detail.1688.com/offer/948427739387.html",
    "collectedAt": "2026-11-25T10:28:04.816Z",
-   "whiteStatus": "pending"
+   "whiteStatus": "done",
+   "whiteAt": "2026-11-25T10:30:52.030Z"
   },
   "DRAFT-MWVZCWGJAF4Q": {
    "id": "DRAFT-MWVZCWGJAF4Q",
