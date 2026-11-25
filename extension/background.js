@@ -12,7 +12,7 @@ const STORAGE_KEY = 'lum_collect_state';
    所以不需要分批了 —— 一次全发，省掉 7 次往返。 */
 const BATCH_SIZE = 200;
 /* 与 content.js 保持一致的构建号：变了就重载扩展并把页面按钮重新挂上 */
-const BUILD = '20261125n';
+const BUILD = '20261125o';
 
 let state = {
   running: false, phase: '', url: '', total: 0, done: 0, failed: 0,
@@ -808,7 +808,21 @@ async function runShopCollect(cfg) {
           });
           setTimeout(res, 20000);
         });
-        await new Promise(r => setTimeout(r, 1500));  /* 多等一会儿让 SPA 渲染 */
+        await new Promise(r => setTimeout(r, 1500));
+
+        /* ★ 验证新标签页是否真的是详情页（防止 404 或 SPA 模板页）*/
+        let tabUrl = url;
+        try { const tab = await chrome.tabs.get(tabId); tabUrl = tab.url || url; } catch(e) {}
+        const isRealDetail = /detail\.1688\.com\/offer\/\d+\.html/i.test(tabUrl);
+        if (!isRealDetail) {
+          failCount++; state.failed = failCount;
+          state.lastError = '被 404/反爬拦截（实际跳转到: ' + tabUrl.substring(0,60) + '）';
+          try { if (tab && tab.id) await chrome.tabs.remove(tab.id); } catch(e) {}
+          state.done = myIdx + 1;
+          state.message = '第 ' + (myIdx + 1) + ' 款跳过：404 反爬（采集中 ' + state.done + '/' + state.total + '）';
+          saveState(); broadcast({ type: 'progress', state: publicState() });
+          continue;
+        }
 
         /* 等 ERP 引擎就绪 */
         let ready = false;
