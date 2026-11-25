@@ -1037,6 +1037,124 @@
    "collectedAt": "2026-11-25T11:46:51.390Z",
    "whiteStatus": "done",
    "updatedAt": "2026-11-25T11:47:28.523Z"
+  },
+  "DRAFT-MWW2E88MOXUD": {
+   "id": "DRAFT-MWW2E88MOXUD",
+   "status": "pending",
+   "sku": "",
+   "site": "",
+   "createdAt": "2026-11-25T11:53:05.590Z",
+   "name": "私语 · 甄选好物",
+   "nameEn": "Whisper · Intimate Essential",
+   "category": "women",
+   "desc": "这款单品选用亲肤材质。为私密时刻而设计，细节都藏在手感里。私密包装，中性面单发货。",
+   "descEn": "A intimate essential with a skin-safe finish. Discreet packaging, neutral billing.",
+   "price": 6,
+   "priceMissing": false,
+   "priceMissingAt": "",
+   "stock": 232317,
+   "image": "https://cbu01.alicdn.com/img/ibank/O1CN01VJgGzA25d2b6cIMnL_!!2206592147548-0-cib.jpg",
+   "mainSource": "https://cbu01.alicdn.com/img/ibank/O1CN01VJgGzA25d2b6cIMnL_!!2206592147548-0-cib.jpg",
+   "gallerySources": [
+    "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01lGzLis25d2dC695ER_!!2206592147548-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/2020/428/378/22185873824_536529798.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01n8GLQK25d2b6BWAu9_!!2206592147548-0-cib.jpg"
+   ],
+   "gallery": [
+    "/assets/img/collected/src-6edbb863ace327eb.jpg",
+    "/assets/img/collected/src-7105937877013ea2.jpg",
+    "/assets/img/collected/src-6edbb863ace327eb.jpg",
+    "/assets/img/collected/src-6362b2040fd40a33.jpg"
+   ],
+   "specs": [],
+   "skuImages": {},
+   "skus": [
+    {
+     "name": "8190【单独连体衣】 / 均码",
+     "price": 19,
+     "stock": 16083,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01n8GLQK25d2b6BWAu9_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8190+眼罩+黑丝袜 / 均码",
+     "price": 23.5,
+     "stock": 19545,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01TYkVV425d2b77AnZz_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8190+外袍+眼罩+丝袜 / 均码",
+     "price": 45.5,
+     "stock": 19867,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN017GvzJS25d2b5sn1Ye_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "模特同款外袍 / 均码",
+     "price": 22,
+     "stock": 18860,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01LHTMCe25d2b6KGPU5_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8190+黑丝袜 / 均码",
+     "price": 21.5,
+     "stock": 19689,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN013awhyp25d2b7KTOFr_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8190+外袍+铃铛牵引+丝袜 / 均码",
+     "price": 49.5,
+     "stock": 19956,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01B2qqTJ25d2b77SFu9_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8190+眼罩 / 均码",
+     "price": 21,
+     "stock": 19844,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01Tp1PPy25d2b6Jaqz1_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8190+外袍+眼罩+铃铛牵引+丝袜 / 均码",
+     "price": 51.5,
+     "stock": 19285,
+     "image": "https://img.alicdn.com/imgextra/i1/O1CN01uvnM5c1C0keOdWqw2_!!6000000000019-2-tps-628-628.png"
+    },
+    {
+     "name": "模特同款铃铛牵引 / 均码",
+     "price": 6,
+     "stock": 19619,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01jwlo1725d2b5Q0VMv_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8190+黑丝袜+铃铛牵引+黑眼罩 / 均码",
+     "price": 29.5,
+     "stock": 19851,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN015srR6Y25d2b6JptPF_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8190+黑丝袜+铃铛牵引 / 均码",
+     "price": 27.5,
+     "stock": 19847,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01PQMTc025d2cM9YlIo_!!2206592147548-0-cib.jpg"
+    },
+    {
+     "name": "8190+外袍 / 均码",
+     "price": 41,
+     "stock": 19871,
+     "image": "https://cbu01.alicdn.com/img/ibank/O1CN01lGzLis25d2dC695ER_!!2206592147548-0-cib.jpg"
+    }
+   ],
+   "features": [],
+   "badge": "",
+   "material": "—",
+   "size": "—",
+   "noise": "",
+   "waterproof": "",
+   "battery": "",
+   "originalName": "柠檬物语情趣内衣性感免脱小胸显大带钢圈睡衣新款免脱连体衣8190",
+   "originalDesc": "",
+   "sourceUrl": "https://detail.1688.com/offer/981584332995.html",
+   "collectedAt": "2026-11-25T11:53:05.590Z",
+   "whiteStatus": "done"
   }
  },
  "orders": {

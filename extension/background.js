@@ -202,9 +202,95 @@ async function callParser(tabId, method, opts, pageUrl) {
               };
 
               if (skuMatrix.length) {
+                /* ==========================================================
+                   ★ 主动 SKU 图抓取（最高优先级）
+                   点击页面上的规格选项元素 → 监听主图变化 → 建立索引映射
+                   实测 1688 详情页每个规格都有独立主图，点一下就换
+                   ========================================================== */
+                const skuClickMap = {}; // skuIndex → imageUrl
+                /* 找页面上所有规格选项（1688 React 渲染，class 可能变，多策略匹配） */
+                const findLabels = () => {
+                  const selectors = [
+                    '.label-name',
+                    '[class*="spec-label"]',
+                    '[class*="sku-label"]',
+                    '[class*="field-value"][class*="label"]',
+                    'span[class*="label"]',
+                    '.offer-ui-sku-item'
+                  ];
+                  for (const sel of selectors) {
+                    const nodes = document.querySelectorAll(sel);
+                    if (nodes.length >= Math.min(skuMatrix.length, 3)) {
+                      // 过滤：要排除带 .icon / .close 等按钮类的
+                      const clean = Array.from(nodes).filter(n => !n.querySelector('img, svg, i'));
+                      if (clean.length >= 2) return clean;
+                    }
+                  }
+                  // 兜底：找所有 span，文本匹配 skuMatrix 里的值
+                  const allSpans = document.querySelectorAll('span, li, a, div');
+                  const matchSet = new Set();
+                  for (const row of skuMatrix) {
+                    for (const v of Object.values(row.axes || {})) if (v) matchSet.add(String(v));
+                  }
+                  const matched = Array.from(allSpans).filter(el => {
+                    if (el.children.length > 0) return false;
+                    const t = (el.textContent || '').trim();
+                    return t.length > 1 && t.length < 40 && matchSet.has(t);
+                  });
+                  // 去重
+                  const seen = new Set();
+                  return matched.filter(el => {
+                    const t = (el.textContent || '').trim();
+                    if (seen.has(t)) return false;
+                    seen.add(t); return true;
+                  });
+                };
+                /* 找当前最大的图片元素（主图） */
+                const findMainImgNow = () => {
+                  let biggest = null, maxArea = 0;
+                  document.querySelectorAll('img').forEach(img => {
+                    const area = img.naturalWidth * img.naturalHeight;
+                    if (area > maxArea && area > 10000) { maxArea = area; biggest = img; }
+                  });
+                  return biggest ? (biggest.currentSrc || biggest.src || '') : '';
+                };
+                /* 如果 colorImgMap 是空的（ERP 没抓到颜色图），主动点击抓 */
+                const hasColorImgs = Object.keys(colorImgMap).length > 0;
+                if (!hasColorImgs) {
+                  try {
+                    const labels = findLabels();
+                    if (labels.length >= 2) {
+                      /* 滚动到规格区域让懒加载就绪 */
+                      const specArea = document.querySelector('.offer-ui-sku, [class*="sku-panel"]');
+                      if (specArea) specArea.scrollIntoView({ block: 'center' });
+                      /* ★ 逐个点击 → 按名称匹配 skuMatrix 行（不按索引，DOM 顺序和后端 JSON 顺序经常不一致） */
+                      for (let i = 0; i < labels.length; i++) {
+                        const labelText = (labels[i].textContent || '').trim();
+                        if (!labelText) continue;
+                        try { labels[i].click(); } catch(e) {}
+                        await new Promise(r => setTimeout(r, 400));
+                        let img = findMainImgNow();
+                        if (!img) continue;
+                        img = clean1688(img);
+                        /* 精确匹配：找 axes 值 === labelText 的 skuMatrix 行 */
+                        for (let j = 0; j < skuMatrix.length; j++) {
+                          const row = skuMatrix[j];
+                          if (!row.axes) continue;
+                          for (const v of Object.values(row.axes)) {
+                            if (String(v || '').trim() === labelText && !skuClickMap[j]) {
+                              skuClickMap[j] = img;
+                              break;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  } catch(e) { /* 抓图失败不阻断 */ }
+                }
+
                 /* 1. 推导 skuOptions：所有 row.axes 的轴名 → 值集合 + 选项图 */
                 const axisMap = {};
-                const axisColorMap = {};
+                const axisColorMap = {}; // 轴值 → 匹配到的颜色图
                 for (const row of skuMatrix) {
                   if (!row.axes || typeof row.axes !== 'object') continue;
                   for (const [axis, val] of Object.entries(row.axes)) {
@@ -212,6 +298,17 @@ async function callParser(tabId, method, opts, pageUrl) {
                     if (!axisMap[axis]) axisMap[axis] = new Set();
                     axisMap[axis].add(val);
                     if (!axisColorMap[val]) axisColorMap[val] = findColorImg(val);
+                  }
+                }
+                /* ★ 用点击抓到的图补 axisColorMap */
+                if (Object.keys(skuClickMap).length) {
+                  for (const [i, row] of skuMatrix.entries()) {
+                    if (!row.axes) continue;
+                    for (const val of Object.values(row.axes)) {
+                      if (val && !axisColorMap[val] && skuClickMap[i]) {
+                        axisColorMap[val] = skuClickMap[i];
+                      }
+                    }
                   }
                 }
                 for (const [axis, vals] of Object.entries(axisMap)) {
@@ -222,17 +319,19 @@ async function callParser(tabId, method, opts, pageUrl) {
                   if (items.length >= 1) skuOptions.push({ group: axis, items });
                 }
 
-                /* 2. ★ SKU 图兜底：颜色关键词都匹配不到时，把 images[1..] 按顺序分给 skus
-                   （1688 详情页 images 数组通常是：主图 + 颜色选项1 + 颜色选项2 + ... + 详情图） */
-                const fallbackImgs = cleanImages.slice(1); // 跳过主图
+                /* 2. ★ SKU 图：优先级 → 点击抓图 > 颜色匹配 > 顺序兜底 */
+                const fallbackImgs = cleanImages.slice(1);
                 /* 3. 生成 skus：每个 row 一个组合，补 image */
                 let skuIdx = 0;
                 for (const row of skuMatrix) {
                   if (!row.axes) continue;
                   const comboName = Object.values(row.axes).filter(Boolean).join(' / ') || String(row.specAttrs || '');
                   const firstVal = Object.values(row.axes)[0] || '';
-                  let skuImg = findColorImg(firstVal);
-                  /* 颜色匹配失败 → 兜底：按顺序分图 */
+                  /* 优先级 1：点击抓图 */
+                  let skuImg = skuClickMap[skuIdx] || '';
+                  /* 优先级 2：颜色匹配 */
+                  if (!skuImg) skuImg = findColorImg(firstVal);
+                  /* 优先级 3：兜底 */
                   if (!skuImg && fallbackImgs[skuIdx]) skuImg = fallbackImgs[skuIdx];
                   skus.push({
                     name: comboName,
