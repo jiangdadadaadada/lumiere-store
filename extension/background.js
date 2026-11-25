@@ -131,6 +131,24 @@ async function callParser(tabId, method, opts, pageUrl) {
     func: async (m, o) => {
       if (!window.__c1688 && !window.__LUM_COLLECT__) return { ok: false, error: '采集引擎未注入' };
       try {
+        /* ★ 1688 图片清洗：去掉 _数字x数字q*.jpg 缩略后缀，返回原图 URL */
+        const clean1688 = (url) => {
+          let s = String(url || '').trim();
+          if (!s) return '';
+          // 去掉 1688 缩略规格后缀：_60x60q90.jpg / _400x400.jpg / _800x800.jpg
+          s = s.replace(/_\d+x\d+(?:q\d*)?\.jpg$/i, '.jpg');
+          s = s.replace(/_\d+x\d+(?:q\d*)?\.jpeg$/i, '.jpeg');
+          s = s.replace(/_\d+x\d+(?:q\d*)?\.png$/i, '.png');
+          s = s.replace(/_\d+x\d+(?:q\d*)?\.webp$/i, '.webp');
+          // .jpg_sum.jpg 也是中间尺寸，去掉
+          s = s.replace(/\.jpg_sum\.jpg$/i, '.jpg');
+          return s;
+        };
+        /* 从 URL 提取文件名用于模糊匹配 */
+        const basenameOf = (u) => {
+          const m = String(u || '').match(/\/([^\/?#]+?)(?:_[^\/?#]+)?(?:\?|#|$)/);
+          return m ? m[1].toLowerCase() : '';
+        };
         /* ★ 优先 ERP __c1688 */
         if (window.__c1688) {
           let raw;
@@ -144,44 +162,95 @@ async function callParser(tabId, method, opts, pageUrl) {
               let skuOptions = [];
               let skus = [];
 
+              /* ★ images 数组清洗：所有 URL 都去掉缩略后缀 */
+              const cleanImages = (raw.images || []).map(clean1688).filter(Boolean);
+              /* ★ 从 raw._colorImgs / raw.sku_images 构建颜色 → 图 映射（ERP parser 有时能抓到） */
+              const colorImgMap = {};
+              if (raw._colorImgs && typeof raw._colorImgs === 'object' && !Array.isArray(raw._colorImgs)) {
+                for (const [k, v] of Object.entries(raw._colorImgs)) {
+                  if (v) colorImgMap[String(k).toLowerCase()] = clean1688(v);
+                }
+              }
+              if (raw.sku_images && typeof raw.sku_images === 'object' && !Array.isArray(raw.sku_images)) {
+                for (const [k, v] of Object.entries(raw.sku_images)) {
+                  const url = Array.isArray(v) ? (v[0] || '') : String(v || '');
+                  if (url) colorImgMap[String(k).toLowerCase()] = clean1688(url);
+                }
+              }
+              /* ★ 颜色关键词列表，用于从 images 数组里匹配颜色选项图 */
+              const COLOR_HINTS = ['黑','白','粉','红','紫','蓝','绿','黄','灰','金','银','米','杏','棕','橙','玫','酒','藏','湖','宝'];
+              const findColorImg = (name) => {
+                const n = String(name || '').toLowerCase();
+                // 1. 先查 colorImgMap 精确匹配
+                for (const [k, v] of Object.entries(colorImgMap)) {
+                  if (n.includes(k) || k.includes(n)) return v;
+                }
+                // 2. 从 images 数组里按 basename 模糊匹配颜色关键词
+                for (const c of COLOR_HINTS) {
+                  if (name.includes(c)) {
+                    for (const img of cleanImages) {
+                      const bn = basenameOf(img);
+                      if (bn && bn.includes(c)) return img;
+                    }
+                  }
+                }
+                return '';
+              };
+
               if (skuMatrix.length) {
-                /* 1. 推导 skuOptions：所有 row.axes 的轴名 → 值集合 */
-                const axisMap = {}; // { "颜色": Set("黑色","白色"), "尺码": Set("M","L") }
+                /* 1. 推导 skuOptions：所有 row.axes 的轴名 → 值集合 + 选项图 */
+                const axisMap = {};
+                const axisColorMap = {}; // 轴值 → 匹配到的颜色图
                 for (const row of skuMatrix) {
                   if (!row.axes || typeof row.axes !== 'object') continue;
                   for (const [axis, val] of Object.entries(row.axes)) {
                     if (!axis || !val) continue;
                     if (!axisMap[axis]) axisMap[axis] = new Set();
                     axisMap[axis].add(val);
+                    /* 尝试给这个轴值找一张颜色图 */
+                    if (!axisColorMap[val]) axisColorMap[val] = findColorImg(val);
                   }
                 }
                 for (const [axis, vals] of Object.entries(axisMap)) {
-                  const items = Array.from(vals).map(v => ({ name: String(v), image: '' }));
+                  const items = Array.from(vals).map(v => ({
+                    name: String(v),
+                    image: axisColorMap[v] || ''
+                  }));
                   if (items.length >= 1) skuOptions.push({ group: axis, items });
                 }
 
-                /* 2. 生成 skus：每个 row 一个组合 */
+                /* 2. 生成 skus：每个 row 一个组合，补 image */
                 for (const row of skuMatrix) {
                   if (!row.axes) continue;
                   const comboName = Object.values(row.axes).filter(Boolean).join(' / ') || String(row.specAttrs || '');
+                  /* 从 axes 里第一个值找颜色图（通常就是颜色/规格） */
+                  const firstVal = Object.values(row.axes)[0] || '';
+                  const skuImg = findColorImg(firstVal);
                   skus.push({
                     name: comboName,
                     price: Number(row.price || row.discountPrice || 0),
                     stock: Number(row.stock || 0),
                     skuId: row.skuId || row.specId || '',
-                    images: []
+                    image: skuImg,
+                    images: skuImg ? [skuImg] : []
                   });
                 }
               } else if (Array.isArray(raw.skus) && raw.skus.length) {
                 /* 没有 sku_matrix 时，把 ERP 的扁平字符串 skus 当单一规格选项 */
-                skuOptions = [{ group: '规格', items: raw.skus.map(s => ({ name: String(s), image: '' })) }];
-                skus = raw.skus.map(s => ({ name: String(s), price: Number(raw.price || raw.priceMax || 0), stock: 0 }));
+                skuOptions = [{ group: '规格', items: raw.skus.map(s => ({ name: String(s), image: findColorImg(s) })) }];
+                skus = raw.skus.map(s => ({
+                  name: String(s),
+                  price: Number(raw.price || raw.priceMax || 0),
+                  stock: 0,
+                  image: findColorImg(s)
+                }));
               }
 
               return { ok: true, items: [{
                 offerId: raw.offerId || '', url: raw.url || '',
                 name: raw.title || '', price: raw.price || raw.priceMax || 0,
-                image: (raw.images || [])[0] || '', images: raw.images || [],
+                /* ★ 主图和图集都用清洗后的完整图 URL */
+                image: cleanImages[0] || '', images: cleanImages,
                 desc: raw.description || '',
                 attrs: raw.attrs && typeof raw.attrs === 'object'
                   ? Object.entries(raw.attrs).map(([k,v]) => ({ name: k, value: Array.isArray(v) ? v.join('/') : String(v) }))
@@ -200,10 +269,11 @@ async function callParser(tabId, method, opts, pageUrl) {
               if (!/detail\.1688\.com\/offer\/\d+\.html/i.test(url)) {
                 url = 'https://detail.1688.com/offer/' + r.offerId + '.html';
               }
+              const img = clean1688(r.image || '');
               return {
                 offerId: r.offerId, url,
                 name: r.title || '', price: r.price || 0,
-                image: r.image || '', images: r.image ? [r.image] : []
+                image: img, images: img ? [img] : []
               };
             });
             return { ok: true, items, linkCount: items.length, totalLinks: items.length };
